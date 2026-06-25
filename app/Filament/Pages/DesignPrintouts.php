@@ -26,7 +26,7 @@ class DesignPrintouts extends Page implements HasForms
     public static function canAccess(): bool
     {
         $u = auth()->user();
-        return $u && ($u->isAdmin() || $u->isGallery());
+        return $u && ($u->isAdmin() || $u->isGallery() || $u->isCollector() || $u->isArtist());
     }
 
     public ?array $data = [];
@@ -45,6 +45,7 @@ class DesignPrintouts extends Page implements HasForms
 
                         Forms\Components\Tabs\Tab::make('Certificate of Authenticity')
                             ->icon('heroicon-o-shield-check')
+                            ->visible(fn (): bool => ! auth()->user()?->isCollector())
                             ->schema([
                                 Forms\Components\RichEditor::make('cert_intro')
                                     ->label('Intro paragraph')
@@ -139,6 +140,7 @@ class DesignPrintouts extends Page implements HasForms
 
                         Forms\Components\Tabs\Tab::make('Maintenance Report')
                             ->icon('heroicon-o-wrench-screwdriver')
+                            ->visible(fn (): bool => ! auth()->user()?->isArtist())
                             ->schema([
                                 Forms\Components\Placeholder::make('maintenance_intro')
                                     ->label('')

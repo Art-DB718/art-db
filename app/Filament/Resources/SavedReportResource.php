@@ -20,6 +20,8 @@ class SavedReportResource extends Resource
     protected static ?string $model = SavedReport::class;
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
     protected static ?string $navigationGroup = 'System';
+
+    public static function canViewAny(): bool { return auth()->check(); }
     protected static ?int $navigationSort = 4;
     protected static ?string $navigationLabel = 'Saved Reports';
     protected static ?string $recordTitleAttribute = 'name';

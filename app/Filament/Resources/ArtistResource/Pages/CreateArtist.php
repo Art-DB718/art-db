@@ -28,13 +28,17 @@ class CreateArtist extends CreateRecord
         }
     }
 
-    /** Artist user has only one profile — replace "Create another" with edit redirect. */
+    /**
+     * Redirect after save:
+     * - Artist user: edit page (they own a single profile, keep editing)
+     * - Everyone else: index/list (so the newly-created row is visible in the table)
+     */
     protected function getRedirectUrl(): string
     {
         $user = auth()->user();
         if ($user?->isArtist()) {
             return ArtistResource::getUrl('edit', ['record' => $this->record]);
         }
-        return parent::getRedirectUrl();
+        return ArtistResource::getUrl('index');
     }
 }

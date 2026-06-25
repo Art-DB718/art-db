@@ -18,6 +18,8 @@ class MediumResource extends Resource
     protected static ?string $model = Medium::class;
     protected static ?string $navigationIcon = 'heroicon-o-paint-brush';
     protected static ?string $navigationGroup = 'Catalogue';
+
+    public static function canViewAny(): bool { return auth()->check(); }
     protected static ?int $navigationSort = 10;
     protected static ?string $recordTitleAttribute = 'name';
 

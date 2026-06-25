@@ -25,6 +25,7 @@ class Artwork extends Model
         'purchase_date', 'purchase_price', 'insurance_value',
         'condition_notes', 'damage_notes', 'provenance', 'exhibition_history', 'literature',
         'has_certificate_of_authenticity',
+        'certificate_of_authenticity_document', 'invoice_document',
         'restoration_date', 'restoration_returned_at',
         'restoration_notes', 'restoration_price',
         'restorer_name', 'restorer_email', 'restorer_phone',

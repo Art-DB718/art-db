@@ -72,7 +72,8 @@ class ArtistResource extends Resource
                             ->minValue(1000)
                             ->maxValue((int) date('Y'))
                             ->placeholder('e.g. 2010')
-                            ->helperText('Leave empty for living artists.'),
+                            ->helperText('Leave empty for living artists.')
+                            ->visible(fn (): bool => ! auth()->user()?->isArtist()),
                         Forms\Components\TextInput::make('birth_place'),
                         Forms\Components\Select::make('country_id')->relationship('country', 'name')->searchable()->preload(),
                     ]),
@@ -246,61 +247,47 @@ class ArtistResource extends Resource
                 Tables\Columns\TextColumn::make('artworks_count')->counts('artworks')->label('Artworks'),
                 Tables\Columns\IconColumn::make('is_published')->boolean()->label('Public'),
                 Tables\Columns\IconColumn::make('is_featured')->boolean()->label('Featured'),
+                Tables\Columns\ToggleColumn::make('represented_by_me')
+                    ->label('Represented')
+                    ->visible(fn (): bool => auth()->user()?->isGallery() === true && auth()->user()->gallery !== null)
+                    ->getStateUsing(function (Artist $record): bool {
+                        $gallery = auth()->user()->gallery;
+                        return $gallery
+                            ? $record->galleries()->whereKey($gallery->id)->exists()
+                            : false;
+                    })
+                    ->updateStateUsing(function (Artist $record, bool $state): bool {
+                        $gallery = auth()->user()->gallery;
+                        if (! $gallery) return false;
+                        if ($state) {
+                            $gallery->artists()->syncWithoutDetaching([
+                                $record->id => ['represented_since' => now()->toDateString()],
+                            ]);
+                        } else {
+                            $gallery->artists()->detach($record->id);
+                        }
+                        return $state;
+                    })
+                    ->tooltip('Toggle whether your gallery represents this artist.'),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_published'),
                 Tables\Filters\TernaryFilter::make('is_featured'),
                 Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\Filter::make('represented_by_me')
+                    ->label('Only artists I represent')
+                    ->visible(fn (): bool => auth()->user()?->isGallery() === true && auth()->user()->gallery !== null)
+                    ->query(function ($query) {
+                        $gallery = auth()->user()->gallery;
+                        return $gallery
+                            ? $query->whereHas('galleries', fn ($q) => $q->whereKey($gallery->id))
+                            : $query;
+                    })
+                    ->toggle(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('unrepresent')
-                    ->label('Stop representing')
-                    ->icon('heroicon-m-x-mark')
-                    ->color('warning')
-                    ->visible(fn (): bool => auth()->user()?->isGallery() === true)
-                    ->requiresConfirmation()
-                    ->action(function (Artist $record): void {
-                        $gallery = auth()->user()->gallery;
-                        if ($gallery) {
-                            $gallery->artists()->detach($record->id);
-                        }
-                    }),
                 Tables\Actions\DeleteAction::make(),
-            ])
-            ->headerActions([
-                Tables\Actions\Action::make('represent')
-                    ->label('+ Represent existing artist')
-                    ->icon('heroicon-m-user-plus')
-                    ->color('primary')
-                    ->visible(fn (): bool => auth()->user()?->isGallery() === true && auth()->user()->gallery !== null)
-                    ->form([
-                        Forms\Components\Select::make('artist_id')
-                            ->label('Artist')
-                            ->options(function () {
-                                $gallery = auth()->user()->gallery;
-                                $alreadyIds = $gallery ? $gallery->artists()->pluck('artists.id')->all() : [];
-                                return Artist::query()
-                                    ->whereNotIn('id', $alreadyIds)
-                                    ->orderBy('last_name')->orderBy('first_name')
-                                    ->get()
-                                    ->mapWithKeys(fn (Artist $a) => [$a->id => trim(($a->first_name ?? '').' '.($a->last_name ?? ''))])
-                                    ->all();
-                            })
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\DatePicker::make('represented_since')->native(false),
-                        Forms\Components\Toggle::make('is_primary')->label('Mark as primary representing gallery'),
-                    ])
-                    ->action(function (array $data): void {
-                        $gallery = auth()->user()->gallery;
-                        if ($gallery) {
-                            $gallery->artists()->attach($data['artist_id'], [
-                                'represented_since' => $data['represented_since'] ?? null,
-                                'is_primary'        => (bool) ($data['is_primary'] ?? false),
-                            ]);
-                        }
-                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -321,17 +308,13 @@ class ArtistResource extends Resource
             $query->where('owner_user_id', $user->id);
         }
 
-        // Gallery vidí len artists, ktorých zastupuje (cez artist_gallery pivot).
-        if ($user?->isGallery() && $user->gallery) {
-            $query->whereHas('galleries', fn ($q) => $q->whereKey($user->gallery->id));
-        }
+        // Gallery vidí všetkých umelcov v archíve — toggle column ukáže, ktorých zastupuje.
+        // (Žiadne scoping; voliteľný filter "Only artists I represent" je v table->filters.)
 
-        // Collector vidí published archív + vlastné private záznamy.
+        // Collector v admine vidí IBA svoju súkromnú databázu (own records).
+        // Public archív Collector prehliada cez verejný web (Fáza 3), nie cez admin.
         if ($user?->isCollector()) {
-            $query->where(function ($q) use ($user) {
-                $q->where('is_published', true)
-                  ->orWhere('owner_user_id', $user->id);
-            });
+            $query->where('owner_user_id', $user->id);
         }
 
         return $query;

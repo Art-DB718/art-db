@@ -20,6 +20,8 @@ class WebserviceResource extends Resource
     protected static ?string $model = Webservice::class;
     protected static ?string $navigationIcon = 'heroicon-o-bolt';
     protected static ?string $navigationGroup = 'System';
+
+    public static function canViewAny(): bool { return auth()->check(); }
     protected static ?int $navigationSort = 3;
     protected static ?string $recordTitleAttribute = 'name';
 

@@ -18,6 +18,8 @@ class ArtworkStatusResource extends Resource
     protected static ?string $model = ArtworkStatus::class;
     protected static ?string $navigationIcon = 'heroicon-o-flag';
     protected static ?string $navigationGroup = 'Catalogue';
+
+    public static function canViewAny(): bool { return auth()->check(); }
     protected static ?int $navigationSort = 12;
     protected static ?string $navigationLabel = 'Artwork Statuses';
     protected static ?string $recordTitleAttribute = 'name';

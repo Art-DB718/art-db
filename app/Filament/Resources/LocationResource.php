@@ -20,6 +20,8 @@ class LocationResource extends Resource
     protected static ?string $model = Location::class;
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
     protected static ?string $navigationGroup = 'System';
+
+    public static function canViewAny(): bool { return auth()->check(); }
     protected static ?int $navigationSort = 1;
     protected static ?string $recordTitleAttribute = 'name';
 

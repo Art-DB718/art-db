@@ -22,6 +22,12 @@ class Maintenance extends Page implements HasTable
 
     protected static string $view = 'filament.pages.maintenance';
 
+    /** Hidden from Artist sidebar — gallery/collector manage maintenance, not the artist. */
+    public static function canAccess(): bool
+    {
+        return ! auth()->user()?->isArtist();
+    }
+
     /** Badge with count of works currently in restoration. */
     public static function getNavigationBadge(): ?string
     {

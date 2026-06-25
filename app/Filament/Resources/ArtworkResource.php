@@ -39,6 +39,7 @@ class ArtworkResource extends Resource
                             ->searchable(['first_name', 'last_name'])
                             ->preload()
                             ->required()
+                            ->visible(fn (): bool => ! auth()->user()?->isArtist())
                             ->createOptionForm([
                                 Forms\Components\Grid::make(2)->schema([
                                     Forms\Components\TextInput::make('first_name')->required(),
@@ -158,6 +159,7 @@ class ArtworkResource extends Resource
                         ])->columns(3),
 
                     Forms\Components\Fieldset::make('Acquisition')
+                        ->visible(fn (): bool => ! auth()->user()?->isArtist())
                         ->schema([
                             Forms\Components\TextInput::make('purchase_price')
                                 ->label('Acquisition cost')
@@ -178,11 +180,33 @@ class ArtworkResource extends Resource
                 ]),
 
                 Forms\Components\Tabs\Tab::make('History')->schema([
-                    Forms\Components\Textarea::make('provenance')->rows(3)->columnSpanFull(),
+                    Forms\Components\Textarea::make('provenance')->rows(3)->columnSpanFull()
+                        ->visible(fn (): bool => ! auth()->user()?->isArtist()),
                     Forms\Components\Textarea::make('exhibition_history')->rows(3)->columnSpanFull(),
                     Forms\Components\Textarea::make('literature')->rows(3)->columnSpanFull(),
                     Forms\Components\Textarea::make('condition_notes')->rows(3)->columnSpanFull(),
                     Forms\Components\Toggle::make('has_certificate_of_authenticity')->label('Has Certificate of Authenticity'),
+
+                    Forms\Components\Fieldset::make('Scanned documents')
+                        ->visible(fn (): bool => (bool) (auth()->user()?->isGallery() || auth()->user()?->isCollector() || auth()->user()?->isAdmin()))
+                        ->schema([
+                            Forms\Components\FileUpload::make('certificate_of_authenticity_document')
+                                ->label('Certificate of Authenticity (file)')
+                                ->helperText('Upload a scan/PDF of the existing certificate (e.g. issued by the original gallery).')
+                                ->disk('public')
+                                ->directory('artworks/certificates')
+                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                                ->openable()
+                                ->downloadable(),
+                            Forms\Components\FileUpload::make('invoice_document')
+                                ->label('Invoice (file)')
+                                ->helperText('Upload a scan/PDF of the original purchase invoice.')
+                                ->disk('public')
+                                ->directory('artworks/invoices')
+                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                                ->openable()
+                                ->downloadable(),
+                        ])->columns(2),
                 ]),
 
                 Forms\Components\Tabs\Tab::make('Location & Images')->schema([
@@ -212,6 +236,7 @@ class ArtworkResource extends Resource
 
                 Forms\Components\Tabs\Tab::make('Maintenance')
                     ->icon('heroicon-o-wrench-screwdriver')
+                    ->visible(fn (): bool => ! auth()->user()?->isArtist())
                     ->schema([
                         Forms\Components\Repeater::make('maintenances')
                             ->relationship()
@@ -394,6 +419,7 @@ class ArtworkResource extends Resource
                 Tables\Actions\Action::make('printCertificate')
                     ->label('Print certificate')
                     ->icon('heroicon-m-shield-check')
+                    ->visible(fn (): bool => ! auth()->user()?->isCollector())
                     ->url(fn (Artwork $record): string => route('artworks.print.certificate', $record))
                     ->openUrlInNewTab(),
                 Tables\Actions\Action::make('printLabel')
@@ -404,6 +430,7 @@ class ArtworkResource extends Resource
                 Tables\Actions\Action::make('printMaintenance')
                     ->label('Print maintenance report')
                     ->icon('heroicon-m-wrench-screwdriver')
+                    ->visible(fn (): bool => ! auth()->user()?->isArtist())
                     ->url(fn (Artwork $record): string => route('artworks.print.maintenance', $record))
                     ->openUrlInNewTab(),
                 Tables\Actions\Action::make('pdfCard')
@@ -414,6 +441,7 @@ class ArtworkResource extends Resource
                 Tables\Actions\Action::make('pdfCertificate')
                     ->label('Download certificate (PDF)')
                     ->icon('heroicon-o-document-arrow-down')
+                    ->visible(fn (): bool => ! auth()->user()?->isCollector())
                     ->url(fn (Artwork $record): string => route('artworks.pdf.certificate', $record))
                     ->openUrlInNewTab(),
                 Tables\Actions\Action::make('pdfLabel')
@@ -424,6 +452,7 @@ class ArtworkResource extends Resource
                 Tables\Actions\Action::make('pdfMaintenance')
                     ->label('Download maintenance report (PDF)')
                     ->icon('heroicon-o-document-arrow-down')
+                    ->visible(fn (): bool => ! auth()->user()?->isArtist())
                     ->url(fn (Artwork $record): string => route('artworks.pdf.maintenance', $record))
                     ->openUrlInNewTab(),
                 Tables\Actions\Action::make('enterSale')
@@ -560,6 +589,7 @@ class ArtworkResource extends Resource
                         ->label('Certificates (PDF)')
                         ->icon('heroicon-o-shield-check')
                         ->color('gray')
+                        ->visible(fn (): bool => ! auth()->user()?->isCollector())
                         ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
                             $artworks = $records->load(['artist', 'medium']);
                             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('prints.artwork-certificates-pdf', [
@@ -613,12 +643,9 @@ class ArtworkResource extends Resource
             $query->whereHas('artist.galleries', fn ($q) => $q->whereKey($user->gallery->id));
         }
 
-        // Collector vidí published archív + vlastné private záznamy.
+        // Collector v admine vidí IBA svoju súkromnú databázu (own records).
         if ($user?->isCollector()) {
-            $query->where(function ($q) use ($user) {
-                $q->where('is_published', true)
-                  ->orWhere('owner_user_id', $user->id);
-            });
+            $query->where('owner_user_id', $user->id);
         }
 
         return $query;

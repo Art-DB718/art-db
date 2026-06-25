@@ -18,6 +18,8 @@ class ContactGroupResource extends Resource
     protected static ?string $model = ContactGroup::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
     protected static ?string $navigationGroup = 'CRM';
+
+    public static function canViewAny(): bool { return auth()->check(); }
     protected static ?int $navigationSort = 2;
     protected static ?string $recordTitleAttribute = 'name';
 
