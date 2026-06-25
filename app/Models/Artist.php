@@ -48,4 +48,11 @@ class Artist extends Model
     public function country()  { return $this->belongsTo(Country::class); }
     public function artworks() { return $this->hasMany(Artwork::class); }
     public function owner()    { return $this->belongsTo(\App\Models\User::class, 'owner_user_id'); }
+
+    public function galleries()
+    {
+        return $this->belongsToMany(Gallery::class, 'artist_gallery')
+            ->withPivot('represented_since', 'is_primary', 'notes')
+            ->withTimestamps();
+    }
 }

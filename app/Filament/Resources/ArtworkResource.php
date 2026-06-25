@@ -601,10 +601,24 @@ class ArtworkResource extends Resource
         $query = parent::getEloquentQuery()
             ->withoutGlobalScopes([SoftDeletingScope::class]);
 
-        // Artist vidí v admine len svoje diela.
         $user = auth()->user();
-        if ($user && $user->isArtist()) {
+
+        // Artist vidí v admine len svoje diela.
+        if ($user?->isArtist()) {
             $query->where('owner_user_id', $user->id);
+        }
+
+        // Gallery vidí len artworks tých artistov, ktorých zastupuje.
+        if ($user?->isGallery() && $user->gallery) {
+            $query->whereHas('artist.galleries', fn ($q) => $q->whereKey($user->gallery->id));
+        }
+
+        // Collector vidí published archív + vlastné private záznamy.
+        if ($user?->isCollector()) {
+            $query->where(function ($q) use ($user) {
+                $q->where('is_published', true)
+                  ->orWhere('owner_user_id', $user->id);
+            });
         }
 
         return $query;

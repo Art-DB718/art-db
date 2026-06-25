@@ -228,7 +228,53 @@ class ArtistResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('unrepresent')
+                    ->label('Stop representing')
+                    ->icon('heroicon-m-x-mark')
+                    ->color('warning')
+                    ->visible(fn (): bool => auth()->user()?->isGallery() === true)
+                    ->requiresConfirmation()
+                    ->action(function (Artist $record): void {
+                        $gallery = auth()->user()->gallery;
+                        if ($gallery) {
+                            $gallery->artists()->detach($record->id);
+                        }
+                    }),
                 Tables\Actions\DeleteAction::make(),
+            ])
+            ->headerActions([
+                Tables\Actions\Action::make('represent')
+                    ->label('+ Represent existing artist')
+                    ->icon('heroicon-m-user-plus')
+                    ->color('primary')
+                    ->visible(fn (): bool => auth()->user()?->isGallery() === true && auth()->user()->gallery !== null)
+                    ->form([
+                        Forms\Components\Select::make('artist_id')
+                            ->label('Artist')
+                            ->options(function () {
+                                $gallery = auth()->user()->gallery;
+                                $alreadyIds = $gallery ? $gallery->artists()->pluck('artists.id')->all() : [];
+                                return Artist::query()
+                                    ->whereNotIn('id', $alreadyIds)
+                                    ->orderBy('last_name')->orderBy('first_name')
+                                    ->get()
+                                    ->mapWithKeys(fn (Artist $a) => [$a->id => trim(($a->first_name ?? '').' '.($a->last_name ?? ''))])
+                                    ->all();
+                            })
+                            ->searchable()
+                            ->required(),
+                        Forms\Components\DatePicker::make('represented_since')->native(false),
+                        Forms\Components\Toggle::make('is_primary')->label('Mark as primary representing gallery'),
+                    ])
+                    ->action(function (array $data): void {
+                        $gallery = auth()->user()->gallery;
+                        if ($gallery) {
+                            $gallery->artists()->attach($data['artist_id'], [
+                                'represented_since' => $data['represented_since'] ?? null,
+                                'is_primary'        => (bool) ($data['is_primary'] ?? false),
+                            ]);
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -242,10 +288,24 @@ class ArtistResource extends Resource
     {
         $query = parent::getEloquentQuery()->withoutGlobalScopes([SoftDeletingScope::class]);
 
-        // Artist vidí v admine len vlastný profil.
         $user = auth()->user();
-        if ($user && $user->isArtist()) {
+
+        // Artist vidí v admine len vlastný profil.
+        if ($user?->isArtist()) {
             $query->where('owner_user_id', $user->id);
+        }
+
+        // Gallery vidí len artists, ktorých zastupuje (cez artist_gallery pivot).
+        if ($user?->isGallery() && $user->gallery) {
+            $query->whereHas('galleries', fn ($q) => $q->whereKey($user->gallery->id));
+        }
+
+        // Collector vidí published archív + vlastné private záznamy.
+        if ($user?->isCollector()) {
+            $query->where(function ($q) use ($user) {
+                $q->where('is_published', true)
+                  ->orWhere('owner_user_id', $user->id);
+            });
         }
 
         return $query;

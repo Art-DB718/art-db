@@ -90,6 +90,12 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasOne(Artist::class, 'owner_user_id');
     }
 
+    /** Gallery profile linked to this user (only relevant for role=gallery). */
+    public function gallery()
+    {
+        return $this->hasOne(Gallery::class, 'owner_user_id');
+    }
+
     /** Artworks this user has hearted. */
     public function likedArtworks()
     {

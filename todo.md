@@ -74,7 +74,7 @@
 ## 2. Aktuálny stav
 
 **Fáza:** 0 + 1 ✅ DOKONČENÉ. Nasleduje **Fáza 2** (Gallery entita + multi-tenant artist).
-**Posledný commit:** `caef683` chore: initial commit — Laravel 12 + Filament 3 admin (2026-06-25)
+**Posledný commit:** (po dokončení Fázy 2 — viď git log)
 **Posledná session:** 2026-06-24 — bootstrap + Filament resources + role-based access + seed dáta + spec dokument založený + 6 produktových otázok odpovedaných.
 
 **Ako spustiť server (ďalšia session):**
@@ -120,25 +120,20 @@ php artisan serve --host=127.0.0.1 --port=8002
 
 ---
 
-### Fáza 2 — Gallery entita + multi-tenant artist + public/private rozlíšenie
+### Fáza 2 — Gallery entita + multi-tenant artist + public/private rozlíšenie ✅ DOKONČENÁ (2026-06-25)
 
-**Cieľ:** Galéria ako plnohodnotná entita s dashboardom. Artist môže byť pod viacerými galériami. Pridať `is_public` na artists a sprehľadniť `is_published` na artworks.
+**Cieľ:** Galéria ako plnohodnotná entita s dashboardom. Artist môže byť pod viacerými galériami.
 
-- [ ] Migrácia + model **Gallery** (name, slug, logo, description, address, country, website, email, phone, `owner_user_id` → User)
-- [ ] Migrácia pivot **`artist_gallery`** (gallery_id, artist_id, represented_since, is_primary, timestamps)
-- [ ] Migrácia: pridať **`is_public`** na artists (default false)
-- [ ] Vzťahy: `Artist::galleries()`, `Gallery::artists()`, `User::gallery()` (hasOne)
-- [ ] `GalleryResource` (Filament) — pre Gallery owner; iné role nevidia v menu
-- [ ] **Refactor** ArtistResource: scoping podľa role
-  - Gallery: vidí artists kde `gallery_id ∈ user.gallery.artists` (cez pivot)
-  - Artist: iba vlastný profil
-  - Collector: vlastné private artists (`owner_user_id=user.id` AND `is_public=false`) + možnosť referencovať public artists
-- [ ] **Refactor** ArtworkResource: scoping podľa role + visibility
-  - Gallery: artworks of represented artists
-  - Artist: vlastné artworks
-  - Collector: vlastné private artworks + možnosť referencovať public
-- [ ] Doplniť **Test Gallery** ("Schottert Contemporary") do ArchiveSeeder, pripojiť k nej Bartuszovú
-- [ ] Filament action „Add existing artist to my gallery" v Artist liste pre Gallery rolu
+- [x] Migrácia + model **Gallery** (name, slug, logo, description, address, country, website, email, phone, `owner_user_id`)
+- [x] Migrácia pivot **`artist_gallery`** (gallery_id, artist_id, represented_since, is_primary, notes, timestamps)
+- [x] _Existujúci `is_published` flag na artists/artworks ponechaný (žiadny duplicitný `is_public` netreba)_
+- [x] Vzťahy: `Artist::galleries()`, `Gallery::artists()`, `User::gallery()`
+- [x] `GalleryResource` (Filament) — "My gallery" pre Gallery user, jump na vlastný profil; ostatné role nevidia v menu
+- [x] **Refactor** ArtistResource: Gallery vidí len cez pivot, Artist len vlastný, Collector published+vlastné
+- [x] **Refactor** ArtworkResource: Gallery cez `artist.galleries`, Artist vlastné, Collector published+vlastné
+- [x] Test Gallery "Schottert Contemporary" vytvorená cez tinker, Bartuszová napojená (`is_primary=true`)
+- [x] Filament action **„+ Represent existing artist"** (header) + **„Stop representing"** (row) v ArtistResource pre Gallery
+- [x] CreateArtist `afterCreate` hook — pri Gallery vytvorení nového artistu auto-attach do pivotu
 
 ---
 
