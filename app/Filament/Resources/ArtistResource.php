@@ -55,8 +55,24 @@ class ArtistResource extends Resource
                     Forms\Components\Grid::make(2)->schema([
                         Forms\Components\TextInput::make('first_name')->required(),
                         Forms\Components\TextInput::make('last_name')->required(),
-                        Forms\Components\TextInput::make('birth_year')->numeric(),
-                        Forms\Components\TextInput::make('death_year')->numeric(),
+                        Forms\Components\TextInput::make('birth_year')
+                            ->label('Year of birth')
+                            ->numeric()
+                            ->rule('integer')
+                            ->step(1)
+                            ->minValue(1000)
+                            ->maxValue((int) date('Y'))
+                            ->placeholder('e.g. 1955')
+                            ->helperText('Year only, 4 digits — not a full date.'),
+                        Forms\Components\TextInput::make('death_year')
+                            ->label('Year of death')
+                            ->numeric()
+                            ->rule('integer')
+                            ->step(1)
+                            ->minValue(1000)
+                            ->maxValue((int) date('Y'))
+                            ->placeholder('e.g. 2010')
+                            ->helperText('Leave empty for living artists.'),
                         Forms\Components\TextInput::make('birth_place'),
                         Forms\Components\Select::make('country_id')->relationship('country', 'name')->searchable()->preload(),
                     ]),
@@ -115,8 +131,14 @@ class ArtistResource extends Resource
                                 ->label('Field of study')
                                 ->placeholder('Painting, Sculpture, Photography…')
                                 ->maxLength(255),
-                            Forms\Components\TextInput::make('year_from')->label('From year')->numeric()->minValue(1900)->maxValue((int) date('Y') + 6),
-                            Forms\Components\TextInput::make('year_to')->label('To year')->numeric()->minValue(1900)->maxValue((int) date('Y') + 6)
+                            Forms\Components\TextInput::make('year_from')->label('From year')
+                                ->numeric()->rule('integer')->step(1)
+                                ->minValue(1900)->maxValue((int) date('Y') + 6)
+                                ->placeholder('e.g. 2010'),
+                            Forms\Components\TextInput::make('year_to')->label('To year')
+                                ->numeric()->rule('integer')->step(1)
+                                ->minValue(1900)->maxValue((int) date('Y') + 6)
+                                ->placeholder('e.g. 2015')
                                 ->helperText('Leave empty if still studying.'),
                         ])
                         ->columns(2)
@@ -138,7 +160,11 @@ class ArtistResource extends Resource
                             return $bits ? implode(' · ', $bits) : 'New exhibition';
                         })
                         ->schema([
-                            Forms\Components\TextInput::make('year')->numeric()->minValue(1900)->maxValue((int) date('Y') + 1)->required(),
+                            Forms\Components\TextInput::make('year')
+                                ->numeric()->rule('integer')->step(1)
+                                ->minValue(1900)->maxValue((int) date('Y') + 1)
+                                ->placeholder('e.g. 2024')
+                                ->required(),
                             Forms\Components\Select::make('type')
                                 ->options([
                                     'solo'  => 'Solo show',
