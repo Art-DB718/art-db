@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls /Users/katarinaschottertsobolciakova/claude.code/art-db/app/ /Users/katarinaschottertsobolciakova/claude.code/art-db/routes/ /Users/katarinaschottertsobolciakova/claude.code/art-db/artdb-core/ 2>&1)"
+    ]
+  }
+}

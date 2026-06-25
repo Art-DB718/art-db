@@ -1,0 +1,262 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\ArtistResource\Pages;
+use App\Models\Artist;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class ArtistResource extends Resource
+{
+    protected static ?string $model = Artist::class;
+    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
+    protected static ?string $navigationGroup = 'Catalogue';
+    protected static ?int $navigationSort = 1;
+    protected static ?string $recordTitleAttribute = 'last_name';
+
+    /** Artist user sees "About me", everyone else sees "Artists". */
+    public static function getNavigationLabel(): string
+    {
+        return auth()->user()?->isArtist() ? 'About me' : 'Artists';
+    }
+
+    public static function getNavigationIcon(): string
+    {
+        return auth()->user()?->isArtist() ? 'heroicon-o-identification' : 'heroicon-o-user-circle';
+    }
+
+    /** Artist user jumps straight to their own profile edit (or create if none). */
+    public static function getNavigationUrl(): string
+    {
+        $user = auth()->user();
+
+        if ($user?->isArtist()) {
+            $artist = $user->artistProfile;
+            return $artist
+                ? static::getUrl('edit', ['record' => $artist])
+                : static::getUrl('create');
+        }
+
+        return static::getUrl('index');
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form->schema([
+            Forms\Components\Tabs::make()->tabs([
+
+                Forms\Components\Tabs\Tab::make('Basic')->schema([
+                    Forms\Components\Grid::make(2)->schema([
+                        Forms\Components\TextInput::make('first_name')->required(),
+                        Forms\Components\TextInput::make('last_name')->required(),
+                        Forms\Components\TextInput::make('birth_year')->numeric(),
+                        Forms\Components\TextInput::make('death_year')->numeric(),
+                        Forms\Components\TextInput::make('birth_place'),
+                        Forms\Components\Select::make('country_id')->relationship('country', 'name')->searchable()->preload(),
+                    ]),
+                    Forms\Components\Textarea::make('short_bio')->rows(2)->maxLength(300)
+                        ->helperText('Krátky bio (max 300 znakov) — pre listing kartu'),
+                ]),
+
+                Forms\Components\Tabs\Tab::make('Bio & CV')->schema([
+                    Forms\Components\Textarea::make('biography')
+                        ->label('Biography')
+                        ->rows(10)
+                        ->columnSpanFull()
+                        ->helperText('Long-form biographical text — life story, key milestones, influences.'),
+
+                    Forms\Components\Textarea::make('statement')
+                        ->label('Artist Statement')
+                        ->rows(6)
+                        ->columnSpanFull()
+                        ->helperText('First-person reflection on the practice — themes, methods, intent.'),
+
+                    Forms\Components\Repeater::make('education')
+                        ->label('Education / Studies')
+                        ->addActionLabel('+ Add education record')
+                        ->collapsible()
+                        ->collapsed()
+                        ->reorderable()
+                        ->defaultItems(0)
+                        ->itemLabel(function (array $state): ?string {
+                            $bits = array_filter([
+                                $state['institution'] ?? null,
+                                $state['degree'] ?? null,
+                                trim(($state['year_from'] ?? '').'–'.($state['year_to'] ?? ''), '–'),
+                            ]);
+                            return $bits ? implode(' · ', $bits) : 'New education record';
+                        })
+                        ->schema([
+                            Forms\Components\TextInput::make('institution')
+                                ->label('University / school')
+                                ->required()
+                                ->maxLength(255)
+                                ->columnSpan(2)
+                                ->placeholder('e.g. Vysoká škola výtvarných umení v Bratislave'),
+                            Forms\Components\TextInput::make('city')->maxLength(120),
+                            Forms\Components\TextInput::make('country')->label('Country')->maxLength(120),
+                            Forms\Components\Select::make('degree')
+                                ->options([
+                                    'BA'      => 'BA (Bachelor)',
+                                    'MA'      => 'MA (Master)',
+                                    'MFA'     => 'MFA',
+                                    'PhD'     => 'PhD',
+                                    'Diploma' => 'Diploma',
+                                    'Other'   => 'Other',
+                                ])
+                                ->native(false),
+                            Forms\Components\TextInput::make('field')
+                                ->label('Field of study')
+                                ->placeholder('Painting, Sculpture, Photography…')
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('year_from')->label('From year')->numeric()->minValue(1900)->maxValue((int) date('Y') + 6),
+                            Forms\Components\TextInput::make('year_to')->label('To year')->numeric()->minValue(1900)->maxValue((int) date('Y') + 6)
+                                ->helperText('Leave empty if still studying.'),
+                        ])
+                        ->columns(2)
+                        ->columnSpanFull(),
+
+                    Forms\Components\Repeater::make('previous_exhibitions')
+                        ->label('Previous exhibitions')
+                        ->addActionLabel('+ Add exhibition')
+                        ->collapsible()
+                        ->collapsed()
+                        ->reorderable()
+                        ->defaultItems(0)
+                        ->itemLabel(function (array $state): ?string {
+                            $bits = array_filter([
+                                $state['year'] ?? null,
+                                $state['title'] ?? null,
+                                $state['venue'] ?? null,
+                            ]);
+                            return $bits ? implode(' · ', $bits) : 'New exhibition';
+                        })
+                        ->schema([
+                            Forms\Components\TextInput::make('year')->numeric()->minValue(1900)->maxValue((int) date('Y') + 1)->required(),
+                            Forms\Components\Select::make('type')
+                                ->options([
+                                    'solo'  => 'Solo show',
+                                    'group' => 'Group show',
+                                    'duo'   => 'Duo show',
+                                    'biennale' => 'Biennale / festival',
+                                    'art_fair' => 'Art fair',
+                                ])
+                                ->default('group')
+                                ->native(false),
+                            Forms\Components\TextInput::make('title')
+                                ->required()
+                                ->maxLength(255)
+                                ->columnSpan(2)
+                                ->placeholder('e.g. "Inner Landscapes"'),
+                            Forms\Components\TextInput::make('venue')
+                                ->maxLength(255)
+                                ->placeholder('e.g. Schottert Contemporary, SNG, MoMA PS1…'),
+                            Forms\Components\TextInput::make('city')->maxLength(120),
+                            Forms\Components\TextInput::make('country')->maxLength(120),
+                            Forms\Components\TextInput::make('url')
+                                ->label('Reference URL (optional)')
+                                ->url()
+                                ->maxLength(255)
+                                ->columnSpan(2),
+                        ])
+                        ->columns(2)
+                        ->columnSpanFull(),
+                ]),
+
+                Forms\Components\Tabs\Tab::make('Contact & Web')->schema([
+                    Forms\Components\TextInput::make('website')->url()->prefix('https://'),
+                    Forms\Components\KeyValue::make('social_links')
+                        ->keyLabel('Platform (instagram, facebook, ...)')
+                        ->valueLabel('URL')
+                        ->reorderable(),
+                ]),
+
+                Forms\Components\Tabs\Tab::make('Images')->schema([
+                    Forms\Components\FileUpload::make('profile_image')
+                        ->label('Portrait image')
+                        ->image()->disk('public')->directory('artists/profile'),
+                    Forms\Components\FileUpload::make('cover_image')
+                        ->label('Signature image')
+                        ->image()->disk('public')->directory('artists/signatures'),
+                ]),
+
+                Forms\Components\Tabs\Tab::make('Publishing')->schema([
+                    Forms\Components\Toggle::make('is_published')->label('Published on public site'),
+                    Forms\Components\Toggle::make('is_featured')->label('Featured (homepage)'),
+                    Forms\Components\Select::make('branding_theme')
+                        ->options(['default' => 'Default', 'minimal' => 'Minimal', 'editorial' => 'Editorial', 'classic' => 'Classic'])
+                        ->default('default'),
+                ]),
+
+            ])->columnSpanFull(),
+        ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\ImageColumn::make('profile_image')->disk('public')->circular()->size(40),
+                Tables\Columns\TextColumn::make('display_name')->label('Name')->searchable(['first_name', 'last_name'])->sortable(),
+                Tables\Columns\TextColumn::make('birth_year')->sortable(),
+                Tables\Columns\TextColumn::make('life_status')
+                    ->label('Úmrtie')
+                    ->badge()
+                    ->state(fn (Artist $record): string => $record->death_year
+                        ? '† '.$record->death_year
+                        : 'Living')
+                    ->color(fn (Artist $record): string => $record->death_year ? 'gray' : 'success')
+                    ->icon(fn (Artist $record): string => $record->death_year
+                        ? 'heroicon-m-archive-box'
+                        : 'heroicon-m-check-badge')
+                    ->sortable(['death_year']),
+                Tables\Columns\TextColumn::make('country.name')->label('Country'),
+                Tables\Columns\TextColumn::make('artworks_count')->counts('artworks')->label('Artworks'),
+                Tables\Columns\IconColumn::make('is_published')->boolean()->label('Public'),
+                Tables\Columns\IconColumn::make('is_featured')->boolean()->label('Featured'),
+            ])
+            ->filters([
+                Tables\Filters\TernaryFilter::make('is_published'),
+                Tables\Filters\TernaryFilter::make('is_featured'),
+                Tables\Filters\TrashedFilter::make(),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ])
+            ->defaultSort('last_name');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery()->withoutGlobalScopes([SoftDeletingScope::class]);
+
+        // Artist vidí v admine len vlastný profil.
+        $user = auth()->user();
+        if ($user && $user->isArtist()) {
+            $query->where('owner_user_id', $user->id);
+        }
+
+        return $query;
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index'  => Pages\ListArtists::route('/'),
+            'create' => Pages\CreateArtist::route('/create'),
+            'edit'   => Pages\EditArtist::route('/{record}/edit'),
+        ];
+    }
+}
