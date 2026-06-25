@@ -74,7 +74,7 @@
 ## 2. Aktuálny stav
 
 **Fáza:** 0 + 1 ✅ DOKONČENÉ. Nasleduje **Fáza 2** (Gallery entita + multi-tenant artist).
-**Posledný commit:** _žiadny — git ešte nie je inicializovaný_
+**Posledný commit:** `caef683` chore: initial commit — Laravel 12 + Filament 3 admin (2026-06-25)
 **Posledná session:** 2026-06-24 — bootstrap + Filament resources + role-based access + seed dáta + spec dokument založený + 6 produktových otázok odpovedaných.
 
 **Ako spustiť server (ďalšia session):**
@@ -237,7 +237,7 @@ php artisan serve --host=127.0.0.1 --port=8002
 
 ### Fáza 10 — Polish + Production
 
-- [ ] **`git init`** + `.gitignore` (.env, vendor, node_modules, public/storage) + first commit ako `Kat <info@schottert-contemporary.com>`
+- [x] **`git init`** + `.gitignore` (.env, vendor, node_modules, public/storage) + first commit ako `Kat <info@schottert-contemporary.com>` _(2026-06-25, commit `caef683`)_
 - [ ] Multi-language: `lang/sk` + `lang/en`, language switcher
 - [ ] Sitemap.xml (`spatie/laravel-sitemap`), robots.txt
 - [ ] Image optimization automatically on upload
@@ -429,7 +429,7 @@ Spomenula si že Collector **nemôže** organizovať exhibitions, posielať mail
 | **2026-06-24** | **14-dňový trial + paid plans (Stripe Cashier)** | Kat: každý user musí registrovať, 14 dní trial, potom platba podľa rozsahu DB |
 | **2026-06-24** | **Doménový spec v Markdown (`docs/SPECIFIKACIA.md`)** | Lepšie verzuje cez git; ak Kat povie že treba .docx, prekonvertujeme cez docx skill |
 | **2026-06-24** | **Git identita commitov: `Kat <info@schottert-contemporary.com>`** | Rovnako ako Art DB |
-| 2026-06-24 | `git init` odložené | Project je ranej fáze; init v Fáze 10 alebo skôr na požiadanie |
+| 2026-06-25 | **`git init` vykonaný** | Initial commit `caef683` ako `Kat <info@schottert-contemporary.com>`. 332 súborov, žiadne sensitive (`.env`, `vendor/`, `node_modules/` zachytené `.gitignore`) |
 | **2026-06-24** | **Collector môže mať vlastnú súkromnú databázu artists/artworks** | Kat: Collector pridáva diela zo svojej zbierky; rieši sa cez `is_public`/`is_published` flag + `owner_user_id` scoping |
 | **2026-06-24** | **Kolekcie môže vytvárať akákoľvek rola (Gallery/Artist/Collector)** | Kat: pôvodne iba Collector — rozšírené |
 | **2026-06-24** | **Inquiries môže poslať AJ PRIJAŤ akákoľvek prihlásená rola** | Kat: aj umelec môže prijímať/posielať, aj Collector |
