@@ -72,6 +72,13 @@ class MediumResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            \App\Filament\Resources\MediumResource\RelationManagers\ArtworksRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [

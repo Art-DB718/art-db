@@ -56,6 +56,13 @@ class GenreResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            \App\Filament\Resources\GenreResource\RelationManagers\ArtworksRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [

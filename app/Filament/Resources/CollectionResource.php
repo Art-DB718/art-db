@@ -141,16 +141,156 @@ class CollectionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('cover_image')->disk('public')->square()->size(50),
-                Tables\Columns\TextColumn::make('title')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('parent.title')->label('Parent'),
-                Tables\Columns\TextColumn::make('artworks_count')->counts('artworks')->label('Artworks'),
-                Tables\Columns\IconColumn::make('is_public')->boolean(),
-                Tables\Columns\TextColumn::make('position')->sortable(),
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable()->sortable()
+                    ->weight('medium')
+                    ->description(fn (Collection $r): ?string => $r->parent?->title
+                        ? '↳ in '.$r->parent->title
+                        : null),
+                Tables\Columns\TextColumn::make('artworks_count')
+                    ->counts('artworks')
+                    ->label('Works')
+                    ->badge()
+                    ->color('gray')
+                    ->sortable(),
+                Tables\Columns\ImageColumn::make('artwork_previews')
+                    ->label('Preview')
+                    ->disk('public')
+                    ->stacked()
+                    ->limit(8)
+                    ->limitedRemainingText()
+                    ->square()
+                    ->size(42),
+                Tables\Columns\TextColumn::make('artworks_total_value')
+                    ->label('Total value')
+                    ->state(fn (Collection $r) => $r->artworks_total_value)
+                    ->money('EUR')
+                    ->placeholder('—')
+                    ->alignEnd()
+                    ->sortable(false),
+                Tables\Columns\IconColumn::make('is_public')->boolean()->label('Public'),
+                Tables\Columns\TextColumn::make('owner.email')->label('Owner')->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')->label('Updated')->dateTime()->since()->sortable()->toggleable(),
+            ])
+            ->filters([
+                Tables\Filters\TernaryFilter::make('is_public'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+
+                    Tables\Actions\Action::make('printCatalogue')
+                        ->label('Catalogue (PDF)')
+                        ->icon('heroicon-m-book-open')
+                        ->action(function (Collection $record) {
+                            $artworks = $record->artworks()->with(['artist', 'medium', 'genre'])->get();
+                            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('prints.artwork-catalogue-pdf', [
+                                'artworks' => $artworks,
+                                'settings' => \App\Models\InvoiceSetting::current(),
+                            ])->setPaper('a4');
+                            $name = 'catalogue-'.\Illuminate\Support\Str::slug($record->title).'-'.now()->format('Ymd').'.pdf';
+                            return response()->streamDownload(fn () => print($pdf->output()), $name);
+                        }),
+
+                    Tables\Actions\Action::make('printCards')
+                        ->label('Artwork cards (PDF)')
+                        ->icon('heroicon-m-document-text')
+                        ->action(function (Collection $record) {
+                            $artworks = $record->artworks()->with(['artist', 'medium', 'genre'])->get();
+                            $settings = \App\Models\InvoiceSetting::current();
+                            $size = match ($settings->card_size ?? 'a4') {
+                                'a5' => 'a5', 'letter' => 'letter', default => 'a4',
+                            };
+                            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('prints.collection-cards-pdf', [
+                                'artworks' => $artworks,
+                                'settings' => $settings,
+                            ])->setPaper($size);
+                            $name = 'cards-'.\Illuminate\Support\Str::slug($record->title).'-'.now()->format('Ymd').'.pdf';
+                            return response()->streamDownload(fn () => print($pdf->output()), $name);
+                        }),
+
+                    Tables\Actions\Action::make('printLabels')
+                        ->label('Artwork labels (PDF)')
+                        ->icon('heroicon-m-tag')
+                        ->action(function (Collection $record) {
+                            $artworks = $record->artworks()->with(['artist', 'medium'])->get();
+                            $settings = \App\Models\InvoiceSetting::current();
+                            $size = match ($settings->label_size ?? 'standard') {
+                                'small'    => [0, 0, 60  * 2.834, 40  * 2.834],
+                                'large'    => [0, 0, 105 * 2.834, 70  * 2.834],
+                                'a6'       => 'a6',
+                                default    => [0, 0, 85  * 2.834, 55  * 2.834],
+                            };
+                            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('prints.artwork-labels-pdf', [
+                                'artworks' => $artworks,
+                                'settings' => $settings,
+                            ])->setPaper($size, 'landscape');
+                            $name = 'labels-'.\Illuminate\Support\Str::slug($record->title).'-'.now()->format('Ymd').'.pdf';
+                            return response()->streamDownload(fn () => print($pdf->output()), $name);
+                        }),
+
+                    Tables\Actions\Action::make('exportCsv')
+                        ->label('Export CSV')
+                        ->icon('heroicon-m-arrow-down-tray')
+                        ->action(function (Collection $record) {
+                            $name = 'collection-'.\Illuminate\Support\Str::slug($record->title).'-'.now()->format('Ymd').'.csv';
+                            return response()->streamDownload(function () use ($record) {
+                                $h = fopen('php://output', 'w');
+                                fputcsv($h, ['Inv. ID', 'Title', 'Artist', 'Year', 'Medium', 'Price', 'Currency', 'Published']);
+                                foreach ($record->artworks()->with(['artist', 'medium'])->get() as $a) {
+                                    fputcsv($h, [
+                                        $a->inventory_id,
+                                        $a->title,
+                                        $a->artist?->display_name ?? '',
+                                        $a->year_created,
+                                        $a->medium?->name ?? '',
+                                        $a->price,
+                                        $a->currency,
+                                        $a->is_published ? 'yes' : 'no',
+                                    ]);
+                                }
+                                fclose($h);
+                            }, $name, ['Content-Type' => 'text/csv']);
+                        }),
+
+                    Tables\Actions\Action::make('bulkAddArtworks')
+                        ->label('Bulk add artworks')
+                        ->icon('heroicon-m-plus-circle')
+                        ->form([
+                            Forms\Components\Select::make('artwork_ids')
+                                ->label('Pick artworks to add')
+                                ->multiple()
+                                ->searchable()
+                                ->preload()
+                                ->options(function (Collection $record) {
+                                    $existing = $record->artworks()->pluck('artworks.id')->all();
+                                    return Artwork::query()
+                                        ->whereNotIn('id', $existing)
+                                        ->orderBy('title')
+                                        ->limit(500)
+                                        ->get()
+                                        ->mapWithKeys(fn (Artwork $a) => [
+                                            $a->id => trim(($a->inventory_id ? '['.$a->inventory_id.'] ' : '').$a->title.' — '.($a->artist?->display_name ?? '')),
+                                        ])
+                                        ->all();
+                                })
+                                ->required(),
+                        ])
+                        ->action(function (Collection $record, array $data) {
+                            $record->artworks()->syncWithoutDetaching($data['artwork_ids'] ?? []);
+                        }),
+
+                    Tables\Actions\Action::make('archive')
+                        ->label('Archive collection')
+                        ->icon('heroicon-m-archive-box-arrow-down')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->modalDescription('Marks the collection as archived (soft delete). You can restore it from the Trashed filter.')
+                        ->action(fn (Collection $record) => $record->delete())
+                        ->visible(fn (Collection $record): bool => $record->deleted_at === null),
+
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->defaultSort('position');
     }
@@ -159,9 +299,10 @@ class CollectionResource extends Resource
     {
         $query = parent::getEloquentQuery();
 
-        // Artist vidí v admine len vlastné kolekcie.
         $user = auth()->user();
-        if ($user && $user->isArtist()) {
+
+        // Artist a Collector vidia v admine iba vlastné kolekcie.
+        if ($user && ($user->isArtist() || $user->isCollector())) {
             $query->where('owner_user_id', $user->id);
         }
 

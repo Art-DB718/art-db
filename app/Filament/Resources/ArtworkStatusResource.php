@@ -69,6 +69,13 @@ class ArtworkStatusResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            \App\Filament\Resources\ArtworkStatusResource\RelationManagers\ArtworksRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
