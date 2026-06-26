@@ -132,6 +132,11 @@ class Artwork extends Model
         return $this->belongsToMany(User::class, 'artwork_saves')->withPivot('private_note')->withTimestamps();
     }
 
+    public function inquiries()
+    {
+        return $this->hasMany(Inquiry::class)->latest();
+    }
+
     /** Maintenance / restoration records. */
     public function maintenances()
     {

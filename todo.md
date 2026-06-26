@@ -167,16 +167,21 @@ php artisan serve --host=127.0.0.1 --port=8002
 
 ---
 
-### Fáza 5 — Inquiries (akákoľvek prihlásená rola → akýkoľvek artwork owner)
+### Fáza 5 — Inquiries (akákoľvek prihlásená rola → akýkoľvek artwork owner) ✅ DOKONČENÁ (2026-06-25)
 
 **Cieľ:** Bez Stripe pre umelecké diela. Sender aj recipient môžu byť akákoľvek rola (Gallery, Artist, Collector).
 
-- [ ] Migrácia + model **Inquiry** (sender_user_id, recipient_user_id, artwork_id, message, status: new/replied/closed)
-- [ ] `InquiryResource` v Filament — pre **všetky role**, sekcie „Received" a „Sent"
-- [ ] Inquiry form na verejnej detail stránke Artwork (potreba prihlásenia — akákoľvek rola)
-- [ ] Email notifikácia recipientovi (`Mail::log` → neskôr Resend)
-- [ ] Filament badge `unreadInquiriesCount` v menu
-- [ ] (TBD) Interný messaging thread vs. iba „uložená správa, ďalej cez email" — viď Q for Kat
+- [x] Migrácia + model **Inquiry** (sender_user_id, recipient_user_id, artwork_id, message, status enum new/replied/closed, read_at, replied_at)
+- [x] `User::sentInquiries()` / `receivedInquiries()` + `Artwork::inquiries()` relations
+- [x] `InquiryResource` v Filament (CRM group) — query scope per user (sees own sent + received), Admin sees all
+- [x] Stĺpce: direction badge (IN/OUT), artwork/artist, sender/recipient, message preview, status badge, read indicator, since
+- [x] Filtre: status, Inbox-only, Sent-only, Unread
+- [x] Row actions: Open (markAsRead), Mark replied, Close
+- [x] EditInquiry: `afterFill` auto-mark as read pri otvorení
+- [x] **„Send inquiry"** action na ArtworkResource — modal s text-areou; visible iba ak current user ≠ artwork owner; vytvorí Inquiry + pošle email (Mail::raw cez Mail::log driver)
+- [x] **Sidebar badge** — `getNavigationBadge` ukazuje počet unread received inquiries (warning farba)
+- [ ] Inquiry form na verejnej detail stránke Artwork — _odložené na Fázu 3 (verejný web)_
+- [ ] Interný messaging thread (multi-message konverzácia) — _zatiaľ iba single inquiry + odpoveď cez email; Kat sa rozhodne neskôr_
 
 ---
 

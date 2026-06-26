@@ -398,6 +398,52 @@ class ArtworkResource extends Resource
             ->actions([
                 Tables\Actions\ActionGroup::make([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('sendInquiry')
+                    ->label('Send inquiry')
+                    ->icon('heroicon-m-envelope')
+                    ->color('primary')
+                    ->visible(fn (Artwork $record): bool => auth()->check() && $record->owner_user_id !== auth()->id())
+                    ->modalHeading(fn (Artwork $record): string => 'Inquire about: '.$record->title)
+                    ->form([
+                        Forms\Components\Placeholder::make('to')
+                            ->label('To')
+                            ->content(fn (Artwork $record): string => $record->owner?->name
+                                ? $record->owner->name.' <'.$record->owner->email.'>'
+                                : 'No owner set — inquiry will be unrouted'),
+                        Forms\Components\Textarea::make('message')
+                            ->required()
+                            ->rows(6)
+                            ->placeholder('Hello, I am interested in this artwork. Could you tell me more about availability, price, condition…')
+                            ->maxLength(5000),
+                    ])
+                    ->action(function (Artwork $record, array $data): void {
+                        $inquiry = \App\Models\Inquiry::create([
+                            'sender_user_id'    => auth()->id(),
+                            'recipient_user_id' => $record->owner_user_id,
+                            'artwork_id'        => $record->id,
+                            'message'           => $data['message'],
+                            'status'            => 'new',
+                        ]);
+
+                        if ($recipient = $record->owner) {
+                            \Illuminate\Support\Facades\Mail::raw(
+                                "New inquiry about \"{$record->title}\":\n\n".
+                                "From: ".auth()->user()->email."\n\n".
+                                $data['message']."\n\n".
+                                "Reply via the admin inbox.",
+                                fn ($m) => $m->to($recipient->email)
+                                    ->subject('New inquiry about: '.$record->title)
+                            );
+                        }
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Inquiry sent')
+                            ->body($recipient
+                                ? 'Notification emailed to '.$recipient->email
+                                : 'Saved — recipient not set, only visible in admin inbox')
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Actions\Action::make('duplicate')
                     ->label('Duplicate')
                     ->icon('heroicon-m-document-duplicate')

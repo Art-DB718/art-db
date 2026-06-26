@@ -96,6 +96,16 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasOne(Gallery::class, 'owner_user_id');
     }
 
+    public function sentInquiries()
+    {
+        return $this->hasMany(Inquiry::class, 'sender_user_id');
+    }
+
+    public function receivedInquiries()
+    {
+        return $this->hasMany(Inquiry::class, 'recipient_user_id');
+    }
+
     /** Artworks this user has hearted. */
     public function likedArtworks()
     {
