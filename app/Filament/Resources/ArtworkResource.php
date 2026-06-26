@@ -424,22 +424,18 @@ class ArtworkResource extends Resource
                             'message'           => $data['message'],
                             'status'            => 'new',
                         ]);
+                        $inquiry->load(['sender', 'artwork.artist']);
 
                         if ($recipient = $record->owner) {
-                            \Illuminate\Support\Facades\Mail::raw(
-                                "New inquiry about \"{$record->title}\":\n\n".
-                                "From: ".auth()->user()->email."\n\n".
-                                $data['message']."\n\n".
-                                "Reply via the admin inbox.",
-                                fn ($m) => $m->to($recipient->email)
-                                    ->subject('New inquiry about: '.$record->title)
-                            );
+                            \Illuminate\Support\Facades\Mail::to($recipient->email)
+                                ->send(new \App\Mail\InquiryReceived($inquiry));
                         }
 
+                        $driver = config('mail.default');
                         \Filament\Notifications\Notification::make()
                             ->title('Inquiry sent')
                             ->body($recipient
-                                ? 'Notification emailed to '.$recipient->email
+                                ? 'Notification sent to '.$recipient->email.' via '.$driver.' mailer.'
                                 : 'Saved — recipient not set, only visible in admin inbox')
                             ->success()
                             ->send();
