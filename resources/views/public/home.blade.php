@@ -10,9 +10,9 @@
                 <span class="italic text-gray-700">Here.</span>
             </h1>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-                {{ config('app.name', 'ArtDB') }} gathers students from art academies and creative
-                artists and presents their work to the public, to galleries and to collectors —
-                from thesis projects to first solo pieces.
+                {{ config('app.name', 'Project Arch') }} is an online archive of contemporary art —
+                galleries publish their roster, artists curate their portfolio, collectors keep their
+                private database. Discover what's being made, right now.
             </p>
             <div class="flex flex-wrap gap-3 justify-center">
                 <a href="{{ route('artworks.index') }}"

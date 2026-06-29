@@ -5,7 +5,7 @@
 ])
 @php
     $pageTitle       = $title ?? config('app.name', 'ArtDB');
-    $metaDescription = $description ?? "ArtDB is a showcase platform for art-school students. Browse paintings, sculpture, photography and installation from art academies — for galleries, collectors and the public.";
+    $metaDescription = $description ?? "Project Arch is an online archive and platform for galleries, artists and collectors — browse contemporary art, follow artists, curate collections.";
     $ogImageUrl      = $ogImage
         ? (str_starts_with($ogImage, 'http') ? $ogImage : \Illuminate\Support\Facades\Storage::url($ogImage))
         : null;
@@ -66,7 +66,6 @@
                 <li><a href="{{ route('artists.index') }}" class="hover:text-gray-400 transition">Artists</a></li>
                 <li><a href="{{ route('exhibitions.index') }}" class="hover:text-gray-400 transition">Exhibitions</a></li>
                 <li><a href="{{ route('collections.index') }}" class="hover:text-gray-400 transition">Collections</a></li>
-                <li><a href="#" class="hover:text-gray-400 transition opacity-50">Universities (n/a)</a></li>
                 {{-- Platform dropdown --}}
                 <li class="relative group">
                     <a href="{{ route('platform') }}" class="hover:text-gray-400 transition flex items-center gap-1">
@@ -123,7 +122,6 @@
                 <li><a href="{{ route('artists.index') }}" class="block py-2.5 hover:text-gray-400">Artists</a></li>
                 <li><a href="{{ route('exhibitions.index') }}" class="block py-2.5 hover:text-gray-400">Exhibitions</a></li>
                 <li><a href="{{ route('collections.index') }}" class="block py-2.5 hover:text-gray-400">Collections</a></li>
-                <li><a href="#" class="block py-2.5 hover:text-gray-400 opacity-50">Universities (n/a)</a></li>
 
                 {{-- Platform with collapsible sub-menu --}}
                 <li>

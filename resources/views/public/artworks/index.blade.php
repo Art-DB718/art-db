@@ -8,7 +8,7 @@
             <p class="mt-4 text-gray-600 max-w-2xl leading-relaxed">
                 Paintings, sculpture, photography, video, installation —
                 published by students from art academies on the platform.
-                Filter by university, medium, year or price to find what you're looking for.
+                Filter by medium, year or price to find what you're looking for.
             </p>
         </div>
     </section>

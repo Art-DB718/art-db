@@ -11,7 +11,7 @@
                 <span class="italic text-gray-700">meets the world.</span>
             </h1>
             <p class="text-base md:text-lg text-gray-700 leading-loose max-w-2xl">
-                {{ config('app.name', 'ArtDB') }} connects students from art academies, the universities
+                {{ config('app.name', 'ArtDB') }} connects artists
                 that host them, the galleries who want to discover them, and the collectors who buy
                 the first piece.
             </p>
@@ -74,7 +74,7 @@
                     <h3 class="font-serif text-2xl mb-6">Artist</h3>
                     <p class="text-sm text-gray-700 leading-loose mb-8">
                         A public portfolio while you're still in school.
-                        Publish your works, write your statement, link your university.
+                        Publish your works, write your statement, link your gallery.
                         Sign in with your academic email.
                     </p>
                     <p class="text-xs uppercase tracking-[0.18em] text-gray-900 group-hover:underline underline-offset-4">

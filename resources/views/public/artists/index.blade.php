@@ -7,7 +7,7 @@
             <h1 class="font-serif text-4xl md:text-5xl tracking-tight">Student artists</h1>
             <p class="mt-4 text-gray-600 max-w-2xl leading-relaxed">
                 Painters, sculptors, photographers and multimedia artists publishing their
-                practice from art academies across the region. Filter by university or search by name.
+                practice across the region. Filter by gallery or country.
             </p>
         </div>
     </section>
@@ -84,9 +84,7 @@
                                 </div>
                             @endif
                             <p class="mt-4 font-semibold">{{ $artist->display_name }}</p>
-                            @if ($artist->university)
-                                <p class="text-xs text-gray-500 mt-1">{{ $artist->university->short_name ?: $artist->university->name }}</p>
-                            @elseif ($artist->birth_year)
+                            @if ($artist->birth_year)
                                 <p class="text-xs text-gray-500 mt-1">
                                     {{ $artist->birth_year }}@if ($artist->death_year) – {{ $artist->death_year }}@endif
                                 </p>

@@ -2,11 +2,11 @@
     'role'    => 'artist',
     'eyebrow' => 'For students',
     'title'   => 'Artist',
-    'intro'   => 'A public portfolio while you\'re still in school. Publish your works, write your statement, link the university where you study. The platform handles inquiries; you keep the focus on the work.',
+    'intro'   => 'A public portfolio while you\'re still in school. Publish your works, write your statement, link your gallery. The platform handles inquiries; you keep the focus on the work.',
     'features' => [
         [
             'title' => 'Sign in with your academic email',
-            'body'  => 'Student accounts are gated to academic addresses — .edu, .ac.*, .edu.sk, plus a maintained whitelist of Slovak and EU art academies (VŠVU, VŠMU, AVU Praha, UMPRUM, ASP Kraków and others). Your university affiliation is verified the moment you sign up.',
+            'body'  => 'Student accounts are gated to academic addresses — .edu, .ac.*, .edu.sk, plus a maintained whitelist of Slovak and EU art academies (VŠVU, VŠMU, AVU Praha, UMPRUM, ASP Kraków and others). Your gallery affiliation is verified the moment you sign up.',
         ],
         [
             'title' => 'A profile that is yours',
@@ -17,8 +17,8 @@
             'body'  => 'Add, edit and publish artworks in a workspace scoped only to you. Multiple photos per piece, dimensions, medium, materials, edition, year, tags. Draft / published toggle so you decide exactly when a piece appears in the public catalogue.',
         ],
         [
-            'title' => 'Your university, on your profile',
-            'body'  => 'Pick your art academy from the list — or add it if it\'s new to the platform. Field of study, degree level, year started. When you move to a different school, you can update both your university and your sign-in email in one step.',
+            'title' => 'Your gallery, on your profile',
+            'body'  => 'Pick the gallery that represents you, or stay self-represented. You can switch at any time — your archive moves with you.',
         ],
         [
             'title' => 'Curated collections',

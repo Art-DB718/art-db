@@ -67,23 +67,23 @@
                         <p class="mt-6 text-gray-700 leading-relaxed max-w-3xl">{{ $artist->short_bio }}</p>
                     @endif
 
-                    @php $universityName = $artist->university?->name ?? $artist->university_name; @endphp
-                    @if ($universityName || $artist->field_of_study)
+                    @if (is_array($artist->education ?? null) && count($artist->education))
                         <div class="mt-6 p-4 border-l-2 border-gray-300 bg-gray-50 max-w-2xl">
-                            <p class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-1">
-                                {{ $artist->is_currently_studying ? 'Currently studying' : 'Studied' }}
-                            </p>
-                            <p class="text-sm text-gray-800">
-                                @if ($artist->field_of_study){{ $artist->field_of_study }}@endif
-                                @if ($artist->degree_level) — {{ $artist->degree_level }}@endif
-                                @if ($universityName)
-                                    <br>at <span class="font-medium">{{ $universityName }}</span>
-                                    @if ($artist->university?->city), {{ $artist->university->city }}@endif
-                                @endif
-                                @if ($artist->year_started)
-                                    <br><span class="text-xs text-gray-500">since {{ $artist->year_started }}</span>
-                                @endif
-                            </p>
+                            <p class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-2">Education</p>
+                            <ul class="text-sm text-gray-800 space-y-1">
+                                @foreach ($artist->education as $edu)
+                                    <li>
+                                        @if (!empty($edu['institution'])){{ $edu['institution'] }}@endif
+                                        @if (!empty($edu['degree'])) — {{ $edu['degree'] }}@endif
+                                        @if (!empty($edu['field'])) ({{ $edu['field'] }})@endif
+                                        @if (!empty($edu['year_from']) || !empty($edu['year_to']))
+                                            <span class="text-xs text-gray-500">
+                                                {{ $edu['year_from'] ?? '' }}@if (!empty($edu['year_to']))–{{ $edu['year_to'] }}@endif
+                                            </span>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
                         </div>
                     @endif
 

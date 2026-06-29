@@ -6,7 +6,7 @@
     'features' => [
         [
             'title' => 'Browse current student work',
-            'body'  => 'Every artwork published by an art-school student is in one searchable catalogue. Filter by medium, year, university, tag, price. Sort by school or by what\'s most recently uploaded — see what each generation is making, right now.',
+            'body'  => 'Every artwork published by an art-school student is in one searchable catalogue. Filter by medium, year, gallery, tag, price. Sort by school or by what\'s most recently uploaded — see what each generation is making, right now.',
         ],
         [
             'title' => 'Save shortlists for your programme',
@@ -22,7 +22,7 @@
         ],
         [
             'title' => 'Follow the schools',
-            'body'  => 'A platform-wide universities directory. Browse all students from a specific academy. Discover the next graduating class before the diploma show opens.',
+            'body'  => 'A platform-wide galleries directory. Browse all artists represented by a specific gallery. Discover the next graduating class before the diploma show opens.',
         ],
         [
             'title' => 'An institutional account',
