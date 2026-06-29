@@ -77,6 +77,16 @@ class Artwork extends Model
                 $m->inventory_id = static::generateInventoryId($m->artist_id);
             }
         });
+
+        // After save, optimize newly-uploaded image fields + generate thumb/medium variants.
+        static::saved(function (self $m) {
+            if ($m->wasChanged('primary_image') && $m->primary_image) {
+                \App\Services\ImageProcessor::process($m->primary_image);
+            }
+            if ($m->wasChanged('gallery_images')) {
+                \App\Services\ImageProcessor::processMany($m->gallery_images);
+            }
+        });
     }
 
     /**

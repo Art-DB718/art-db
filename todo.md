@@ -189,13 +189,17 @@ php artisan serve --host=127.0.0.1 --port=8002
 
 ---
 
-### Fáza 6 — Médiá a obrázky
+### Fáza 6 — Médiá a obrázky ✅ DOKONČENÁ (2026-06-29)
 
-- [ ] Image optimization (`spatie/laravel-image-optimizer` alebo `intervention/image`)
-- [ ] Thumbnail generation (small/medium/large) na upload
-- [ ] Lazy loading na public listingoch
-- [ ] Cover image cropping v Filament (`->imageEditor()`)
-- [ ] (optional) S3-compatible storage (R2 / Backblaze) — config v `.env`
+- [x] Image optimization (`spatie/laravel-image-optimizer` + `intervention/image-laravel`)
+- [x] Thumbnail generation: `_thumb` (400px) a `_medium` (1200px) variants generované na save
+- [x] `App\Services\ImageProcessor::process($path)` / `processMany($paths)` / `pathFor($path, $variant)`
+- [x] Artwork `saved` observer auto-processuje primary_image + gallery_images keď sa zmenia
+- [x] S3-compatible storage config (`AWS_ENDPOINT`, `AWS_URL` v `.env` + `.env.example`) — pripravené pre R2 / Backblaze, len treba flipnúť `FILESYSTEM_DISK=s3` v prod
+- [x] Optimizer binárky: jpegoptim, optipng, pngquant, cwebp (cez brew); SVG / GIF prejdú bez optimalizácie
+- [ ] Lazy loading na public listingoch — _môže pribudnúť cez `loading="lazy"` v Phase 10 polish_
+- [ ] Cover image cropping v Filament (`->imageEditor()`) — _optional, pridať keď bude treba_
+- [ ] Wire processor aj na Artist (profile/cover), Gallery (logo/cover) — _jednoduchý copy-paste observer; zatiaľ iba Artwork ako referencia_
 
 ---
 
