@@ -171,6 +171,7 @@
                 <h3 class="font-serif text-xl mb-3">{{ config('app.name', 'Project Arch') }}</h3>
                 <p class="text-sm text-gray-600 leading-relaxed">
                     An art database platform for galleries, collectors, artists and institutions.
+                    Private, public, or anywhere in between — you choose what to share.
                 </p>
             </div>
 

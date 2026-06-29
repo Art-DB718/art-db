@@ -8,10 +8,14 @@
                 Build your art database.<br>
                 <span class="italic text-gray-700">All in one place.</span>
             </h1>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-6 leading-relaxed">
                 {{ config('app.name', 'Project Arch') }} lets galleries, collectors, artists and
                 institutions build and publish their own art databases — artworks, artists, exhibitions
                 and curated collections — in one place.
+            </p>
+            <p class="text-base text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed italic">
+                Your database can be entirely private, fully public, or anywhere in between —
+                you decide what to share, work by work. Share nothing, share everything, share only what matters.
             </p>
             <div class="flex flex-wrap gap-3 justify-center">
                 <a href="{{ route('artworks.index') }}"

@@ -15,6 +15,11 @@
                 galleries publish their roster and inventory, artists curate their portfolio,
                 collectors keep a private archive of their holdings. Institutions get the same toolkit.
             </p>
+            <p class="text-base text-gray-600 leading-loose max-w-2xl mt-6 italic">
+                Your database can be entirely private, fully public, or anywhere in between.
+                Share nothing, share everything, share only what matters — the choice is yours,
+                record by record.
+            </p>
 
             @if (auth()->guest())
                 <div class="mt-12 flex flex-wrap gap-4">
