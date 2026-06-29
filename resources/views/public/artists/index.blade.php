@@ -3,11 +3,11 @@
     {{-- HEADER --}}
     <section class="border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-6 py-16 md:py-20">
-            <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Currently studying</p>
-            <h1 class="font-serif text-4xl md:text-5xl tracking-tight">Student artists</h1>
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">On the platform</p>
+            <h1 class="font-serif text-4xl md:text-5xl tracking-tight">Artists</h1>
             <p class="mt-4 text-gray-600 max-w-2xl leading-relaxed">
-                Painters, sculptors, photographers and multimedia artists publishing their
-                practice across the region. Filter by gallery or country.
+                Painters, sculptors, photographers and multimedia artists publishing their work
+                here — independent or represented by a gallery. Filter by gallery or country.
             </p>
         </div>
     </section>
@@ -67,7 +67,7 @@
 
             @if ($artists->isEmpty())
                 <div class="py-24 text-center border border-dashed border-gray-200">
-                    <p class="text-gray-500">No students match your filters.</p>
+                    <p class="text-gray-500">No artists match your filters.</p>
                     <a href="{{ route('artists.index') }}" class="mt-4 inline-block text-xs uppercase tracking-[0.18em] underline underline-offset-4 hover:text-gray-500">Clear filters</a>
                 </div>
             @else

@@ -168,16 +168,15 @@
     <footer class="mt-24 border-t border-gray-200 bg-white">
         <div class="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-3 gap-12">
             <div>
-                <h3 class="font-serif text-xl mb-3">{{ config('app.name', 'ArtDB') }}</h3>
+                <h3 class="font-serif text-xl mb-3">{{ config('app.name', 'Project Arch') }}</h3>
                 <p class="text-sm text-gray-600 leading-relaxed">
-                    A showcase for art-school students.
-                    Before the gallery. Before the name. Here.
+                    An art database platform for galleries, collectors, artists and institutions.
                 </p>
             </div>
 
             <div>
                 <h3 class="font-serif text-xl mb-3">Newsletter</h3>
-                <p class="text-sm text-gray-600 mb-4">New student works, graduation shows, names to watch — once a month, no spam.</p>
+                <p class="text-sm text-gray-600 mb-4">New works in the archive, upcoming exhibitions, names to watch — once a month, no spam.</p>
                 <form action="{{ route('newsletter.subscribe') }}" method="POST" class="flex flex-col sm:flex-row gap-2">
                     @csrf
                     <input type="email" name="email" required placeholder="your@email.com"

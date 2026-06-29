@@ -1,33 +1,33 @@
 @include('public.platform._role', [
     'role'    => 'gallery',
-    'eyebrow' => 'For institutions',
+    'eyebrow' => 'For galleries & institutions',
     'title'   => 'Gallery',
-    'intro'   => 'Discover student work before everyone else. Browse paintings, sculpture, photography, video and installation from art academies across the region. Save shortlists, reach the studio directly, follow the schools that matter.',
+    'intro'   => 'Build and publish your gallery’s art database — represented artists, their works, exhibitions, collections — in one place. Reach collectors directly through the platform.',
     'features' => [
         [
-            'title' => 'Browse current student work',
-            'body'  => 'Every artwork published by an art-school student is in one searchable catalogue. Filter by medium, year, gallery, tag, price. Sort by school or by what\'s most recently uploaded — see what each generation is making, right now.',
+            'title' => 'A database of your roster',
+            'body'  => 'Represent any artist via a single click — the artwork list, exhibition history and contact details follow. Multiple galleries can represent the same artist; the platform keeps everyone in sync.',
         ],
         [
-            'title' => 'Save shortlists for your programme',
-            'body'  => 'Tap the bookmark on any artwork to add it to your institution\'s private shortlist. Build a longlist before a programme committee meeting. Drop the works you can\'t show; promote the ones you can.',
+            'title' => 'Catalogue your inventory',
+            'body'  => 'Add artworks one by one or in bulk. Photos, dimensions, medium, materials, edition, price, condition, provenance. Draft until you publish — the public archive only shows what you’re ready to show.',
         ],
         [
-            'title' => 'Heart what catches you',
-            'body'  => 'A lightweight "like" — separate from the saved shortlist — for the works that strike you but aren\'t yet a fit. Visible only on your dashboard.',
+            'title' => 'Exhibitions, Private Rooms, Invoices',
+            'body'  => 'Organise upcoming, current and past exhibitions. Share curated Private Rooms with specific clients via a token link. Issue branded PDF invoices and certificates of authenticity in one click.',
         ],
         [
-            'title' => 'Contact the artist',
-            'body'  => 'A direct message on any artist profile. The platform forwards it to the student; you get a reply. No more chasing graduate-show open hours or scraping Instagram DMs.',
+            'title' => 'Inquiries land in your inbox',
+            'body'  => 'Every collector message lands directly in your Filament inbox with the work, the sender and a reply-to. Unread count badge in the sidebar — no Instagram DMs to scrape.',
         ],
         [
-            'title' => 'Follow the schools',
-            'body'  => 'A platform-wide galleries directory. Browse all artists represented by a specific gallery. Discover the next graduating class before the diploma show opens.',
+            'title' => 'A public profile that lives with you',
+            'body'  => 'Your gallery profile (logo, address, contact, roster, works) is available at /galleries/your-slug. Update once, every page follows.',
         ],
         [
-            'title' => 'An institutional account',
-            'body'  => 'Sign up as a gallery or museum — the platform stores your institution\'s name, city, country and website so artists know who they\'re talking to when you reach out.',
+            'title' => 'Designed printouts',
+            'body'  => 'Artwork cards, labels, certificates of authenticity, catalogue PDFs — all branded from your Invoice Settings page. Live preview while you edit.',
         ],
     ],
-    'cta' => 'Start discovering.',
+    'cta' => 'Start your gallery database.',
 ])

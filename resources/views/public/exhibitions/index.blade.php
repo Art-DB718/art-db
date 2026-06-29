@@ -5,8 +5,8 @@
             <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Where the work shows</p>
             <h1 class="font-serif text-4xl md:text-5xl tracking-tight">Exhibitions</h1>
             <p class="mt-4 text-gray-600 max-w-2xl leading-relaxed">
-                Graduation shows, group exhibitions, open studios and end-of-year presentations
-                organised by art academies and partner venues. Current, upcoming and past.
+                Solo and group exhibitions, openings and partner shows organised by the
+                galleries and institutions on the platform. Current, upcoming and past.
             </p>
         </div>
     </section>

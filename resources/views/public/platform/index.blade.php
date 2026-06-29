@@ -1,19 +1,19 @@
 <x-layouts.public
-    :title="'Platform features — '.config('app.name', 'ArtDB')"
-    description="ArtDB is a platform for galleries, artists and collectors. Galleries manage inventory and sales; artists publish their works; collectors track and acquire pieces. The public can browse everything marked as public.">
+    :title="'Platform — '.config('app.name', 'Project Arch')"
+    description="Project Arch is an art database platform for galleries, collectors, artists and institutions. Galleries publish their roster and inventory; artists curate their portfolio; collectors keep a private database of their holdings.">
 
     {{-- HERO --}}
     <section class="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white border-b border-gray-200">
         <div class="max-w-6xl mx-auto px-6 py-28 md:py-36 relative">
             <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-8">How it works</p>
             <h1 class="font-serif text-5xl md:text-7xl tracking-tight leading-[1.1] mb-10 max-w-4xl">
-                Where student practice<br>
-                <span class="italic text-gray-700">meets the world.</span>
+                Build your art database.<br>
+                <span class="italic text-gray-700">All in one place.</span>
             </h1>
             <p class="text-base md:text-lg text-gray-700 leading-loose max-w-2xl">
-                {{ config('app.name', 'ArtDB') }} connects artists
-                that host them, the galleries who want to discover them, and the collectors who buy
-                the first piece.
+                {{ config('app.name', 'Project Arch') }} is a platform for building art databases —
+                galleries publish their roster and inventory, artists curate their portfolio,
+                collectors keep a private archive of their holdings. Institutions get the same toolkit.
             </p>
 
             @if (auth()->guest())
@@ -44,10 +44,10 @@
 
             <div class="text-center max-w-2xl mx-auto mb-20">
                 <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-5">Who it's for</p>
-                <h2 class="font-serif text-3xl md:text-4xl">Three roles, one place.</h2>
+                <h2 class="font-serif text-3xl md:text-4xl">Three roles, one platform.</h2>
                 <p class="mt-6 text-gray-600 leading-loose">
-                    The students who make the work. The institutions who discover it.
-                    The collectors who back it. Each gets a workspace tuned to their part of the story.
+                    Galleries publishing their roster. Artists curating their portfolio.
+                    Collectors keeping a private database. Each gets a workspace tuned to their part of the story.
                 </p>
             </div>
 
@@ -56,11 +56,11 @@
                 {{-- GALLERY --}}
                 <a href="{{ route('platform.gallery') }}" class="block bg-white p-10 md:p-12 group hover:bg-gray-50 transition">
                     <div class="font-serif text-5xl text-gray-300 mb-8">01</div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">For institutions</p>
+                    <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">For galleries &amp; institutions</p>
                     <h3 class="font-serif text-2xl mb-6">Gallery</h3>
                     <p class="text-sm text-gray-700 leading-loose mb-8">
-                        Discover student work before everyone else.
-                        Save shortlists, reach the studio directly, follow the schools that matter.
+                        Publish your roster and inventory. Represent multiple artists, manage
+                        exhibitions, share Private Rooms, issue invoices and certificates.
                     </p>
                     <p class="text-xs uppercase tracking-[0.18em] text-gray-900 group-hover:underline underline-offset-4">
                         Read more &rarr;
@@ -70,12 +70,11 @@
                 {{-- ARTIST --}}
                 <a href="{{ route('platform.artist') }}" class="block bg-white p-10 md:p-12 group hover:bg-gray-50 transition">
                     <div class="font-serif text-5xl text-gray-300 mb-8">02</div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">For students</p>
+                    <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">For artists</p>
                     <h3 class="font-serif text-2xl mb-6">Artist</h3>
                     <p class="text-sm text-gray-700 leading-loose mb-8">
-                        A public portfolio while you're still in school.
-                        Publish your works, write your statement, link your gallery.
-                        Sign in with your academic email.
+                        A public portfolio plus a private workspace. Publish your works, write your
+                        statement, list your education and previous exhibitions. Switch galleries any time.
                     </p>
                     <p class="text-xs uppercase tracking-[0.18em] text-gray-900 group-hover:underline underline-offset-4">
                         Read more &rarr;
@@ -88,9 +87,8 @@
                     <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">For collectors</p>
                     <h3 class="font-serif text-2xl mb-6">Collector</h3>
                     <p class="text-sm text-gray-700 leading-loose mb-8">
-                        Buy at the start of a career.
-                        Browse student work, save the pieces that catch you,
-                        inquire or buy directly when something is available.
+                        A private database of the works you own — and a curated archive of what
+                        you'd like to follow. Browse the public archive, inquire, save, catalogue.
                     </p>
                     <p class="text-xs uppercase tracking-[0.18em] text-gray-900 group-hover:underline underline-offset-4">
                         Read more &rarr;
@@ -112,9 +110,9 @@
                     </h2>
                 </div>
                 <p class="text-base text-gray-300 max-w-md leading-loose">
-                    No login needed to look. Anyone arriving at {{ config('app.name', 'ArtDB') }}
-                    can browse every student work, artist profile, exhibition and curated
-                    collection that's been published. To save, like, contact or buy — sign up free.
+                    No login needed to look. Anyone arriving at {{ config('app.name', 'Project Arch') }}
+                    can browse every published artwork, artist profile, gallery profile, exhibition
+                    and public collection. To save, inquire or build your own database — sign up.
                 </p>
             </div>
 

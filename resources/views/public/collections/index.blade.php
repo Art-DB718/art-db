@@ -2,11 +2,11 @@
 
     <section class="border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-6 py-16 md:py-20">
-            <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Curated by students</p>
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Curated by the platform</p>
             <h1 class="font-serif text-4xl md:text-5xl tracking-tight">Collections</h1>
             <p class="mt-4 text-gray-600 max-w-2xl leading-relaxed">
-                Student-curated groupings of works — thesis projects, series, themes, group submissions.
-                A glimpse into how the next generation is organising its practice.
+                Curated groupings of works — series, themes, exhibitions, private archives.
+                Built by galleries, artists and collectors on the platform.
             </p>
         </div>
     </section>
@@ -16,7 +16,7 @@
 
             @if ($collections->isEmpty())
                 <div class="py-24 text-center border border-dashed border-gray-200">
-                    <p class="text-gray-500">No student collections published yet.</p>
+                    <p class="text-gray-500">No public collections yet.</p>
                 </div>
             @else
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">

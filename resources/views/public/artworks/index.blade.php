@@ -3,12 +3,12 @@
     {{-- HEADER --}}
     <section class="border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-6 py-16 md:py-20">
-            <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">From the studios</p>
-            <h1 class="font-serif text-4xl md:text-5xl tracking-tight">Student works</h1>
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">From the archive</p>
+            <h1 class="font-serif text-4xl md:text-5xl tracking-tight">Artworks</h1>
             <p class="mt-4 text-gray-600 max-w-2xl leading-relaxed">
-                Paintings, sculpture, photography, video, installation —
-                published by students from art academies on the platform.
-                Filter by medium, year or price to find what you're looking for.
+                Paintings, sculpture, photography, video and installation —
+                published by galleries, artists and collectors on the platform.
+                Filter by gallery, medium, year or price to find what you're looking for.
             </p>
         </div>
     </section>
@@ -155,7 +155,7 @@
 
                 @if ($artworks->isEmpty())
                     <div class="py-24 text-center border border-dashed border-gray-200">
-                        <p class="text-gray-500">No student works match your filters.</p>
+                        <p class="text-gray-500">No artworks match your filters.</p>
                         <a href="{{ route('artworks.index') }}" class="mt-4 inline-block text-xs uppercase tracking-[0.18em] underline underline-offset-4 hover:text-gray-500">Clear filters</a>
                     </div>
                 @else

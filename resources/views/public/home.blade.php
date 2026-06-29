@@ -3,26 +3,25 @@
     {{-- HERO --}}
     <section class="bg-gray-50">
         <div class="max-w-7xl mx-auto px-6 py-24 md:py-36 text-center">
-            <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-6">Student artists</p>
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-6">An art database platform</p>
             <h1 class="font-serif text-5xl md:text-7xl tracking-tight leading-[1.05] mb-8">
-                Before the gallery.<br>
-                Before the name.<br>
-                <span class="italic text-gray-700">Here.</span>
+                Build your art database.<br>
+                <span class="italic text-gray-700">All in one place.</span>
             </h1>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-                {{ config('app.name', 'Project Arch') }} is an online archive of contemporary art —
-                galleries publish their roster, artists curate their portfolio, collectors keep their
-                private database. Discover what's being made, right now.
+                {{ config('app.name', 'Project Arch') }} lets galleries, collectors, artists and
+                institutions build and publish their own art databases — artworks, artists, exhibitions
+                and curated collections — in one place.
             </p>
             <div class="flex flex-wrap gap-3 justify-center">
                 <a href="{{ route('artworks.index') }}"
                    class="inline-block px-10 py-4 bg-gray-900 text-white text-xs uppercase tracking-[0.18em] hover:bg-gray-700 transition">
-                    Browse student works
+                    Browse the archive
                 </a>
                 @guest
                     <a href="{{ route('register') }}"
                        class="inline-block px-10 py-4 border border-gray-300 text-xs uppercase tracking-[0.18em] hover:border-gray-900 transition">
-                        Join as a student
+                        Start your database
                     </a>
                 @endguest
             </div>
@@ -35,7 +34,7 @@
             <div class="max-w-7xl mx-auto px-6">
                 <div class="flex items-baseline justify-between mb-12">
                     <div>
-                        <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-2">From the studios</p>
+                        <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-2">From the archive</p>
                         <h2 class="font-serif text-3xl md:text-4xl">Featured works</h2>
                     </div>
                     <a href="{{ route('artworks.index') }}" class="text-xs uppercase tracking-[0.18em] underline underline-offset-4 hover:text-gray-500">View all</a>
@@ -117,7 +116,7 @@
             <div class="max-w-7xl mx-auto px-6">
                 <div class="flex items-baseline justify-between mb-12">
                     <div>
-                        <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-2">Currently studying</p>
+                        <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-2">On the platform</p>
                         <h2 class="font-serif text-3xl md:text-4xl">Featured artists</h2>
                     </div>
                     <a href="{{ route('artists.index') }}" class="text-xs uppercase tracking-[0.18em] underline underline-offset-4 hover:text-gray-500">View all</a>
@@ -179,7 +178,7 @@
         <div class="max-w-3xl mx-auto px-6 text-center">
             <h2 class="font-serif text-3xl md:text-4xl mb-4">Stay close to the studios</h2>
             <p class="text-gray-300 mb-10 leading-relaxed">
-                A monthly newsletter — new student works, graduation shows, names to watch.
+                A monthly newsletter — new works in the archive, upcoming exhibitions, names to watch.
                 No spam.
             </p>
             <form action="{{ route('newsletter.subscribe') }}" method="POST" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">

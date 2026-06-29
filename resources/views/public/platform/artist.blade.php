@@ -1,36 +1,36 @@
 @include('public.platform._role', [
     'role'    => 'artist',
-    'eyebrow' => 'For students',
+    'eyebrow' => 'For artists',
     'title'   => 'Artist',
-    'intro'   => 'A public portfolio while you\'re still in school. Publish your works, write your statement, link your gallery. The platform handles inquiries; you keep the focus on the work.',
+    'intro'   => 'A public portfolio and a private workspace in one. Publish your works, write your statement, list your education and previous exhibitions. The platform handles inquiries; you keep the focus on the work.',
     'features' => [
         [
-            'title' => 'Sign in with your academic email',
-            'body'  => 'Student accounts are gated to academic addresses — .edu, .ac.*, .edu.sk, plus a maintained whitelist of Slovak and EU art academies (VŠVU, VŠMU, AVU Praha, UMPRUM, ASP Kraków and others). Your gallery affiliation is verified the moment you sign up.',
-        ],
-        [
             'title' => 'A profile that is yours',
-            'body'  => 'A public page on the platform with portrait, cover image, biography, statement, birth year and country. Link your website, Instagram, anything that should travel with the work. Edit it any time — publish when you\'re ready.',
+            'body'  => 'A public page with portrait, cover image, biography, statement, birth year, country and links — anything that should travel with the work. Edit any time, publish when you’re ready.',
         ],
         [
-            'title' => 'Your works, in your hands',
-            'body'  => 'Add, edit and publish artworks in a workspace scoped only to you. Multiple photos per piece, dimensions, medium, materials, edition, year, tags. Draft / published toggle so you decide exactly when a piece appears in the public catalogue.',
+            'title' => 'Your works, your database',
+            'body'  => 'Add, edit and publish artworks in a workspace scoped only to you. Multiple photos per piece, dimensions, medium, materials, edition, year, tags. Draft / published toggle so you decide exactly when a piece appears in the public archive.',
         ],
         [
-            'title' => 'Your gallery, on your profile',
-            'body'  => 'Pick the gallery that represents you, or stay self-represented. You can switch at any time — your archive moves with you.',
+            'title' => 'Bio & CV — education and exhibitions',
+            'body'  => 'A structured Bio & CV tab on your profile: long-form biography, artist statement, education records (school, degree, years) and previous exhibitions (year, title, venue, type). All optional, all editable.',
+        ],
+        [
+            'title' => 'Galleries you’re represented by',
+            'body'  => 'Pick the gallery that represents you, or stay self-represented. Multiple galleries can list you at once — and you can switch any time. Your archive moves with you.',
         ],
         [
             'title' => 'Curated collections',
-            'body'  => 'Group your works by series, theme or thesis project into your own collections — public or private. Useful for studio visits, juries, applications. Visible from your profile.',
+            'body'  => 'Group your works by series, theme or project into your own collections — public or private. Useful for studio visits, juries, applications. Visible from your profile.',
         ],
         [
-            'title' => 'Inquiries land in the gallery\'s inbox',
-            'body'  => 'When a gallery or collector contacts you from one of your work pages, the message goes to the platform team first — who pass it on. Your studio stays out of the back-and-forth until you\'re ready.',
+            'title' => 'Inquiries land in your inbox',
+            'body'  => 'Galleries and collectors contact you straight from any of your work pages. Reply by email or in the admin inbox; the conversation thread stays attached to the work.',
         ],
         [
             'title' => 'PDF documentation when you need it',
-            'body'  => 'Generate your own artwork cards, certificates and wall labels. Useful for studio visits, art fairs, residency applications, or sending documentation when a curator asks.',
+            'body'  => 'Generate artwork cards, certificates of authenticity and wall labels for studio visits, fairs, residency applications or curator requests.',
         ],
     ],
     'cta' => 'Publish your practice.',
