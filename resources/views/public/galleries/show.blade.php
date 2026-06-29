@@ -1,4 +1,12 @@
-<x-layouts.public :title="$gallery->name">
+@php
+    $gallerySeoDescription = $gallery->description
+        ? \Illuminate\Support\Str::limit(strip_tags($gallery->description), 160)
+        : $gallery->name.' — represented artists and works on '.config('app.name', 'Project Arch').'.';
+@endphp
+<x-layouts.public
+    :title="$gallery->name.' — '.config('app.name', 'Project Arch')"
+    :description="$gallerySeoDescription"
+    :og-image="$gallery->cover_image ?? $gallery->logo">
     <section class="py-16 bg-white">
         <div class="max-w-5xl mx-auto px-6">
             <a href="{{ route('galleries.index') }}" class="text-xs uppercase tracking-[0.18em] text-gray-500 hover:text-gray-900">← All galleries</a>

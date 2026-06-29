@@ -1,2 +1,9 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /my/
+Disallow: /private-room/
+Disallow: /checkout/
+Disallow: /prints/
+
+Sitemap: /sitemap.xml

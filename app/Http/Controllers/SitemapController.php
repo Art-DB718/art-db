@@ -6,6 +6,7 @@ use App\Models\Artist;
 use App\Models\Artwork;
 use App\Models\Collection;
 use App\Models\Exhibition;
+use App\Models\Gallery;
 use Illuminate\Support\Carbon;
 
 class SitemapController extends Controller
@@ -16,7 +17,7 @@ class SitemapController extends Controller
 
         // Static routes
         $now = Carbon::now()->toAtomString();
-        foreach (['home', 'artworks.index', 'artists.index', 'collections.index', 'exhibitions.index', 'platform'] as $name) {
+        foreach (['home', 'artworks.index', 'artists.index', 'galleries.index', 'collections.index', 'exhibitions.index', 'platform'] as $name) {
             $urls->push([
                 'loc'        => route($name),
                 'lastmod'    => $now,
@@ -24,6 +25,18 @@ class SitemapController extends Controller
                 'priority'   => $name === 'home' ? '1.0' : '0.8',
             ]);
         }
+
+        // Galleries
+        Gallery::query()->where('is_published', true)
+            ->select('slug', 'updated_at')
+            ->each(function ($g) use ($urls) {
+                $urls->push([
+                    'loc'        => route('galleries.show', $g->slug),
+                    'lastmod'    => $g->updated_at?->toAtomString(),
+                    'changefreq' => 'monthly',
+                    'priority'   => '0.7',
+                ]);
+            });
 
         // Artworks
         Artwork::query()->where('is_published', true)

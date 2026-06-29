@@ -1,4 +1,6 @@
-<x-layouts.public title="Galleries">
+<x-layouts.public
+    :title="'Galleries — '.config('app.name', 'Project Arch')"
+    description="Contemporary art galleries on Project Arch — discover their roster of artists, exhibitions and works.">
     <section class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-6">
             <div class="max-w-3xl mb-12">

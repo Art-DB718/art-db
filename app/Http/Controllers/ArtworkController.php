@@ -116,41 +116,57 @@ class ArtworkController extends Controller
     {
         abort_unless($artwork->is_published, 404);
 
-        $validated = $request->validate([
-            'name'    => ['required', 'string', 'max:255'],
-            'email'   => ['required', 'email', 'max:255'],
-            'message' => ['required', 'string', 'max:2000'],
+        $user = $request->user();
+
+        // Auth visitors don't need to retype name/email (taken from User).
+        $rules = ['message' => ['required', 'string', 'max:2000']];
+        if (! $user) {
+            $rules['name']  = ['required', 'string', 'max:255'];
+            $rules['email'] = ['required', 'email', 'max:255'];
+        }
+        $validated = $request->validate($rules);
+
+        // Resolve recipient — artwork owner, or fall back to gallery contact email.
+        $recipientUserId = $artwork->owner_user_id;
+        $settings        = InvoiceSetting::current();
+        $fallbackEmail   = $settings->email ?: config('mail.from.address');
+
+        // Create the Inquiry record. Filament inbox will pick it up automatically.
+        $inquiry = \App\Models\Inquiry::create([
+            'sender_user_id'    => $user?->id,
+            'guest_name'        => $user ? null : ($validated['name'] ?? null),
+            'guest_email'       => $user ? null : ($validated['email'] ?? null),
+            'recipient_user_id' => $recipientUserId,
+            'artwork_id'        => $artwork->id,
+            'message'           => $validated['message'],
+            'status'            => 'new',
         ]);
+        $inquiry->load(['sender', 'recipient', 'artwork.artist']);
 
-        // Save / update contact
-        $names = preg_split('/\s+/', trim($validated['name']), 2);
-        Contact::firstOrCreate(
-            ['email' => $validated['email']],
-            [
-                'first_name' => $names[0] ?? null,
-                'last_name'  => $names[1] ?? null,
-                'source'     => 'artwork inquiry',
-                'notes'      => 'Inquiry about: '.$artwork->title,
-            ],
-        );
+        // Also save a CRM contact for guest senders (legacy behaviour preserved).
+        if (! $user && ! empty($validated['email'])) {
+            $names = preg_split('/\s+/', trim($validated['name']), 2);
+            Contact::firstOrCreate(
+                ['email' => $validated['email']],
+                [
+                    'first_name' => $names[0] ?? null,
+                    'last_name'  => $names[1] ?? null,
+                    'source'     => 'artwork inquiry',
+                    'notes'      => 'Inquiry about: '.$artwork->title,
+                ],
+            );
+        }
 
-        // Notify the gallery
-        $settings     = InvoiceSetting::current();
-        $galleryEmail = $settings->email ?: config('mail.from.address');
-
-        $html = '<p>New inquiry about <strong>'.e($artwork->title).'</strong>'
-            .' by '.e($artwork->artist?->display_name ?? '—').'.</p>'
-            .'<p><strong>From:</strong> '.e($validated['name']).' &lt;'.e($validated['email']).'&gt;</p>'
-            .'<p><strong>Message:</strong></p>'
-            .'<blockquote style="border-left:3px solid #d1d5db;padding-left:1rem;color:#374151;">'
-            .nl2br(e($validated['message']))
-            .'</blockquote>';
-
-        Mail::html($html, function ($m) use ($galleryEmail, $validated, $artwork) {
-            $m->to($galleryEmail)
-              ->replyTo($validated['email'], $validated['name'])
-              ->subject('Inquiry: '.$artwork->title);
-        });
+        // Email the recipient via the InquiryReceived mailable (Mail::log driver in dev,
+        // Resend in prod once RESEND_API_KEY is set + MAIL_MAILER=resend).
+        $recipientEmail = $artwork->owner?->email ?: $fallbackEmail;
+        if ($recipientEmail) {
+            try {
+                Mail::to($recipientEmail)->send(new \App\Mail\InquiryReceived($inquiry));
+            } catch (\Throwable $e) {
+                logger()->warning('Inquiry mail failed: '.$e->getMessage());
+            }
+        }
 
         return redirect()
             ->route('artworks.show', $artwork)

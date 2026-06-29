@@ -1,7 +1,7 @@
 <x-mail::message>
 # New inquiry
 
-**{{ $sender?->name ?? 'A user' }}** ({{ $sender?->email }}) has sent you a question about:
+**{{ $senderName }}**@if ($senderEmail) ({{ $senderEmail }})@endif has sent you a question about:
 
 @if ($artwork)
 **{{ $artwork->title }}**

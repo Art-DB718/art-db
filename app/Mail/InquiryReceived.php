@@ -20,13 +20,14 @@ class InquiryReceived extends Mailable
 
     public function envelope(): Envelope
     {
-        $artwork = $this->inquiry->artwork;
-        $sender  = $this->inquiry->sender;
+        $artwork    = $this->inquiry->artwork;
+        $replyEmail = $this->inquiry->sender_display_email;
+        $replyName  = $this->inquiry->sender_display_name;
 
         return new Envelope(
             subject: 'New inquiry about: '.($artwork?->title ?? 'an artwork'),
-            replyTo: $sender?->email
-                ? [new Address($sender->email, $sender->name ?? '')]
+            replyTo: $replyEmail
+                ? [new Address($replyEmail, $replyName)]
                 : [],
         );
     }
@@ -36,10 +37,11 @@ class InquiryReceived extends Mailable
         return new Content(
             markdown: 'mail.inquiry-received',
             with: [
-                'inquiry'      => $this->inquiry,
-                'artwork'      => $this->inquiry->artwork,
-                'sender'       => $this->inquiry->sender,
-                'inboxUrl'     => url('/admin/inquiries/'.$this->inquiry->id.'/edit'),
+                'inquiry'     => $this->inquiry,
+                'artwork'     => $this->inquiry->artwork,
+                'senderName'  => $this->inquiry->sender_display_name,
+                'senderEmail' => $this->inquiry->sender_display_email,
+                'inboxUrl'    => url('/admin/inquiries/'.$this->inquiry->id.'/edit'),
             ],
         );
     }

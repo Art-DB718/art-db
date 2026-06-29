@@ -13,6 +13,8 @@ class Inquiry extends Model
 
     protected $fillable = [
         'sender_user_id',
+        'guest_name',
+        'guest_email',
         'recipient_user_id',
         'artwork_id',
         'message',
@@ -20,6 +22,17 @@ class Inquiry extends Model
         'read_at',
         'replied_at',
     ];
+
+    public function getSenderDisplayNameAttribute(): string
+    {
+        return $this->sender?->name
+            ?: ($this->guest_name ?: 'Anonymous visitor');
+    }
+
+    public function getSenderDisplayEmailAttribute(): ?string
+    {
+        return $this->sender?->email ?: $this->guest_email;
+    }
 
     protected $casts = [
         'read_at'    => 'datetime',
