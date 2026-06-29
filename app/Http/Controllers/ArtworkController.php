@@ -9,7 +9,6 @@ use App\Models\Contact;
 use App\Models\Genre;
 use App\Models\InvoiceSetting;
 use App\Models\Medium;
-use App\Models\University;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -33,9 +32,8 @@ class ArtworkController extends Controller
         if ($request->filled('status_id')) {
             $query->where('status_id', (int) $request->status_id);
         }
-        if ($request->filled('university_id')) {
-            // Filter by the university of the artwork's artist.
-            $query->whereHas('artist', fn ($a) => $a->where('university_id', (int) $request->university_id));
+        if ($request->filled('gallery_id')) {
+            $query->whereHas('artist.galleries', fn ($g) => $g->whereKey((int) $request->gallery_id));
         }
         if ($request->filled('year_from')) {
             $query->where('year_created', '>=', (int) $request->year_from);
@@ -91,11 +89,7 @@ class ArtworkController extends Controller
             'mediums'        => Medium::orderBy('name')->get(['id', 'name']),
             'genres'         => Genre::orderBy('name')->get(['id', 'name']),
             'statuses'       => ArtworkStatus::where('is_public', true)->orderBy('position')->get(['id', 'name']),
-            'universities'   => University::query()
-                ->whereHas('artists', fn ($a) => $a->where('is_published', true)
-                    ->whereHas('artworks', fn ($w) => $w->where('is_published', true)))
-                ->orderBy('name')
-                ->get(['id', 'name']),
+            'galleries'      => \App\Models\Gallery::where('is_published', true)->orderBy('name')->get(['id', 'name']),
         ]);
     }
 

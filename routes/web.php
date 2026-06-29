@@ -7,6 +7,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExhibitionController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MyArtworksController;
 use App\Http\Controllers\MyCollectionController;
@@ -34,6 +35,9 @@ Route::get('/collections/{collection:slug}', [CollectionController::class, 'show
 
 Route::get('/exhibitions', [ExhibitionController::class, 'index'])->name('exhibitions.index');
 Route::get('/exhibitions/{exhibition:slug}', [ExhibitionController::class, 'show'])->name('exhibitions.show');
+
+Route::get('/galleries', [GalleryController::class, 'index'])->name('galleries.index');
+Route::get('/galleries/{gallery:slug}', [GalleryController::class, 'show'])->name('galleries.show');
 
 Route::get('/platform',           [PlatformController::class, 'index'])->name('platform');
 Route::get('/platform/gallery',   [PlatformController::class, 'gallery'])->name('platform.gallery');

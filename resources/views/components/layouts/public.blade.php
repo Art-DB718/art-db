@@ -66,7 +66,7 @@
                 <li><a href="{{ route('artists.index') }}" class="hover:text-gray-400 transition">Artists</a></li>
                 <li><a href="{{ route('exhibitions.index') }}" class="hover:text-gray-400 transition">Exhibitions</a></li>
                 <li><a href="{{ route('collections.index') }}" class="hover:text-gray-400 transition">Collections</a></li>
-                <li><a href="{{ route('universities.index') }}" class="hover:text-gray-400 transition">Universities</a></li>
+                <li><a href="#" class="hover:text-gray-400 transition opacity-50">Universities (n/a)</a></li>
                 {{-- Platform dropdown --}}
                 <li class="relative group">
                     <a href="{{ route('platform') }}" class="hover:text-gray-400 transition flex items-center gap-1">
@@ -123,7 +123,7 @@
                 <li><a href="{{ route('artists.index') }}" class="block py-2.5 hover:text-gray-400">Artists</a></li>
                 <li><a href="{{ route('exhibitions.index') }}" class="block py-2.5 hover:text-gray-400">Exhibitions</a></li>
                 <li><a href="{{ route('collections.index') }}" class="block py-2.5 hover:text-gray-400">Collections</a></li>
-                <li><a href="{{ route('universities.index') }}" class="block py-2.5 hover:text-gray-400">Universities</a></li>
+                <li><a href="#" class="block py-2.5 hover:text-gray-400 opacity-50">Universities (n/a)</a></li>
 
                 {{-- Platform with collapsible sub-menu --}}
                 <li>

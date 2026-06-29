@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Artist;
 use App\Models\Artwork;
 use App\Models\Exhibition;
-use App\Models\University;
+use App\Models\Gallery;
 
 class HomeController extends Controller
 {
@@ -28,9 +28,9 @@ class HomeController extends Controller
                 ->orderBy('start_date')
                 ->limit(4)
                 ->get(),
-            'universities' => University::query()
-                ->withCount(['artists' => fn ($q) => $q->where('is_published', true)])
-                ->whereHas('artists', fn ($q) => $q->where('is_published', true))
+            'featuredGalleries' => Gallery::query()
+                ->where('is_published', true)
+                ->withCount(['artists'])
                 ->orderByDesc('artists_count')
                 ->limit(8)
                 ->get(),

@@ -78,11 +78,11 @@
                     </div>
 
                     <div>
-                        <label for="university_id" class="block text-xs uppercase tracking-[0.18em] text-gray-500 mb-2">University</label>
-                        <select name="university_id" id="university_id" class="w-full px-3 py-2 border border-gray-300 text-sm bg-white focus:outline-none focus:border-gray-900">
-                            <option value="">All universities</option>
-                            @foreach ($universities as $u)
-                                <option value="{{ $u->id }}" @selected((int) request('university_id') === $u->id)>{{ $u->name }}</option>
+                        <label for="gallery_id" class="block text-xs uppercase tracking-[0.18em] text-gray-500 mb-2">Gallery</label>
+                        <select name="gallery_id" id="gallery_id" class="w-full px-3 py-2 border border-gray-300 text-sm bg-white focus:outline-none focus:border-gray-900">
+                            <option value="">All galleries</option>
+                            @foreach ($galleries as $g)
+                                <option value="{{ $g->id }}" @selected((int) request('gallery_id') === $g->id)>{{ $g->name }}</option>
                             @endforeach
                         </select>
                     </div>

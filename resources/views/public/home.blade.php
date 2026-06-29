@@ -11,7 +11,7 @@
             </h1>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
                 {{ config('app.name', 'ArtDB') }} gathers students from art academies and creative
-                universities and presents their work to the public, to galleries and to collectors —
+                artists and presents their work to the public, to galleries and to collectors —
                 from thesis projects to first solo pieces.
             </p>
             <div class="flex flex-wrap gap-3 justify-center">
@@ -145,30 +145,29 @@
         </section>
     @endif
 
-    {{-- UNIVERSITIES --}}
-    @if ($universities->isNotEmpty())
+    {{-- GALLERIES --}}
+    @if ($featuredGalleries->isNotEmpty())
         <section class="py-24 bg-gray-50">
             <div class="max-w-7xl mx-auto px-6">
                 <div class="text-center max-w-2xl mx-auto mb-14">
-                    <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-3">Where the work comes from</p>
-                    <h2 class="font-serif text-3xl md:text-4xl mb-4">Art academies on the platform</h2>
+                    <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-3">Who's on the platform</p>
+                    <h2 class="font-serif text-3xl md:text-4xl mb-4">Galleries</h2>
                     <p class="text-gray-600 leading-relaxed">
-                        Universities and art schools whose students are publishing here.
-                        Each one represents a generation finding its voice.
+                        Contemporary art galleries representing artists on Project Arch.
                     </p>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-gray-200 border border-gray-200">
-                    @foreach ($universities as $university)
-                        <div class="bg-white p-6 hover:bg-gray-50 transition">
-                            <p class="font-serif text-lg leading-tight">{{ $university->name }}</p>
-                            @if ($university->city)
-                                <p class="text-xs text-gray-500 mt-1">{{ $university->city }}</p>
+                    @foreach ($featuredGalleries as $gallery)
+                        <a href="#" class="bg-white p-6 hover:bg-gray-50 transition block">
+                            <p class="font-serif text-lg leading-tight">{{ $gallery->name }}</p>
+                            @if ($gallery->city)
+                                <p class="text-xs text-gray-500 mt-1">{{ $gallery->city }}</p>
                             @endif
                             <p class="mt-4 text-xs uppercase tracking-[0.18em] text-gray-500">
-                                {{ $university->artists_count }} {{ Str::plural('student', $university->artists_count) }}
+                                {{ $gallery->artists_count }} {{ Str::plural('artist', $gallery->artists_count) }}
                             </p>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             </div>

@@ -137,17 +137,21 @@ php artisan serve --host=127.0.0.1 --port=8002
 
 ---
 
-### Fáza 3 — Verejný web (frontend)
+### Fáza 3 — Verejný web (frontend) ✅ MVP DOKONČENÝ (2026-06-29)
 
 **Cieľ:** Public web mimo `/admin` — archív verejne viditeľný + galérie a umelci majú verejné profily.
 
-- [ ] `HomeController` + `home.blade.php` — hero + featured galleries + featured artists + featured artworks
-- [ ] `GalleryController@index/show` — listing + profil galérie (logo, kontakt, list umelcov, ich diela)
-- [ ] `ArtistController@index/show` — listing + profil umelca (bio, country, diela, **list galérií ktoré ho zastupujú**)
-- [ ] `ArtworkController@index/show` — listing s filtrami (Medium, Year, Price, Artist, Gallery) + full-text search + detail
-- [ ] `CollectionController@show` — verejný detail kolekcie (iba `is_private = false`)
-- [ ] Layout `x-layouts.public` s Tailwind theme
-- [ ] Responzivita (mobile-first)
+- [x] HomeController + home.blade — hero + featured artworks + featured artists + featured galleries (replaces universities)
+- [x] GalleryController index/show + nové public views (`/galleries`, `/galleries/{slug}`)
+- [x] ArtistController index/show — funguje s gallery filtrom (nahradil university filter)
+- [x] ArtworkController index/show — funguje s gallery filtrom
+- [x] Layout `x-layouts.public` — z Art DB port, university linky upravené na placeholder
+- [x] Vite assets built (`npm install` + `npm run build` — Tailwind + app.css/js)
+- [x] University leftover cleanup v public flow (HomeController, ArtistController, ArtworkController, home/artists/artworks views)
+- [ ] Inquiry form na public artwork detail wired to nový Inquiry model — _ArtworkController::inquire stále používa pôvodný Contact-based flow z Art DB portu; rewire neskôr_
+- [ ] DashboardController / OnboardingController / Auth\RegisteredUserController stále referencujú University — _dead code (Filament register/dashboard sa používa, nie Breeze flow), cleanup keď bude potrebný_
+- [ ] Platform pages content cleanup (university zmienky v texte)
+- [ ] Responzivita audit
 - [ ] SEO meta tags + sitemap.xml + robots.txt
 
 ---
