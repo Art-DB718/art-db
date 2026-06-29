@@ -9,12 +9,13 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use Billable, HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -51,11 +52,37 @@ class User extends Authenticatable implements FilamentUser
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'onboarded_at'      => 'datetime',
-            'password'          => 'hashed',
-            'role'              => UserRole::class,
+            'email_verified_at'       => 'datetime',
+            'onboarded_at'            => 'datetime',
+            'password'                => 'hashed',
+            'role'                    => UserRole::class,
+            'trial_ends_at'           => 'datetime',
+            'subscription_expires_at' => 'datetime',
         ];
+    }
+
+    public function isOnTrial(): bool
+    {
+        return $this->subscription_status === 'trial'
+            && $this->trial_ends_at
+            && $this->trial_ends_at->isFuture();
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        return in_array($this->subscription_status, ['trial', 'active'], true)
+            && (! $this->trial_ends_at || $this->trial_ends_at->isFuture() || $this->subscription_status === 'active');
+    }
+
+    public function isReadOnly(): bool
+    {
+        return in_array($this->subscription_status, ['past_due', 'archived', 'cancelled'], true);
+    }
+
+    public function trialDaysLeft(): ?int
+    {
+        if (! $this->trial_ends_at) return null;
+        return max(0, (int) now()->diffInDays($this->trial_ends_at, false));
     }
 
     public function isAdmin(): bool

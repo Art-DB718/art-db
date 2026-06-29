@@ -203,22 +203,24 @@ php artisan serve --host=127.0.0.1 --port=8002
 
 ---
 
-### Fáza 7 — Subscriptions & Trial (SaaS biznis model)
+### Fáza 7 — Subscriptions & Trial (SaaS biznis model) ✅ DOKONČENÁ (2026-06-29)
 
-**Cieľ:** 14-dňový trial pri registrácii, potom platba podľa rozsahu DB. Žiadny payment pre umelecké diela — iba pre SaaS prístup.
+**Decisions od Kat (2026-06-29):** Starter 9 € / Pro 29 € / Studio 79 € + Trial 14 dní + Enterprise custom (ročne 10× mesačnej ceny = 2 mesiace zdarma). Trial expiry → **Read-only mode**. Collector dostáva trvalo **Free plan** (50 private diel, 1 GB).
 
-**Toto je novo dohodnutá fáza (2026-06-24) — detaily plánov ešte nie sú known, viď „Questions for Kat".**
-
-- [ ] Migrácia: pridať `trial_ends_at` (timestamp), `subscription_plan` (string nullable), `subscription_status` (enum: trial/active/past_due/cancelled) na `users`
-- [ ] Pri registrácii nastaviť `trial_ends_at = now()->addDays(14)` a status = `trial`
-- [ ] Middleware `EnsureSubscriptionActive` — blokuje prístup do `/admin` (Gallery, Artist) ak trial expired a status nie je active
-- [ ] Public detail stránky **nesú obmedzenie subscription** (verejný archív je vždy verejný)
-- [ ] **Inštalácia `laravel/cashier-stripe`** (Stripe Cashier)
-- [ ] Definovať plans v Stripe Dashboard (manuálne) — názvy a ceny podľa Q&A s Kat
-- [ ] Billing page v admine: aktuálny plán, ostávajúce dni triala, „Upgrade" / „Change plan" tlačidlá
-- [ ] Webhook handler (`stripe:webhook`) — sync subscription status
-- [ ] Email upozornenia: 7/3/1 deň pred koncom triala, pri zmene statusu
-- [ ] „Read-only" mode po expirácii: prístup do `/admin` zachovaný, ale `canCreate/canEdit = false` — Kat sa nestratí dáta
+- [x] Migrácia: `trial_ends_at`, `subscription_plan`, `subscription_status`, `subscription_expires_at` na `users` + indexy
+- [x] `config/subscription.php` — 6 plánov (trial, collector_free, starter, pro, studio, enterprise) s limitmi a Stripe Price ID env-driven
+- [x] Pri registrácii Custom Register page nastavuje trial (gallery/artist) alebo `collector_free` (collector)
+- [x] Middleware `EnforceSubscriptionStatus` — blokuje POST/PUT/PATCH/DELETE pre `past_due`/`archived`/`cancelled` users; trial expiruje lazy on hit
+- [x] Public detail stránky **nesú obmedzenie subscription** (verejný archív zostáva)
+- [x] Cashier `^16.0` inštalovaný (`stripe/stripe-php ^17.3` downgrade) + `Billable` trait na `User` + cashier migrations
+- [x] `Billing` Filament Page (System → Billing) — current plan badge, trial dni do konca, plan grid s upgrade buttonmi, Stripe-not-configured warning
+- [x] `subscriptions:check` artisan command + `Schedule::dailyAt('02:00')` v `routes/console.php` — trial → past_due → archived after 30 days
+- [x] `.env.example` doplnený o `STRIPE_KEY`, `STRIPE_SECRET`, `STRIPE_WEBHOOK_SECRET` + 6 `STRIPE_PRICE_*` ID-ek (Starter/Pro/Studio × monthly/yearly)
+- [x] User helpers: `isOnTrial()`, `hasActiveSubscription()`, `isReadOnly()`, `trialDaysLeft()`
+- [ ] Stripe Checkout integrácia (upgrade button → Stripe-hosted checkout) — _potrebuje Stripe účet + Price IDs; UI je pripravený na flip cez `isStripeReady`_
+- [ ] Webhook handler (`stripe:webhook`) na sync subscription status z Stripe
+- [ ] Email upozornenia: 7/3/1 deň pred koncom triala
+- [ ] Per-plan limit enforcement (max artworks, max storage) cez model observer
 
 ---
 
