@@ -29,7 +29,7 @@ class PlanLimits
         return match ($resource) {
             self::ARTWORKS => Artwork::query()->where('owner_user_id', $user->id)->count(),
             self::ARTISTS  => $this->artistsUsage($user),
-            self::STORAGE  => 0.0, // TODO: implement disk-usage scan in a follow-up
+            self::STORAGE  => round(((int) $user->storage_used_bytes) / 1024 / 1024 / 1024, 2),
             default        => 0,
         };
     }

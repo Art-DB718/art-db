@@ -35,6 +35,8 @@ class PlanUsageWidget extends StatsOverviewWidget
             $stats[] = $this->buildStat('Artists', PlanLimits::ARTISTS, $user, $limits);
         }
 
+        $stats[] = $this->buildStat('Storage', PlanLimits::STORAGE, $user, $limits);
+
         $stats[] = Stat::make('Current plan', $planLabel)
             ->description($this->planDescription($user))
             ->descriptionIcon('heroicon-m-credit-card')
@@ -46,17 +48,19 @@ class PlanUsageWidget extends StatsOverviewWidget
 
     protected function buildStat(string $label, string $resource, $user, PlanLimits $limits): Stat
     {
-        $used  = (int) $limits->usage($user, $resource);
+        $used  = $limits->usage($user, $resource);
         $cap   = $limits->limit($user, $resource);
+        $isStorage = $resource === PlanLimits::STORAGE;
+        $fmt = fn ($v) => $isStorage ? number_format((float) $v, 2).' GB' : (string) (int) $v;
 
         if ($cap === null) {
-            return Stat::make($label, $used)
+            return Stat::make($label, $fmt($used))
                 ->description('Unlimited on your plan')
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color('success');
         }
 
-        $pct = $cap > 0 ? min(100, (int) round(($used / $cap) * 100)) : 0;
+        $pct = $cap > 0 ? min(100, (int) round((((float) $used) / $cap) * 100)) : 0;
 
         $color = match (true) {
             $pct >= 100 => 'danger',
@@ -64,7 +68,8 @@ class PlanUsageWidget extends StatsOverviewWidget
             default     => 'success',
         };
 
-        return Stat::make($label, "{$used} / {$cap}")
+        $capDisplay = $isStorage ? ($cap.' GB') : (string) $cap;
+        return Stat::make($label, $fmt($used).' / '.$capDisplay)
             ->description($pct.'% used'.($pct >= 80 ? ' — consider upgrading' : ''))
             ->descriptionIcon($pct >= 80 ? 'heroicon-m-exclamation-triangle' : 'heroicon-m-chart-bar')
             ->color($color)

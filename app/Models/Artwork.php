@@ -86,6 +86,15 @@ class Artwork extends Model
             if ($m->wasChanged('gallery_images')) {
                 \App\Services\ImageProcessor::processMany($m->gallery_images);
             }
+            // Re-tally owner's storage when any image field changes.
+            if ($m->wasChanged('primary_image') || $m->wasChanged('gallery_images')) {
+                app(\App\Services\StorageAccountant::class)->syncFromModel($m);
+            }
+        });
+
+        // On delete, owner's storage drops by this artwork's images.
+        static::deleted(function (self $m) {
+            app(\App\Services\StorageAccountant::class)->syncFromModel($m);
         });
     }
 

@@ -38,6 +38,16 @@ class Artist extends Model
                 $m->slug = Str::slug(trim(($m->first_name ?? '').' '.($m->last_name ?? '')));
             }
         });
+
+        static::saved(function (self $m) {
+            if ($m->wasChanged('profile_image') || $m->wasChanged('cover_image')) {
+                app(\App\Services\StorageAccountant::class)->syncFromModel($m);
+            }
+        });
+
+        static::deleted(function (self $m) {
+            app(\App\Services\StorageAccountant::class)->syncFromModel($m);
+        });
     }
 
     public function getDisplayNameAttribute(): string

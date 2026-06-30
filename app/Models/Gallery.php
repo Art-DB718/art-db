@@ -32,6 +32,16 @@ class Gallery extends Model
                 $g->slug = Str::slug($g->name ?? 'gallery').'-'.Str::lower(Str::random(4));
             }
         });
+
+        static::saved(function (self $g) {
+            if ($g->wasChanged('logo') || $g->wasChanged('cover_image')) {
+                app(\App\Services\StorageAccountant::class)->syncFromModel($g);
+            }
+        });
+
+        static::deleted(function (self $g) {
+            app(\App\Services\StorageAccountant::class)->syncFromModel($g);
+        });
     }
 
     public function country() { return $this->belongsTo(Country::class); }
