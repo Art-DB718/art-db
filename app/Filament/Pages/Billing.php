@@ -30,8 +30,10 @@ class Billing extends Page
             'user'           => $user,
             'currentPlanKey' => $current,
             'currentPlan'    => $plans[$current] ?? null,
+            // Only paid plans go into the upgrade grid. Free / trial / custom
+            // tiers are surfaced via the status badge + 'Current plan' card.
             'plans'          => collect($plans)
-                ->except(['trial', 'collector_free', 'enterprise'])
+                ->except(['trial', 'collector_free', 'artist_free', 'enterprise'])
                 ->all(),
             'trialDaysLeft'  => $user->trialDaysLeft(),
             'isStripeReady'  => filled(config('cashier.secret')),
