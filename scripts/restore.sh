@@ -26,10 +26,13 @@ if [[ ! -f "$APP_ROOT/.env" ]]; then
     echo "FATAL: $APP_ROOT/.env not found"
     exit 1
 fi
-set -a
-# shellcheck disable=SC1091
-source <(grep -v '^#' "$APP_ROOT/.env" | grep -v '^$' | sed 's/\r$//')
-set +a
+while IFS='=' read -r key val; do
+    [[ -z "$key" || "$key" == \#* ]] && continue
+    val="${val%$'\r'}"
+    val="${val%\"}"; val="${val#\"}"
+    val="${val%\'}"; val="${val#\'}"
+    export "$key=$val"
+done < "$APP_ROOT/.env"
 
 : "${DB_DATABASE:?DB_DATABASE missing}"
 : "${DB_USERNAME:?DB_USERNAME missing}"
