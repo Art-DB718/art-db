@@ -61,12 +61,11 @@
                 <p class="font-medium text-gray-900">Manage your subscription</p>
                 <p>Update your payment method, view invoices, switch plans, or cancel — all in one place.</p>
             </div>
-            <form method="POST" action="{{ route('billing.portal') }}">
+            <form method="POST" action="{{ route('billing.portal') }}" class="shrink-0">
                 @csrf
-                <button type="submit"
-                        class="inline-flex items-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-xs uppercase tracking-[0.18em] text-white hover:bg-gray-700 transition">
+                <x-filament::button type="submit" color="primary" size="sm">
                     Open Stripe portal →
-                </button>
+                </x-filament::button>
             </form>
         </div>
     @endif
