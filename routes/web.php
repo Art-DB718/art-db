@@ -57,6 +57,19 @@ Route::post('/artworks/{artwork:slug}/buy',      [CheckoutController::class, 'bu
 Route::get('/checkout/success/{artwork:slug}',   [CheckoutController::class, 'success'])->name('checkout.success');
 Route::post('/stripe/webhook',                   [CheckoutController::class, 'webhook'])->name('stripe.webhook');
 
+// SaaS subscription checkout (admin billing page → Stripe hosted checkout).
+Route::middleware('auth')->group(function () {
+    Route::post('/admin/billing/subscribe/{plan}/{cycle}',
+        [\App\Http\Controllers\BillingCheckoutController::class, 'subscribe'])
+        ->name('billing.subscribe');
+    Route::get('/billing/success',
+        [\App\Http\Controllers\BillingCheckoutController::class, 'success'])
+        ->name('billing.success');
+    Route::get('/billing/cancel',
+        [\App\Http\Controllers\BillingCheckoutController::class, 'cancel'])
+        ->name('billing.cancel');
+});
+
 Route::post('/newsletter/subscribe', NewsletterController::class)
     ->name('newsletter.subscribe');
 
