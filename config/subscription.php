@@ -33,6 +33,14 @@ return [
             'description' => 'Private archive — up to 50 private artworks, 1 GB. Forever free.',
         ],
 
+        'artist_free' => [
+            'label'       => 'Free',
+            'price_eur'   => 0,
+            'roles'       => ['artist'],
+            'limits'      => ['artworks' => 20, 'storage_gb' => 1],
+            'description' => 'Publish up to 20 works on your public profile — forever free, no card.',
+        ],
+
         'starter' => [
             'label'        => 'Starter',
             'price_eur'    => 9,

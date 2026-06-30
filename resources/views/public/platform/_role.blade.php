@@ -62,10 +62,13 @@
     {{-- PRICING --}}
     @php
         $allPlans = config('subscription.plans', []);
-        // Same paid-plan ladder for every role on the public site (Starter /
-        // Pro / Studio). Collector Free is still wired in registration and
-        // config, just not surfaced as a marketing option here.
-        $planKeys = ['starter', 'pro', 'studio'];
+        // Per-role plan ladder:
+        //   - Artist: Free (20 works) → Pro → Studio. No paid Starter for
+        //     artists — the free tier is the entry point.
+        //   - Gallery + Collector: Starter → Pro → Studio (paid only).
+        $planKeys = $role === 'artist'
+            ? ['artist_free', 'pro', 'studio']
+            : ['starter', 'pro', 'studio'];
 
         // Per-role limit keys actually meaningful to that role.
         //   - Artist + Collector: one personal workspace → artworks + storage
