@@ -9,7 +9,7 @@
                 <span class="italic text-gray-700">All in one place.</span>
             </h1>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-6 leading-relaxed">
-                {{ config('app.name', 'Project Arch') }} lets galleries, collectors, artists and
+                {{ config('app.name', 'Art DB') }} lets galleries, collectors, artists and
                 institutions build and publish their own art databases — artworks, artists, exhibitions
                 and curated collections — in one place.
             </p>
@@ -156,7 +156,7 @@
                     <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-3">Who's on the platform</p>
                     <h2 class="font-serif text-3xl md:text-4xl mb-4">Galleries</h2>
                     <p class="text-gray-600 leading-relaxed">
-                        Contemporary art galleries representing artists on Project Arch.
+                        Contemporary art galleries representing artists on Art DB.
                     </p>
                 </div>
 

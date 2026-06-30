@@ -1,12 +1,12 @@
 <x-layouts.public
-    :title="'Galleries — '.config('app.name', 'Project Arch')"
-    description="Contemporary art galleries on Project Arch — discover their roster of artists, exhibitions and works.">
+    :title="'Galleries — '.config('app.name', 'Art DB')"
+    description="Contemporary art galleries on Art DB — discover their roster of artists, exhibitions and works.">
     <section class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-6">
             <div class="max-w-3xl mb-12">
-                <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-3">Project Arch</p>
+                <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-3">Art DB</p>
                 <h1 class="font-serif text-4xl md:text-5xl mb-4">Galleries</h1>
-                <p class="text-gray-600 leading-relaxed">Contemporary art galleries represented on Project Arch — discover their roster of artists and current programme.</p>
+                <p class="text-gray-600 leading-relaxed">Contemporary art galleries represented on Art DB — discover their roster of artists and current programme.</p>
             </div>
 
             @if ($galleries->isEmpty())

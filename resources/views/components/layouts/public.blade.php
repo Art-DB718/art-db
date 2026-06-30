@@ -4,8 +4,8 @@
     'ogImage'     => null,
 ])
 @php
-    $pageTitle       = $title ?? config('app.name', 'ArtDB');
-    $metaDescription = $description ?? "Project Arch is an online archive and platform for galleries, artists and collectors — browse contemporary art, follow artists, curate collections.";
+    $pageTitle       = $title ?? config('app.name', 'Art DB');
+    $metaDescription = $description ?? config('app.name', 'Art DB')." is an online archive and platform for galleries, artists and collectors — browse contemporary art, follow artists, curate collections.";
     $ogImageUrl      = $ogImage
         ? (str_starts_with($ogImage, 'http') ? $ogImage : \Illuminate\Support\Facades\Storage::url($ogImage))
         : null;
@@ -168,7 +168,7 @@
     <footer class="mt-24 border-t border-gray-200 bg-white">
         <div class="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-3 gap-12">
             <div>
-                <h3 class="font-serif text-xl mb-3">{{ config('app.name', 'Project Arch') }}</h3>
+                <h3 class="font-serif text-xl mb-3">{{ config('app.name', 'Art DB') }}</h3>
                 <p class="text-sm text-gray-600 leading-relaxed">
                     An art database platform for galleries, collectors, artists and institutions.
                     Private, public, or anywhere in between — you choose what to share.

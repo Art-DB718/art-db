@@ -1,10 +1,10 @@
 @php
     $gallerySeoDescription = $gallery->description
         ? \Illuminate\Support\Str::limit(strip_tags($gallery->description), 160)
-        : $gallery->name.' — represented artists and works on '.config('app.name', 'Project Arch').'.';
+        : $gallery->name.' — represented artists and works on '.config('app.name', 'Art DB').'.';
 @endphp
 <x-layouts.public
-    :title="$gallery->name.' — '.config('app.name', 'Project Arch')"
+    :title="$gallery->name.' — '.config('app.name', 'Art DB')"
     :description="$gallerySeoDescription"
     :og-image="$gallery->cover_image ?? $gallery->logo">
     <section class="py-16 bg-white">

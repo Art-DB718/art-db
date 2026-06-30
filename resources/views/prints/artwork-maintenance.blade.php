@@ -75,7 +75,7 @@
 
     <div class="sheet">
         <div class="report-label">Maintenance report</div>
-        <h1 class="doc-title">{{ $settings->company_name ?? 'Project Arch' }}</h1>
+        <h1 class="doc-title">{{ $settings->company_name ?? config('app.name', 'Art DB') }}</h1>
 
         @if ($artwork->primary_image)
             <img class="photo" src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}" alt="{{ $artwork->title }}">

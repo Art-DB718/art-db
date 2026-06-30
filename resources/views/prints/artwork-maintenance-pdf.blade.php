@@ -61,7 +61,7 @@
     @endphp
 
     <div class="report-label">Maintenance report</div>
-    <div class="doc-title">{{ $settings->company_name ?? 'Project Arch' }}</div>
+    <div class="doc-title">{{ $settings->company_name ?? config('app.name', 'Art DB') }}</div>
 
     @if ($artwork->primary_image && file_exists(public_path('storage/'.$artwork->primary_image)))
         <div class="photo-wrap">

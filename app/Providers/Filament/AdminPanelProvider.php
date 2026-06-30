@@ -26,7 +26,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName('Project Arch')
+            ->brandName(config('app.name', 'Art DB'))
             ->login()
             ->registration(\App\Filament\Pages\Auth\Register::class)
             ->favicon(asset('favicon.ico'))

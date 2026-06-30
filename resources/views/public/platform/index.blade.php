@@ -1,6 +1,6 @@
 <x-layouts.public
-    :title="'Platform — '.config('app.name', 'Project Arch')"
-    description="Project Arch is an art database platform for galleries, collectors, artists and institutions. Galleries publish their roster and inventory; artists curate their portfolio; collectors keep a private database of their holdings.">
+    :title="'Platform — '.config('app.name', 'Art DB')"
+    description="Art DB is an art database platform for galleries, collectors, artists and institutions. Galleries publish their roster and inventory; artists curate their portfolio; collectors keep a private database of their holdings.">
 
     {{-- HERO --}}
     <section class="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white border-b border-gray-200">
@@ -11,7 +11,7 @@
                 <span class="italic text-gray-700">All in one place.</span>
             </h1>
             <p class="text-base md:text-lg text-gray-700 leading-loose max-w-2xl">
-                {{ config('app.name', 'Project Arch') }} is a platform for building art databases —
+                {{ config('app.name', 'Art DB') }} is a platform for building art databases —
                 galleries publish their roster and inventory, artists curate their portfolio,
                 collectors keep a private archive of their holdings. Institutions get the same toolkit.
             </p>
@@ -127,7 +127,7 @@
                     </h2>
                 </div>
                 <p class="text-base text-gray-300 max-w-md leading-loose">
-                    No login needed to look. Anyone arriving at {{ config('app.name', 'Project Arch') }}
+                    No login needed to look. Anyone arriving at {{ config('app.name', 'Art DB') }}
                     can browse every published artwork, artist profile, gallery profile, exhibition
                     and public collection. To save, inquire or build your own database — sign up.
                 </p>
