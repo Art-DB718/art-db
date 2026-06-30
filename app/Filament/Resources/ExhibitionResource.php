@@ -64,9 +64,18 @@ class ExhibitionResource extends Resource
                 ]),
 
                 Forms\Components\Tabs\Tab::make('Media')->schema([
-                    Forms\Components\FileUpload::make('poster_image')->image()->disk('public')->directory('exhibitions'),
-                    Forms\Components\FileUpload::make('gallery_images')->image()->multiple()->reorderable()
-                        ->disk('public')->directory('exhibitions/gallery'),
+                    Forms\Components\FileUpload::make('poster_image')
+                        ->image()
+                        ->disk('public')
+                        ->directory('exhibitions')
+                        ->helperText('Public site shows the poster as a 3:1 banner on the exhibition page (full-width hero) and as a 4:3 thumbnail in listings. Both crops use object-cover, so subject should sit near the centre. Recommended: landscape, at least 1920 × 800 px.'),
+                    Forms\Components\FileUpload::make('gallery_images')
+                        ->image()
+                        ->multiple()
+                        ->reorderable()
+                        ->disk('public')
+                        ->directory('exhibitions/gallery')
+                        ->helperText('Installation views appear in a 3-column grid, each cropped to a 4:3 thumbnail; clicking opens the full image in a new tab. Upload landscape format ≥ 1600 × 1200 px for the cleanest crop; portraits and squares get centre-cropped.'),
                 ]),
 
                 Forms\Components\Tabs\Tab::make('Publishing')->schema([
