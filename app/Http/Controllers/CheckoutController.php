@@ -7,6 +7,7 @@ use App\Models\Contact;
 use App\Models\InvoiceSetting;
 use App\Models\Sale;
 use App\Models\SaleLineItem;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -76,8 +77,8 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Stripe webhook — POST /stripe/webhook.
-     * checkout.session.completed → create Sale record.
+     * Unified Stripe webhook — POST /stripe/webhook.
+     * Handles both one-time artwork purchases and SaaS subscription events.
      */
     public function webhook(Request $request)
     {
@@ -97,19 +98,41 @@ class CheckoutController extends Controller
             return response()->json(['error' => 'invalid signature'], 400);
         }
 
-        if ($event->type !== 'checkout.session.completed') {
-            return response()->json(['ignored' => $event->type]);
+        return match ($event->type) {
+            'checkout.session.completed'      => $this->handleCheckoutSessionCompleted($event->data->object),
+            'customer.subscription.created',
+            'customer.subscription.updated'   => $this->handleSubscriptionUpsert($event->data->object),
+            'customer.subscription.deleted'   => $this->handleSubscriptionDeleted($event->data->object),
+            'invoice.payment_succeeded'       => $this->handleInvoicePaymentSucceeded($event->data->object),
+            'invoice.payment_failed'          => $this->handleInvoicePaymentFailed($event->data->object),
+            default                           => response()->json(['ignored' => $event->type]),
+        };
+    }
+
+    /**
+     * checkout.session.completed has two flavours we care about:
+     *   - mode === 'subscription' → SaaS plan upgrade landed (let Cashier sync
+     *     pull the rest; we mark user active + plan immediately so the UI updates)
+     *   - mode === 'payment' with artwork_id metadata → one-time art purchase →
+     *     create Sale + Contact (legacy Art DB behaviour)
+     */
+    protected function handleCheckoutSessionCompleted($session)
+    {
+        if (($session->mode ?? null) === 'subscription') {
+            // Subscription checkout — actual status flip happens on
+            // customer.subscription.created (fires immediately after).
+            // We just ack here so Stripe doesn't retry.
+            return response()->json(['ok' => true, 'mode' => 'subscription']);
         }
 
-        $session = $event->data->object;
+        // One-time artwork purchase path (existing logic).
         $artworkId = (int) ($session->metadata->artwork_id ?? 0);
         $artwork = Artwork::find($artworkId);
 
         if (! $artwork) {
-            return response()->json(['error' => 'artwork not found'], 404);
+            return response()->json(['ignored' => 'no artwork metadata']);
         }
 
-        // Upsert buyer Contact from Stripe customer details.
         $email = $session->customer_details->email ?? $session->customer_email ?? null;
         $name  = $session->customer_details->name  ?? '';
         $names = preg_split('/\s+/', trim($name), 2);
@@ -126,7 +149,6 @@ class CheckoutController extends Controller
             );
         }
 
-        // Create Sale.
         $amount = (float) ($session->amount_total / 100);
         $currency = strtoupper($session->currency ?? 'EUR');
 
@@ -154,5 +176,100 @@ class CheckoutController extends Controller
         $sale->recalculateTotals();
 
         return response()->json(['ok' => true, 'sale_id' => $sale->id]);
+    }
+
+    /**
+     * customer.subscription.created / .updated → mirror Stripe state onto
+     * the User row so the Filament Billing page + middleware see it without
+     * a roundtrip to Stripe.
+     */
+    protected function handleSubscriptionUpsert($subscription)
+    {
+        $user = User::where('stripe_id', $subscription->customer)->first();
+        if (! $user) {
+            return response()->json(['ignored' => 'unknown customer']);
+        }
+
+        $priceId = $subscription->items->data[0]->price->id ?? null;
+        $planKey = $this->resolveOurPlanKey($priceId);
+
+        // Stripe statuses we map: trialing → trial, active → active, past_due
+        // → past_due, canceled → cancelled, unpaid/incomplete → past_due.
+        $statusMap = [
+            'trialing'           => 'trial',
+            'active'             => 'active',
+            'past_due'           => 'past_due',
+            'unpaid'             => 'past_due',
+            'incomplete'         => 'past_due',
+            'incomplete_expired' => 'archived',
+            'canceled'           => 'cancelled',
+        ];
+        $status = $statusMap[$subscription->status] ?? $subscription->status;
+
+        $user->forceFill([
+            'subscription_plan'        => $planKey ?? $user->subscription_plan,
+            'subscription_status'      => $status,
+            'subscription_expires_at'  => $subscription->cancel_at
+                ? \Carbon\Carbon::createFromTimestamp($subscription->cancel_at)
+                : null,
+        ])->save();
+
+        return response()->json(['ok' => true, 'user' => $user->id, 'plan' => $planKey, 'status' => $status]);
+    }
+
+    protected function handleSubscriptionDeleted($subscription)
+    {
+        $user = User::where('stripe_id', $subscription->customer)->first();
+        if (! $user) {
+            return response()->json(['ignored' => 'unknown customer']);
+        }
+        $user->forceFill([
+            'subscription_status'     => 'cancelled',
+            'subscription_expires_at' => now(),
+        ])->save();
+
+        return response()->json(['ok' => true, 'user' => $user->id, 'status' => 'cancelled']);
+    }
+
+    protected function handleInvoicePaymentSucceeded($invoice)
+    {
+        $user = User::where('stripe_id', $invoice->customer)->first();
+        if (! $user) {
+            return response()->json(['ignored' => 'unknown customer']);
+        }
+        // Successful payment → unstick from past_due if we had it.
+        if (in_array($user->subscription_status, ['past_due', 'trial'], true)) {
+            $user->forceFill(['subscription_status' => 'active'])->save();
+        }
+        return response()->json(['ok' => true, 'user' => $user->id]);
+    }
+
+    protected function handleInvoicePaymentFailed($invoice)
+    {
+        $user = User::where('stripe_id', $invoice->customer)->first();
+        if (! $user) {
+            return response()->json(['ignored' => 'unknown customer']);
+        }
+        $user->forceFill(['subscription_status' => 'past_due'])->save();
+        return response()->json(['ok' => true, 'user' => $user->id, 'status' => 'past_due']);
+    }
+
+    /**
+     * Reverse lookup from a Stripe Price ID back to our internal plan slug
+     * (starter / pro / studio) by scanning config('subscription.plans').
+     * Returns null if no match — we'll keep whatever plan the user had.
+     */
+    protected function resolveOurPlanKey(?string $stripePriceId): ?string
+    {
+        if (! $stripePriceId) {
+            return null;
+        }
+        foreach (config('subscription.plans', []) as $key => $plan) {
+            if (($plan['stripe_price_monthly'] ?? null) === $stripePriceId
+                || ($plan['stripe_price_yearly'] ?? null) === $stripePriceId) {
+                return $key;
+            }
+        }
+        return null;
     }
 }
