@@ -63,9 +63,13 @@
                     <div class="font-serif text-5xl text-gray-300 mb-8">01</div>
                     <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">For galleries &amp; institutions</p>
                     <h3 class="font-serif text-2xl mb-6">Gallery</h3>
-                    <p class="text-sm text-gray-700 leading-loose mb-8">
+                    <p class="text-sm text-gray-700 leading-loose mb-6">
                         Publish your roster and inventory. Represent multiple artists, manage
                         exhibitions, share Private Rooms, issue invoices and certificates.
+                    </p>
+                    <p class="text-sm text-gray-900 mb-2">
+                        <span class="font-medium">From €9/mo</span>
+                        <span class="text-gray-500"> · 14-day trial · Studio €79/mo</span>
                     </p>
                     <p class="text-xs uppercase tracking-[0.18em] text-gray-900 group-hover:underline underline-offset-4">
                         Read more &rarr;
@@ -77,9 +81,13 @@
                     <div class="font-serif text-5xl text-gray-300 mb-8">02</div>
                     <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">For artists</p>
                     <h3 class="font-serif text-2xl mb-6">Artist</h3>
-                    <p class="text-sm text-gray-700 leading-loose mb-8">
+                    <p class="text-sm text-gray-700 leading-loose mb-6">
                         A public portfolio plus a private workspace. Publish your works, write your
                         statement, list your education and previous exhibitions. Switch galleries any time.
+                    </p>
+                    <p class="text-sm text-gray-900 mb-2">
+                        <span class="font-medium">From €9/mo</span>
+                        <span class="text-gray-500"> · 14-day trial · Pro €29/mo</span>
                     </p>
                     <p class="text-xs uppercase tracking-[0.18em] text-gray-900 group-hover:underline underline-offset-4">
                         Read more &rarr;
@@ -91,9 +99,13 @@
                     <div class="font-serif text-5xl text-gray-300 mb-8">03</div>
                     <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">For collectors</p>
                     <h3 class="font-serif text-2xl mb-6">Collector</h3>
-                    <p class="text-sm text-gray-700 leading-loose mb-8">
+                    <p class="text-sm text-gray-700 leading-loose mb-6">
                         A private database of the works you own — and a curated archive of what
                         you'd like to follow. Browse the public archive, inquire, save, catalogue.
+                    </p>
+                    <p class="text-sm text-gray-900 mb-2">
+                        <span class="font-medium">Free forever</span>
+                        <span class="text-gray-500"> · 50 private works · or upgrade to €9/mo</span>
                     </p>
                     <p class="text-xs uppercase tracking-[0.18em] text-gray-900 group-hover:underline underline-offset-4">
                         Read more &rarr;

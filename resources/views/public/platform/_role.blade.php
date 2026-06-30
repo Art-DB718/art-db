@@ -59,6 +59,72 @@
         </div>
     </section>
 
+    {{-- PRICING --}}
+    @php
+        $allPlans = config('subscription.plans', []);
+        // Per-role plan order: Collector sees its free plan first, then upgrade options.
+        $planKeys = $role === 'collector'
+            ? ['collector_free', 'starter', 'pro']
+            : ['starter', 'pro', 'studio'];
+    @endphp
+    <section class="py-24 bg-gray-50 border-t border-b border-gray-200">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-14">
+                <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-3">Pricing</p>
+                <h2 class="font-serif text-3xl md:text-4xl mb-4">Simple plans, no surprises.</h2>
+                <p class="text-gray-600 leading-relaxed">
+                    14-day full-feature trial for every new account. Annual billing is 10 months — two months free.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-gray-200 border border-gray-200">
+                @foreach ($planKeys as $key)
+                    @php $plan = $allPlans[$key] ?? null; @endphp
+                    @if ($plan)
+                        <div class="bg-white p-8 flex flex-col">
+                            <p class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-2">{{ $plan['label'] }}</p>
+                            @if (($plan['price_eur'] ?? 0) === 0)
+                                <p class="font-serif text-4xl mb-1">Free</p>
+                                <p class="text-xs text-gray-500 mb-4">{{ $key === 'collector_free' ? 'Forever' : '14-day trial' }}</p>
+                            @else
+                                <p class="font-serif text-4xl mb-1">€{{ $plan['price_eur'] }}<span class="text-sm text-gray-500 font-normal">/mo</span></p>
+                                <p class="text-xs text-gray-500 mb-4">or €{{ $plan['price_eur_yr'] ?? '—' }} / year</p>
+                            @endif
+
+                            <p class="text-sm text-gray-700 leading-relaxed mb-6">{{ $plan['description'] }}</p>
+
+                            <ul class="space-y-1 text-sm text-gray-700 mb-6">
+                                @foreach ($plan['limits'] as $limit => $value)
+                                    <li class="flex justify-between gap-3">
+                                        <span class="text-gray-500">{{ ucfirst(str_replace('_', ' ', $limit)) }}</span>
+                                        <span class="font-medium">{{ $value === null ? 'Unlimited' : $value }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+
+                            <div class="mt-auto">
+                                @auth
+                                    <a href="{{ url('/admin/billing') }}" class="block text-center px-4 py-2.5 text-xs uppercase tracking-[0.18em] bg-gray-900 text-white hover:bg-gray-700 transition">
+                                        Choose in billing
+                                    </a>
+                                @else
+                                    <a href="{{ route('register') }}" class="block text-center px-4 py-2.5 text-xs uppercase tracking-[0.18em] bg-gray-900 text-white hover:bg-gray-700 transition">
+                                        Start with trial
+                                    </a>
+                                @endauth
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+
+            <p class="text-center text-sm text-gray-500 mt-10">
+                Need more? <strong>Enterprise</strong> — multi-gallery, museum-scale storage, custom SLA.
+                <a href="mailto:{{ optional(\App\Models\InvoiceSetting::current())->email ?: config('mail.from.address') }}" class="underline hover:no-underline">Contact us</a>.
+            </p>
+        </div>
+    </section>
+
     {{-- CTA --}}
     <section class="py-24 bg-gray-900 text-white">
         <div class="max-w-3xl mx-auto px-6 text-center">
