@@ -54,6 +54,23 @@
         </div>
     @endif
 
+    {{-- Stripe-hosted Customer Portal — only when the user has a Stripe customer record. --}}
+    @if ($hasStripeCustomer && $isStripeReady)
+        <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <div class="text-sm text-gray-700">
+                <p class="font-medium text-gray-900">Manage your subscription</p>
+                <p>Update your payment method, view invoices, switch plans, or cancel — all in one place.</p>
+            </div>
+            <form method="POST" action="{{ route('billing.portal') }}">
+                @csrf
+                <button type="submit"
+                        class="inline-flex items-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-xs uppercase tracking-[0.18em] text-white hover:bg-gray-700 transition">
+                    Open Stripe portal →
+                </button>
+            </form>
+        </div>
+    @endif
+
     @unless ($isStripeReady)
         <div class="mt-6 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
             <p class="font-medium mb-1">Stripe not configured yet</p>

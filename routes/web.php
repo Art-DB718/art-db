@@ -68,6 +68,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/billing/cancel',
         [\App\Http\Controllers\BillingCheckoutController::class, 'cancel'])
         ->name('billing.cancel');
+
+    // Stripe-hosted Customer Portal — card / invoice / cancellation management.
+    Route::post('/admin/billing/portal',
+        [\App\Http\Controllers\BillingCheckoutController::class, 'portal'])
+        ->name('billing.portal');
 });
 
 Route::post('/newsletter/subscribe', NewsletterController::class)

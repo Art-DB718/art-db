@@ -55,4 +55,23 @@ class BillingCheckoutController extends Controller
     {
         return redirect('/admin/billing')->with('status', 'Checkout cancelled — no charges were made.');
     }
+
+    /**
+     * Open the Stripe-hosted Customer Portal so the user can update their
+     * card, view invoices, switch plans, or cancel their subscription
+     * without us having to build any of that ourselves.
+     *
+     * Returns to /admin/billing after the user closes the portal.
+     */
+    public function portal(Request $request)
+    {
+        $user = $request->user();
+
+        if (! $user || ! $user->hasStripeId()) {
+            return redirect('/admin/billing')
+                ->with('status', 'No subscription on file — pick a plan first to manage your billing.');
+        }
+
+        return $user->redirectToBillingPortal(url('/admin/billing'));
+    }
 }

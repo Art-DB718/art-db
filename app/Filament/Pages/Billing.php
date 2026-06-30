@@ -37,6 +37,10 @@ class Billing extends Page
                 ->all(),
             'trialDaysLeft'  => $user->trialDaysLeft(),
             'isStripeReady'  => filled(config('cashier.secret')),
+            // True when the user has been registered with Stripe (Cashier
+            // sets stripe_id on first charge or checkout). Used to show the
+            // 'Manage subscription' Customer Portal button.
+            'hasStripeCustomer' => $user->hasStripeId(),
         ];
     }
 }
