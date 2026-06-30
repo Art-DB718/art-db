@@ -28,19 +28,19 @@ class Register extends BaseRegister
     }
 
     /**
-     * After registration: Collectors get the free 'collector_free' plan
-     * indefinitely. Everyone else starts on a 14-day trial that converts
-     * to past_due (read-only) when it expires.
+     * After registration every user — Gallery, Artist, Collector alike —
+     * starts on a 14-day full-feature trial. When the trial ends without
+     * a paid subscription the account flips to past_due (read-only) via
+     * the EnforceSubscriptionStatus middleware + subscriptions:check job.
      */
     protected function handleRegistration(array $data): \Illuminate\Database\Eloquent\Model
     {
         $user = parent::handleRegistration($data);
 
-        $isCollector = ($data['role'] ?? null) === 'collector';
         $user->forceFill([
-            'subscription_plan'   => $isCollector ? 'collector_free' : null,
-            'subscription_status' => $isCollector ? 'active' : 'trial',
-            'trial_ends_at'       => $isCollector ? null : now()->addDays((int) config('subscription.trial_days', 14)),
+            'subscription_plan'   => null,
+            'subscription_status' => 'trial',
+            'trial_ends_at'       => now()->addDays((int) config('subscription.trial_days', 14)),
         ])->save();
 
         return $user;
