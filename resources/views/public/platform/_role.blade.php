@@ -70,11 +70,14 @@
         // Per-role limit keys actually meaningful to that role.
         //   - Artist: has 1 fixed profile (themselves), doesn't manage galleries → only artworks + storage matter
         //   - Collector: private archive of artists + artworks
-        //   - Gallery (default): galleries + artists + artworks + storage
+        //   - Gallery: artists + artworks + storage. (Multi-gallery is not in
+        //     the data model yet — every Gallery user owns exactly one Gallery
+        //     via User::gallery() — so the per-plan 'galleries' cap is hidden
+        //     here until multi-gallery support ships.)
         $relevantLimitKeys = match ($role) {
             'artist'    => ['artworks', 'storage_gb'],
             'collector' => ['artists', 'artworks', 'storage_gb'],
-            default     => ['galleries', 'artists', 'artworks', 'storage_gb'],
+            default     => ['artists', 'artworks', 'storage_gb'],
         };
         // Human-friendly labels (override the default ucfirst+underscore→space).
         $limitLabels = [

@@ -69,7 +69,7 @@
                     </p>
                     <p class="text-sm text-gray-900 mb-2">
                         <span class="font-medium">From €9/mo</span>
-                        <span class="text-gray-500"> · 14-day trial · Studio €79/mo</span>
+                        <span class="text-gray-500"> · 14-day trial · Studio €79/mo for larger rosters</span>
                     </p>
                     <p class="text-xs uppercase tracking-[0.18em] text-gray-900 group-hover:underline underline-offset-4">
                         Read more &rarr;
