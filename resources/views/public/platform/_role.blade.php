@@ -62,27 +62,25 @@
     {{-- PRICING --}}
     @php
         $allPlans = config('subscription.plans', []);
-        // Per-role plan order: Collector sees its free plan first, then upgrade options.
-        $planKeys = $role === 'collector'
-            ? ['collector_free', 'starter', 'pro']
-            : ['starter', 'pro', 'studio'];
+        // Same paid-plan ladder for every role on the public site (Starter /
+        // Pro / Studio). Collector Free is still wired in registration and
+        // config, just not surfaced as a marketing option here.
+        $planKeys = ['starter', 'pro', 'studio'];
 
         // Per-role limit keys actually meaningful to that role.
-        //   - Artist: has 1 fixed profile (themselves), doesn't manage galleries → only artworks + storage matter
-        //   - Collector: private archive of artists + artworks
+        //   - Artist + Collector: one personal workspace → artworks + storage
         //   - Gallery: artists + artworks + storage. (Multi-gallery is not in
         //     the data model yet — every Gallery user owns exactly one Gallery
         //     via User::gallery() — so the per-plan 'galleries' cap is hidden
         //     here until multi-gallery support ships.)
         $relevantLimitKeys = match ($role) {
-            'artist'    => ['artworks', 'storage_gb'],
-            'collector' => ['artists', 'artworks', 'storage_gb'],
-            default     => ['artists', 'artworks', 'storage_gb'],
+            'artist', 'collector' => ['artworks', 'storage_gb'],
+            default               => ['artists', 'artworks', 'storage_gb'],
         };
         // Human-friendly labels (override the default ucfirst+underscore→space).
         $limitLabels = [
             'galleries'  => 'Galleries',
-            'artists'    => $role === 'collector' ? 'Private artists' : 'Represented artists',
+            'artists'    => 'Represented artists',
             'artworks'   => $role === 'collector' ? 'Private artworks' : 'Artworks',
             'storage_gb' => 'Storage',
         ];
