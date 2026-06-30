@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Daily: expire 14-day trials and archive past-due users.
 Schedule::command('subscriptions:check')->dailyAt('02:00');
+
+// Daily mid-morning: email trial users at 7 / 3 / 1 days before expiry.
+Schedule::command('subscriptions:remind-trials')->dailyAt('10:00');

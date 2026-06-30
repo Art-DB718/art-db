@@ -58,6 +58,7 @@ class User extends Authenticatable implements FilamentUser
             'role'                    => UserRole::class,
             'trial_ends_at'           => 'datetime',
             'subscription_expires_at' => 'datetime',
+            'trial_reminders_sent'    => 'array',
         ];
     }
 
