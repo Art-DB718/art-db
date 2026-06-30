@@ -249,6 +249,14 @@
                                       class="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:border-gray-900">{{ old('message', "I'd like to know more about ".$artwork->title.'.') }}</textarea>
                             @error('message') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
+                        <label class="flex items-start gap-3 pt-1 cursor-pointer select-none">
+                            <input type="checkbox" name="subscribe_newsletter" value="1" {{ old('subscribe_newsletter') ? 'checked' : '' }}
+                                   class="mt-0.5 h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900">
+                            <span class="text-sm text-gray-700 leading-relaxed">
+                                Also subscribe me to the {{ config('app.name', 'Art DB') }} newsletter — occasional updates
+                                on new works, artists and exhibitions. You can unsubscribe any time.
+                            </span>
+                        </label>
                         <button type="submit"
                                 class="px-8 py-3 bg-gray-900 text-white text-xs uppercase tracking-[0.18em] hover:bg-gray-700 transition">
                             Send inquiry

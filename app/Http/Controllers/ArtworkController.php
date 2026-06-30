@@ -119,12 +119,16 @@ class ArtworkController extends Controller
         $user = $request->user();
 
         // Auth visitors don't need to retype name/email (taken from User).
-        $rules = ['message' => ['required', 'string', 'max:2000']];
+        $rules = [
+            'message'              => ['required', 'string', 'max:2000'],
+            'subscribe_newsletter' => ['nullable', 'boolean'],
+        ];
         if (! $user) {
             $rules['name']  = ['required', 'string', 'max:255'];
             $rules['email'] = ['required', 'email', 'max:255'];
         }
         $validated = $request->validate($rules);
+        $wantsNewsletter = (bool) ($validated['subscribe_newsletter'] ?? false);
 
         // Resolve recipient — artwork owner, or fall back to gallery contact email.
         $recipientUserId = $artwork->owner_user_id;
@@ -143,11 +147,14 @@ class ArtworkController extends Controller
         ]);
         $inquiry->load(['sender', 'recipient', 'artwork.artist']);
 
-        // Also save a CRM contact for guest senders (legacy behaviour preserved).
-        if (! $user && ! empty($validated['email'])) {
-            $names = preg_split('/\s+/', trim($validated['name']), 2);
-            Contact::firstOrCreate(
-                ['email' => $validated['email']],
+        // CRM contact + optional newsletter opt-in.
+        $contactEmail = $user?->email ?: ($validated['email'] ?? null);
+        $contactName  = $user?->name  ?: ($validated['name']  ?? null);
+
+        if ($contactEmail) {
+            $names = $contactName ? preg_split('/\s+/', trim($contactName), 2) : [null, null];
+            $contact = Contact::firstOrCreate(
+                ['email' => $contactEmail],
                 [
                     'first_name' => $names[0] ?? null,
                     'last_name'  => $names[1] ?? null,
@@ -155,6 +162,18 @@ class ArtworkController extends Controller
                     'notes'      => 'Inquiry about: '.$artwork->title,
                 ],
             );
+
+            // Explicit opt-in only — GDPR requires affirmative consent, so we
+            // never auto-subscribe just because someone sent an inquiry.
+            if ($wantsNewsletter && ! $contact->subscribed_to_newsletter) {
+                $contact->update(['subscribed_to_newsletter' => true]);
+                try {
+                    app(\App\Services\MailchimpService::class)
+                        ->subscribe($contactEmail, $names[0] ?? null, $names[1] ?? null);
+                } catch (\Throwable $e) {
+                    logger()->warning('Mailchimp opt-in from inquiry failed for '.$contactEmail.': '.$e->getMessage());
+                }
+            }
         }
 
         // Email the recipient via the InquiryReceived mailable (Mail::log driver in dev,
