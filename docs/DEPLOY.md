@@ -398,4 +398,4 @@ sudo supervisorctl restart artdb-worker:*
 
 ## Next: backup script
 
-After you're live, set up the backup script (see `docs/BACKUP.md` — coming next) so you don't lose data when something goes wrong.
+Set up daily backups before you have anything worth losing — see [docs/BACKUP.md](BACKUP.md) for the install + restore + monthly-test-restore walkthrough. The scripts live in `scripts/backup.sh` + `scripts/restore.sh`.
