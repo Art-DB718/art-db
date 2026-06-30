@@ -45,6 +45,34 @@ class MailchimpService
     }
 
     /**
+     * Upsert a single email into the configured Mailchimp audience.
+     * Returns true on success / dry-run, false on API error.
+     */
+    public function subscribe(string $email, ?string $firstName = null, ?string $lastName = null): bool
+    {
+        if ($this->dryRun || ! $this->client || ! $this->listId) {
+            Log::info('Mailchimp (dry-run): would subscribe '.$email);
+            return true;
+        }
+
+        $payload = [
+            'email_address' => $email,
+            'status_if_new' => 'subscribed',
+            'merge_fields'  => array_filter(['FNAME' => $firstName, 'LNAME' => $lastName]),
+        ];
+
+        $hash   = md5(strtolower($email));
+        $this->client->put("lists/{$this->listId}/members/{$hash}", $payload);
+
+        if ($this->client->success()) {
+            return true;
+        }
+
+        Log::warning('Mailchimp subscribe failed for '.$email.': '.json_encode($this->client->getLastError()));
+        return false;
+    }
+
+    /**
      * Sync (upsert) all subscribed contacts to the configured Mailchimp audience.
      * Returns count of synced records.
      */

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\ArtistController;
 use App\Http\Controllers\Api\V1\ArtworkController;
 use App\Http\Controllers\Api\V1\CollectionController;
 use App\Http\Controllers\Api\V1\ExhibitionController;
+use App\Http\Controllers\Api\V1\GalleryController;
 use App\Http\Controllers\Api\V1\TokenController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,4 +36,8 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/exhibitions',                       [ExhibitionController::class, 'index']);
     Route::get('/exhibitions/{exhibition:slug}',     [ExhibitionController::class, 'show']);
+
+    Route::get('/galleries',                         [GalleryController::class, 'index']);
+    Route::get('/galleries/{gallery:slug}',          [GalleryController::class, 'show']);
+    Route::get('/galleries/{gallery:slug}/artists',  [GalleryController::class, 'artists']);
 });
