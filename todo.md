@@ -224,12 +224,16 @@ php artisan serve --host=127.0.0.1 --port=8002
 
 ---
 
-### Fáza 8 — Ďalšie integrácie (optional)
+### Fáza 8 — Ďalšie integrácie ✅ DOKONČENÁ (2026-06-30)
 
-- [ ] **Resend** — transactional email (inquiry, trial reminders, registrácia)
-- [ ] **Mailchimp** — newsletter sync z home page
-- [ ] **REST API + Sanctum** — `/api/v1/galleries`, `/artists`, `/artworks`
-- [ ] Export endpoint `/api/v1/export/full`
+- [x] **Resend** — `resend/resend-laravel` + InquiryReceived Mailable (commit `fdfe953` v Phase 5)
+- [x] **Mailchimp** — `MailchimpService::subscribe()` jednorázový upsert; NewsletterController auto-pushuje signupy do audience (dry-run mode keď nie je `MAILCHIMP_API_KEY`)
+- [x] **REST API v1** zaregistrované v `bootstrap/app.php` a end-to-end otestované (token issuance + /user + public endpoints):
+  - Public: `/api/v1/{artworks,artists,galleries,exhibitions,collections}` (+ slug + nested `/artists/{slug}/artworks`, `/galleries/{slug}/artists`)
+  - Sanctum auth: `POST /tokens`, `GET /user`, `DELETE /tokens/current`
+- [x] Export endpoint `/api/v1/export/full` (Gate-guarded admin-only, z portu)
+- [x] Pridaný **GalleryController + GalleryResource** (chýbal — Gallery je Phase 2 entita)
+- [x] .env + .env.example — Mailchimp placeholdery
 
 ---
 
