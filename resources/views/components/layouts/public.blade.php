@@ -64,6 +64,7 @@
             <ul class="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.18em] text-gray-700">
                 <li><a href="{{ route('artworks.index') }}" class="hover:text-gray-400 transition">Artworks</a></li>
                 <li><a href="{{ route('artists.index') }}" class="hover:text-gray-400 transition">Artists</a></li>
+                <li><a href="{{ route('galleries.index') }}" class="hover:text-gray-400 transition">Galleries</a></li>
                 <li><a href="{{ route('exhibitions.index') }}" class="hover:text-gray-400 transition">Exhibitions</a></li>
                 <li><a href="{{ route('collections.index') }}" class="hover:text-gray-400 transition">Collections</a></li>
                 {{-- Platform dropdown --}}
@@ -120,6 +121,7 @@
             <ul class="px-6 py-4 space-y-1 text-sm uppercase tracking-[0.18em] text-gray-700">
                 <li><a href="{{ route('artworks.index') }}" class="block py-2.5 hover:text-gray-400">Artworks</a></li>
                 <li><a href="{{ route('artists.index') }}" class="block py-2.5 hover:text-gray-400">Artists</a></li>
+                <li><a href="{{ route('galleries.index') }}" class="block py-2.5 hover:text-gray-400">Galleries</a></li>
                 <li><a href="{{ route('exhibitions.index') }}" class="block py-2.5 hover:text-gray-400">Exhibitions</a></li>
                 <li><a href="{{ route('collections.index') }}" class="block py-2.5 hover:text-gray-400">Collections</a></li>
 
