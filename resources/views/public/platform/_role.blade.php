@@ -66,6 +66,23 @@
         $planKeys = $role === 'collector'
             ? ['collector_free', 'starter', 'pro']
             : ['starter', 'pro', 'studio'];
+
+        // Per-role limit keys actually meaningful to that role.
+        //   - Artist: has 1 fixed profile (themselves), doesn't manage galleries → only artworks + storage matter
+        //   - Collector: private archive of artists + artworks
+        //   - Gallery (default): galleries + artists + artworks + storage
+        $relevantLimitKeys = match ($role) {
+            'artist'    => ['artworks', 'storage_gb'],
+            'collector' => ['artists', 'artworks', 'storage_gb'],
+            default     => ['galleries', 'artists', 'artworks', 'storage_gb'],
+        };
+        // Human-friendly labels (override the default ucfirst+underscore→space).
+        $limitLabels = [
+            'galleries'  => 'Galleries',
+            'artists'    => $role === 'collector' ? 'Private artists' : 'Represented artists',
+            'artworks'   => $role === 'collector' ? 'Private artworks' : 'Artworks',
+            'storage_gb' => 'Storage',
+        ];
     @endphp
     <section class="py-24 bg-gray-50 border-t border-b border-gray-200">
         <div class="max-w-5xl mx-auto px-6">
@@ -77,42 +94,50 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-gray-200 border border-gray-200">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 @foreach ($planKeys as $key)
                     @php $plan = $allPlans[$key] ?? null; @endphp
                     @if ($plan)
-                        <div class="bg-white p-8 flex flex-col">
-                            <p class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-2">{{ $plan['label'] }}</p>
-                            @if (($plan['price_eur'] ?? 0) === 0)
-                                <p class="font-serif text-4xl mb-1">Free</p>
-                                <p class="text-xs text-gray-500 mb-4">{{ $key === 'collector_free' ? 'Forever' : '14-day trial' }}</p>
-                            @else
-                                <p class="font-serif text-4xl mb-1">€{{ $plan['price_eur'] }}<span class="text-sm text-gray-500 font-normal">/mo</span></p>
-                                <p class="text-xs text-gray-500 mb-4">or €{{ $plan['price_eur_yr'] ?? '—' }} / year</p>
-                            @endif
+                        <div class="bg-white border border-gray-200 p-8 flex flex-col h-full">
+                            {{-- Header (fixed-height block so prices align) --}}
+                            <div class="min-h-[140px]">
+                                <p class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-3">{{ $plan['label'] }}</p>
+                                @if (($plan['price_eur'] ?? 0) === 0)
+                                    <p class="font-serif text-4xl leading-none">Free</p>
+                                    <p class="text-xs text-gray-500 mt-2">{{ $key === 'collector_free' ? 'Forever — no card needed' : '14-day trial' }}</p>
+                                @else
+                                    <p class="font-serif text-4xl leading-none">€{{ $plan['price_eur'] }}<span class="text-sm text-gray-500 font-normal"> /mo</span></p>
+                                    @if (! empty($plan['price_eur_yr']))
+                                        <p class="text-xs text-gray-500 mt-2">or €{{ $plan['price_eur_yr'] }} / year (2 months free)</p>
+                                    @endif
+                                @endif
+                            </div>
 
-                            <p class="text-sm text-gray-700 leading-relaxed mb-6">{{ $plan['description'] }}</p>
+                            <p class="text-sm text-gray-700 leading-relaxed border-t border-gray-100 pt-5 mb-5">
+                                {{ $plan['description'] }}
+                            </p>
 
-                            <ul class="space-y-1 text-sm text-gray-700 mb-6">
+                            <ul class="space-y-2 text-sm text-gray-700 mb-6 flex-grow">
                                 @foreach ($plan['limits'] as $limit => $value)
-                                    <li class="flex justify-between gap-3">
-                                        <span class="text-gray-500">{{ ucfirst(str_replace('_', ' ', $limit)) }}</span>
-                                        <span class="font-medium">{{ $value === null ? 'Unlimited' : $value }}</span>
+                                    @continue (! in_array($limit, $relevantLimitKeys, true))
+                                    <li class="flex justify-between gap-3 border-b border-gray-50 pb-2">
+                                        <span class="text-gray-500">{{ $limitLabels[$limit] ?? ucfirst(str_replace('_', ' ', $limit)) }}</span>
+                                        <span class="font-medium text-gray-900">
+                                            {{ $value === null ? 'Unlimited' : ($limit === 'storage_gb' ? $value.' GB' : $value) }}
+                                        </span>
                                     </li>
                                 @endforeach
                             </ul>
 
-                            <div class="mt-auto">
-                                @auth
-                                    <a href="{{ url('/admin/billing') }}" class="block text-center px-4 py-2.5 text-xs uppercase tracking-[0.18em] bg-gray-900 text-white hover:bg-gray-700 transition">
-                                        Choose in billing
-                                    </a>
-                                @else
-                                    <a href="{{ route('register') }}" class="block text-center px-4 py-2.5 text-xs uppercase tracking-[0.18em] bg-gray-900 text-white hover:bg-gray-700 transition">
-                                        Start with trial
-                                    </a>
-                                @endauth
-                            </div>
+                            @auth
+                                <a href="{{ url('/admin/billing') }}" class="block text-center px-4 py-2.5 text-xs uppercase tracking-[0.18em] bg-gray-900 text-white hover:bg-gray-700 transition">
+                                    Choose in billing
+                                </a>
+                            @else
+                                <a href="{{ route('register') }}" class="block text-center px-4 py-2.5 text-xs uppercase tracking-[0.18em] bg-gray-900 text-white hover:bg-gray-700 transition">
+                                    {{ ($plan['price_eur'] ?? 0) === 0 ? 'Sign up free' : 'Start free trial' }}
+                                </a>
+                            @endauth
                         </div>
                     @endif
                 @endforeach

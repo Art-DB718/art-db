@@ -87,7 +87,7 @@
                     </p>
                     <p class="text-sm text-gray-900 mb-2">
                         <span class="font-medium">From €9/mo</span>
-                        <span class="text-gray-500"> · 14-day trial · Pro €29/mo</span>
+                        <span class="text-gray-500"> · 14-day trial · plans differ by storage &amp; artwork count</span>
                     </p>
                     <p class="text-xs uppercase tracking-[0.18em] text-gray-900 group-hover:underline underline-offset-4">
                         Read more &rarr;
