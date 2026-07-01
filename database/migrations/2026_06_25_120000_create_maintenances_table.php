@@ -26,7 +26,14 @@ return new class extends Migration {
             $table->index(['artwork_id', 'position']);
         });
 
-        // Migrate existing flat restoration_* data on artworks → first maintenance row.
+        // Migrate existing flat restoration_* data on artworks → first
+        // maintenance row. Only meaningful on the prod Postgres DB that
+        // was ported from Art DB — SQLite test bootstrap has no legacy
+        // data to backfill AND doesn't support the ::text jsonb cast used
+        // in the WHERE clause. Skip on non-pgsql drivers.
+        if (DB::connection()->getDriverName() !== 'pgsql') {
+            return;
+        }
         $rows = DB::table('artworks')
             ->whereNotNull('restoration_date')
             ->orWhereNotNull('restoration_notes')
