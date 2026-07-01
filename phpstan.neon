@@ -1,0 +1,29 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: 6
+
+    paths:
+        - app
+        - config
+        - database
+        - routes
+        - tests
+
+    excludePaths:
+        - vendor
+        - bootstrap/cache
+        - storage
+        - node_modules
+
+    checkMissingIterableValueType: false
+
+    ignoreErrors:
+        # Filament Resource classes use dynamic ->schema() / ->columns() forms.
+        - '#Unsafe usage of new static\(\)#'
+        # Livewire / Filament dynamic property access (widgets, forms).
+        - '#Access to an undefined property .*Filament\\Pages#'
+        # Cashier's Billable trait injects magic properties on User.
+        - '#Access to an undefined property App\\Models\\User::\$(stripe_id|pm_type|pm_last_four|trial_ends_at)#'

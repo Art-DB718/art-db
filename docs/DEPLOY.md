@@ -20,7 +20,10 @@ Before touching the server:
 
 ```bash
 # Run the full test suite locally
-php artisan test
+composer test                          # Pest — 29 tests / ~3s
+
+# Static analysis — must be clean (or updated baseline)
+composer analyse                       # PHPStan level 6 + Larastan
 
 # Make sure prod build succeeds
 npm ci && npm run build
