@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->brandName(config('app.name', 'Art DB'))
             ->login()
+            ->profile()
             ->registration(\App\Filament\Pages\Auth\Register::class)
             ->favicon(asset('favicon.ico'))
             ->colors([
