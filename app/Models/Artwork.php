@@ -118,10 +118,14 @@ class Artwork extends Model
             $lastname = strtoupper(substr($clean, 0, 4)) ?: 'NONE';
         }
 
-        // Najvyššie aktuálne číslo pre tohto umelca v rovnakom prefixe
+        // Highest number currently used for this PREFIX-LASTNAME bucket.
+        // Scope by inventory_id prefix (not artist_id) so two artists whose
+        // surnames normalise to the same ASCII slug ('Malá' + 'Mala' both
+        // become 'MALA') don't collide, and include trashed rows because the
+        // DB unique index doesn't care about deleted_at.
         $maxFound = static::query()
-            ->when($artistId, fn ($q) => $q->where('artist_id', $artistId))
-            ->where('inventory_id', 'like', "{$prefix}-%")
+            ->withTrashed()
+            ->where('inventory_id', 'like', "{$prefix}-{$lastname}-%")
             ->pluck('inventory_id')
             ->map(function ($id) {
                 if (preg_match('/-(\d+)$/', $id, $m)) return (int) $m[1];
