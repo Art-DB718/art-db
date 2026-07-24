@@ -70,19 +70,28 @@
                     {{ $artwork->title }}@if ($artwork->year_created), <span class="not-italic">{{ $artwork->year_created }}</span>@endif
                 </h1>
 
-                {{-- Represented by (Gallery user's own gallery) --}}
+                {{-- Attribution — who published this artwork on the platform.
+                     Gallery owners get a link to their public gallery page;
+                     Collector owners just get their display name (no public
+                     collector profile exists); Artist owners are already
+                     credited via the artist name above the title. --}}
                 @php
-                    $presentingGallery = ($artwork->owner?->role?->value === 'gallery')
-                        ? $artwork->owner->gallery
-                        : null;
+                    $owner        = $artwork->owner;
+                    $ownerRole    = $owner?->role?->value;
+                    $ownerGallery = $ownerRole === 'gallery' ? $owner->gallery : null;
                 @endphp
-                @if ($presentingGallery && $presentingGallery->is_published)
+                @if ($ownerGallery && $ownerGallery->is_published)
                     <p class="mt-4 text-sm text-gray-600">
                         <span class="uppercase tracking-[0.18em] text-xs text-gray-500 mr-2">Presented by</span>
-                        <a href="{{ route('galleries.show', $presentingGallery) }}"
+                        <a href="{{ route('galleries.show', $ownerGallery) }}"
                            class="text-gray-900 hover:underline font-medium">
-                            {{ $presentingGallery->name }}
+                            {{ $ownerGallery->name }}
                         </a>
+                    </p>
+                @elseif ($ownerRole === 'collector' && $owner)
+                    <p class="mt-4 text-sm text-gray-600">
+                        <span class="uppercase tracking-[0.18em] text-xs text-gray-500 mr-2">From the collection of</span>
+                        <span class="text-gray-900 font-medium">{{ $owner->name }}</span>
                     </p>
                 @endif
 
