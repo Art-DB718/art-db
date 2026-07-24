@@ -14,11 +14,16 @@ class CreateArtist extends CreateRecord
 {
     protected static string $resource = ArtistResource::class;
 
-    /** When an Artist/Collector creates a profile, auto-attach owner_user_id. */
+    /**
+     * Auto-attach owner_user_id to the current user for every non-admin
+     * flow — matches the isolated-workspace scoping in getEloquentQuery,
+     * so a Gallery user who just created an Artist immediately sees it
+     * in their list.
+     */
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $user = auth()->user();
-        if (($user?->isArtist() || $user?->isCollector()) && empty($data['owner_user_id'])) {
+        if ($user && ! $user->isAdmin() && empty($data['owner_user_id'])) {
             $data['owner_user_id'] = $user->id;
         }
         return $data;
