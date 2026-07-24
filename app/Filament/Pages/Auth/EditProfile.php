@@ -16,11 +16,14 @@ use Illuminate\Support\Facades\Hash;
 class EditProfile extends BaseEditProfile
 {
     /**
-     * Adds our destructive action alongside the built-in Save / Cancel row.
+     * Appends our destructive action to the built-in Save / Cancel row.
+     * Filament's base page renders these under the form; our button sits
+     * after Save/Cancel so it's clearly separated from the primary action.
      */
-    protected function getHeaderActions(): array
+    protected function getFormActions(): array
     {
         return [
+            ...parent::getFormActions(),
             Action::make('deleteAccount')
                 ->label('Delete my account')
                 ->icon('heroicon-o-trash')
