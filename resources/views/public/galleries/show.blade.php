@@ -77,6 +77,24 @@
                 </div>
             @endif
 
+            @if ($alsoShowing->isNotEmpty())
+                <h2 class="font-serif text-2xl mb-2">Also showing works by</h2>
+                <p class="text-sm text-gray-500 mb-6">Artists featured by the gallery outside their represented roster.</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 border border-gray-200 mb-16">
+                    @foreach ($alsoShowing as $artist)
+                        <a href="{{ route('artists.show', $artist) }}" class="bg-white p-6 hover:bg-gray-50 transition block">
+                            @if ($artist->profile_image)
+                                <img src="{{ \Illuminate\Support\Facades\Storage::url($artist->profile_image) }}" alt="" class="w-16 h-16 object-cover rounded-full mb-3">
+                            @endif
+                            <p class="font-serif text-lg leading-tight">{{ $artist->display_name }}</p>
+                            @if ($artist->birth_year)
+                                <p class="text-xs text-gray-500 mt-1">b. {{ $artist->birth_year }}</p>
+                            @endif
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+
             <h2 class="font-serif text-2xl mb-6">Presented artworks</h2>
             @if ($artworks->isEmpty())
                 <p class="text-gray-500 italic">No published artworks yet.</p>
