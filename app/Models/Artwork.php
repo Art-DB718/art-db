@@ -76,6 +76,12 @@ class Artwork extends Model
             if (empty($m->inventory_id)) {
                 $m->inventory_id = static::generateInventoryId($m->artist_id);
             }
+            // Default owner to the currently-authenticated user so inquiries
+            // route back to whoever created the artwork. Skip on CLI / seed
+            // contexts where auth is not resolved.
+            if (empty($m->owner_user_id) && auth()->check()) {
+                $m->owner_user_id = auth()->id();
+            }
         });
 
         // After save, optimize newly-uploaded image fields + generate thumb/medium variants.
