@@ -303,11 +303,27 @@ class ArtistResource extends Resource
 
         $user = auth()->user();
 
-        // Every non-admin user has an isolated workspace: they see only
-        // artists they created themselves. Cross-tenant visibility happens
-        // on the public web (union of all published artists), not in admin.
-        if ($user && ! $user->isAdmin()) {
+        // Artist / Collector: strict own-ownership workspace.
+        if ($user && ($user->isArtist() || $user->isCollector())) {
             $query->where('owner_user_id', $user->id);
+        }
+
+        // Gallery: own-created artists PLUS featured artists — anyone whose
+        // work the gallery has uploaded, so 'Featured artists' from public
+        // /galleries/{slug} shows up here too and Kat can edit their metadata
+        // if needed.
+        if ($user?->isGallery()) {
+            $userId = $user->id;
+            $query->where(function ($q) use ($userId) {
+                $q->where('owner_user_id', $userId)
+                  ->orWhereIn('id', function ($sub) use ($userId) {
+                      $sub->select('artist_id')
+                          ->from('artworks')
+                          ->where('owner_user_id', $userId)
+                          ->whereNotNull('artist_id')
+                          ->distinct();
+                  });
+            });
         }
 
         return $query;
