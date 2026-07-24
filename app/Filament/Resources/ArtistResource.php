@@ -303,17 +303,10 @@ class ArtistResource extends Resource
 
         $user = auth()->user();
 
-        // Artist vidí v admine len vlastný profil.
-        if ($user?->isArtist()) {
-            $query->where('owner_user_id', $user->id);
-        }
-
-        // Gallery vidí všetkých umelcov v archíve — toggle column ukáže, ktorých zastupuje.
-        // (Žiadne scoping; voliteľný filter "Only artists I represent" je v table->filters.)
-
-        // Collector v admine vidí IBA svoju súkromnú databázu (own records).
-        // Public archív Collector prehliada cez verejný web (Fáza 3), nie cez admin.
-        if ($user?->isCollector()) {
+        // Every non-admin user has an isolated workspace: they see only
+        // artists they created themselves. Cross-tenant visibility happens
+        // on the public web (union of all published artists), not in admin.
+        if ($user && ! $user->isAdmin()) {
             $query->where('owner_user_id', $user->id);
         }
 

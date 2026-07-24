@@ -675,27 +675,10 @@ class ArtworkResource extends Resource
 
         $user = auth()->user();
 
-        // Artist vidí v admine len svoje diela.
-        if ($user?->isArtist()) {
-            $query->where('owner_user_id', $user->id);
-        }
-
-        // Gallery vidí:
-        //   - artworks tých artistov, ktorých zastupuje (artist_gallery pivot)
-        //   - + vlastné uploady (owner_user_id = tento user) — aj keď artist
-        //     nie je v pivote (napr. novo pridaný artist ktorý ešte nebol
-        //     priradený galérii)
-        if ($user?->isGallery() && $user->gallery) {
-            $galleryId = $user->gallery->id;
-            $userId    = $user->id;
-            $query->where(function ($q) use ($galleryId, $userId) {
-                $q->whereHas('artist.galleries', fn ($qq) => $qq->whereKey($galleryId))
-                  ->orWhere('owner_user_id', $userId);
-            });
-        }
-
-        // Collector v admine vidí IBA svoju súkromnú databázu (own records).
-        if ($user?->isCollector()) {
+        // Isolated per-tenant workspace: every non-admin user sees only
+        // artworks they uploaded themselves. Public web still shows the
+        // union of all published artworks across tenants.
+        if ($user && ! $user->isAdmin()) {
             $query->where('owner_user_id', $user->id);
         }
 
