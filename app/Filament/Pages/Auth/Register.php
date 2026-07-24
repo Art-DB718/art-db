@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Mail\ArtistClaimRequested;
 use App\Models\Artist;
 use App\Models\ArtistClaim;
+use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -14,6 +15,22 @@ use Illuminate\Support\Facades\Mail;
 
 class Register extends BaseRegister
 {
+    /**
+     * Ignore soft-deleted users in the email uniqueness check so someone
+     * who deleted their account can register again with the same address.
+     * The DB-side partial unique index (users_email_unique WHERE
+     * deleted_at IS NULL) enforces the same rule at insert time.
+     */
+    protected function getEmailFormComponent(): Component
+    {
+        return parent::getEmailFormComponent()
+            ->unique(
+                table: 'users',
+                column: 'email',
+                modifyRuleUsing: fn ($rule) => $rule->whereNull('deleted_at'),
+            );
+    }
+
     public function form(Form $form): Form
     {
         return $form
