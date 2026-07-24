@@ -77,22 +77,13 @@
                         : null;
                 @endphp
                 @if ($presentingGallery && $presentingGallery->is_published)
-                    <div class="mt-6 flex items-center gap-3">
-                        @if ($presentingGallery->logo)
-                            <a href="{{ route('galleries.show', $presentingGallery) }}" class="shrink-0">
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($presentingGallery->logo) }}"
-                                     alt="{{ $presentingGallery->name }}"
-                                     class="w-10 h-10 object-contain rounded bg-gray-50 border border-gray-200">
-                            </a>
-                        @endif
-                        <div class="text-xs leading-tight">
-                            <p class="uppercase tracking-[0.18em] text-gray-500 mb-1">Presented by</p>
-                            <a href="{{ route('galleries.show', $presentingGallery) }}"
-                               class="text-gray-900 hover:underline font-medium">
-                                {{ $presentingGallery->name }}
-                            </a>
-                        </div>
-                    </div>
+                    <p class="mt-4 text-sm text-gray-600">
+                        <span class="uppercase tracking-[0.18em] text-xs text-gray-500 mr-2">Presented by</span>
+                        <a href="{{ route('galleries.show', $presentingGallery) }}"
+                           class="text-gray-900 hover:underline font-medium">
+                            {{ $presentingGallery->name }}
+                        </a>
+                    </p>
                 @endif
 
                 <dl class="mt-8 space-y-3 text-sm">
