@@ -78,8 +78,8 @@
             @endif
 
             @if ($alsoShowing->isNotEmpty())
-                <h2 class="font-serif text-2xl mb-2">Also showing works by</h2>
-                <p class="text-sm text-gray-500 mb-6">Artists featured by the gallery outside their represented roster.</p>
+                <h2 class="font-serif text-2xl mb-2">Featured artists</h2>
+                <p class="text-sm text-gray-500 mb-6">Artists shown by the gallery outside their represented roster.</p>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 border border-gray-200 mb-16">
                     @foreach ($alsoShowing as $artist)
                         <a href="{{ route('artists.show', $artist) }}" class="bg-white p-6 hover:bg-gray-50 transition block">
