@@ -16,14 +16,21 @@ use Illuminate\Support\Facades\Mail;
 class Register extends BaseRegister
 {
     /**
-     * Ignore soft-deleted users in the email uniqueness check so someone
-     * who deleted their account can register again with the same address.
-     * The DB-side partial unique index (users_email_unique WHERE
-     * deleted_at IS NULL) enforces the same rule at insert time.
+     * Rebuild the email field from scratch (not extending parent) so we can
+     * install a single unique rule scoped to non-deleted rows. Extending
+     * parent would layer both rules — the base's ->unique() ignores soft
+     * deletes and re-triggers on the leftover row.
+     *
+     * The DB-side partial index (users_email_unique WHERE deleted_at IS NULL)
+     * enforces the same shape at insert time.
      */
     protected function getEmailFormComponent(): Component
     {
-        return parent::getEmailFormComponent()
+        return \Filament\Forms\Components\TextInput::make('email')
+            ->label(__('filament-panels::pages/auth/register.form.email.label'))
+            ->email()
+            ->required()
+            ->maxLength(255)
             ->unique(
                 table: 'users',
                 column: 'email',
