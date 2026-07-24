@@ -70,6 +70,31 @@
                     {{ $artwork->title }}@if ($artwork->year_created), <span class="not-italic">{{ $artwork->year_created }}</span>@endif
                 </h1>
 
+                {{-- Represented by (Gallery user's own gallery) --}}
+                @php
+                    $presentingGallery = ($artwork->owner?->role?->value === 'gallery')
+                        ? $artwork->owner->gallery
+                        : null;
+                @endphp
+                @if ($presentingGallery && $presentingGallery->is_published)
+                    <div class="mt-6 flex items-center gap-3">
+                        @if ($presentingGallery->logo)
+                            <a href="{{ route('galleries.show', $presentingGallery) }}" class="shrink-0">
+                                <img src="{{ \Illuminate\Support\Facades\Storage::url($presentingGallery->logo) }}"
+                                     alt="{{ $presentingGallery->name }}"
+                                     class="w-10 h-10 object-contain rounded bg-gray-50 border border-gray-200">
+                            </a>
+                        @endif
+                        <div class="text-xs leading-tight">
+                            <p class="uppercase tracking-[0.18em] text-gray-500 mb-1">Presented by</p>
+                            <a href="{{ route('galleries.show', $presentingGallery) }}"
+                               class="text-gray-900 hover:underline font-medium">
+                                {{ $presentingGallery->name }}
+                            </a>
+                        </div>
+                    </div>
+                @endif
+
                 <dl class="mt-8 space-y-3 text-sm">
                     @if ($artwork->medium)
                         <div class="grid grid-cols-3 gap-4">
