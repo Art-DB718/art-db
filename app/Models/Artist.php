@@ -35,7 +35,13 @@ class Artist extends Model
         static::creating(function ($m) {
             $m->uuid ??= (string) Str::uuid();
             if (empty($m->slug)) {
-                $m->slug = Str::slug(trim(($m->first_name ?? '').' '.($m->last_name ?? '')));
+                $base = Str::slug(trim(($m->first_name ?? '').' '.($m->last_name ?? ''))) ?: 'artist';
+                // Uniqueness safeguard — two artists can share a name (jr / sr,
+                // homonyms, misspellings). Append a random suffix only on
+                // collision so the first artist keeps the clean SEO slug.
+                $m->slug = static::query()->where('slug', $base)->exists()
+                    ? $base.'-'.Str::lower(Str::random(4))
+                    : $base;
             }
         });
 
