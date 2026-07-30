@@ -33,7 +33,7 @@ class Schema
                     'name'  => $name,
                     'potentialAction' => [
                         '@type' => 'SearchAction',
-                        'target' => $url.'artworks?q={search_term_string}',
+                        'target' => route('artworks.index').'?q={search_term_string}',
                         'query-input' => 'required name=search_term_string',
                     ],
                 ],
