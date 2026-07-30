@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'google' => [
+        // Google Search Console verification meta tag. Get the raw token from
+        // Search Console → 'HTML tag' verification method → content="..." value.
+        'site_verification' => env('GOOGLE_SITE_VERIFICATION'),
+    ],
+
 ];

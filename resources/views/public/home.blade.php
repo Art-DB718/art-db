@@ -1,4 +1,6 @@
-<x-layouts.public :title="config('app.name', 'ArtDB')">
+<x-layouts.public
+    :title="config('app.name', 'ArtDB')"
+    :schema="\App\Services\Seo\Schema::organization()">
 
     {{-- HERO --}}
     <section class="bg-gray-50">

@@ -14,7 +14,15 @@
 <x-layouts.public
     :title="$artwork->title.' — '.($artwork->artist?->display_name ?? config('app.name', 'ArtDB'))"
     :description="$seoDescription"
-    :og-image="$artwork->primary_image">
+    :og-image="$artwork->primary_image"
+    :schema="[
+        \App\Services\Seo\Schema::artwork($artwork),
+        \App\Services\Seo\Schema::breadcrumbs(array_filter([
+            ['Artworks', route('artworks.index')],
+            $artwork->artist ? [$artwork->artist->display_name, route('artists.show', $artwork->artist)] : null,
+            [$artwork->title, route('artworks.show', $artwork)],
+        ])),
+    ]">
 
     <section class="max-w-7xl mx-auto px-6 py-12 md:py-16">
 

@@ -5,5 +5,6 @@ Disallow: /my/
 Disallow: /private-room/
 Disallow: /checkout/
 Disallow: /prints/
+Disallow: /api/
 
-Sitemap: /sitemap.xml
+Sitemap: https://art-db.org/sitemap.xml

@@ -17,7 +17,14 @@
 <x-layouts.public
     :title="$exhibition->title.' — '.config('app.name', 'ArtDB')"
     :description="$seoDescription"
-    :og-image="$exhibition->poster_image">
+    :og-image="$exhibition->poster_image"
+    :schema="[
+        \App\Services\Seo\Schema::exhibition($exhibition),
+        \App\Services\Seo\Schema::breadcrumbs([
+            ['Exhibitions', route('exhibitions.index')],
+            [$exhibition->title, route('exhibitions.show', $exhibition)],
+        ]),
+    ]">
 
     {{-- POSTER --}}
     @if ($exhibition->poster_image)

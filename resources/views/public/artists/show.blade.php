@@ -8,7 +8,14 @@
 <x-layouts.public
     :title="$artist->display_name.' — '.config('app.name', 'ArtDB')"
     :description="$seoDescription"
-    :og-image="$artist->profile_image ?? $artist->cover_image">
+    :og-image="$artist->profile_image ?? $artist->cover_image"
+    :schema="[
+        \App\Services\Seo\Schema::artist($artist),
+        \App\Services\Seo\Schema::breadcrumbs([
+            ['Artists', route('artists.index')],
+            [$artist->display_name, route('artists.show', $artist)],
+        ]),
+    ]">
 
     {{-- COVER --}}
     @if ($artist->cover_image)

@@ -2,6 +2,7 @@
     'title'       => null,
     'description' => null,
     'ogImage'     => null,
+    'schema'      => null, // array | array<array> | null — one or more JSON-LD blobs
 ])
 @php
     $pageTitle       = $title ?? config('app.name', 'Art DB');
@@ -37,6 +38,18 @@
     <meta name="twitter:description" content="{{ $metaDescription }}">
     @if ($ogImageUrl)
         <meta name="twitter:image" content="{{ $ogImageUrl }}">
+    @endif
+
+    {{-- Google Search Console verification (optional; set GOOGLE_SITE_VERIFICATION in .env) --}}
+    @if ($v = config('services.google.site_verification'))
+        <meta name="google-site-verification" content="{{ $v }}">
+    @endif
+
+    {{-- JSON-LD structured data — one blob or an array of blobs --}}
+    @if ($schema)
+        @foreach ((is_array($schema) && isset($schema[0]) && is_array($schema[0])) ? $schema : [$schema] as $blob)
+            <script type="application/ld+json">{!! json_encode($blob, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+        @endforeach
     @endif
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])

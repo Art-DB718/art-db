@@ -6,7 +6,14 @@
 <x-layouts.public
     :title="$gallery->name.' — '.config('app.name', 'Art DB')"
     :description="$gallerySeoDescription"
-    :og-image="$gallery->cover_image ?? $gallery->logo">
+    :og-image="$gallery->cover_image ?? $gallery->logo"
+    :schema="[
+        \App\Services\Seo\Schema::gallery($gallery),
+        \App\Services\Seo\Schema::breadcrumbs([
+            ['Galleries', route('galleries.index')],
+            [$gallery->name, route('galleries.show', $gallery)],
+        ]),
+    ]">
     <section class="py-16 bg-white">
         <div class="max-w-5xl mx-auto px-6">
             <a href="{{ route('galleries.index') }}" class="text-xs uppercase tracking-[0.18em] text-gray-500 hover:text-gray-900">← All galleries</a>
