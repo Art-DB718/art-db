@@ -43,6 +43,12 @@ class Artist extends Model
                     ? $base.'-'.Str::lower(Str::random(4))
                     : $base;
             }
+            // Auto-assign owner for non-admin creators so an Artist created
+            // inline from an Artwork form (Select::createOptionForm) still
+            // lands in the tenant's own /admin/artists list.
+            if (empty($m->owner_user_id) && ($u = auth()->user()) && ! $u->isAdmin()) {
+                $m->owner_user_id = $u->id;
+            }
         });
 
         static::saved(function (self $m) {
