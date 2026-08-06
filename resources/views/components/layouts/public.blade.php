@@ -53,6 +53,13 @@
     @endif
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Umami analytics — cookieless, GDPR-safe. Loads only when both env vars set. --}}
+    @if (config('services.umami.src') && config('services.umami.website_id'))
+        <script defer
+                src="{{ config('services.umami.src') }}"
+                data-website-id="{{ config('services.umami.website_id') }}"></script>
+    @endif
 </head>
 <body class="min-h-screen bg-white text-gray-900 antialiased font-sans">
 

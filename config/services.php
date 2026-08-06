@@ -41,4 +41,10 @@ return [
         'site_verification' => env('GOOGLE_SITE_VERIFICATION'),
     ],
 
+    'umami' => [
+        // Self-hosted Umami analytics. When both set, layout auto-injects the tracker.
+        'src'        => env('UMAMI_SRC'),        // e.g. https://analytics.art-db.org/script.js
+        'website_id' => env('UMAMI_WEBSITE_ID'), // UUID from Umami dashboard
+    ],
+
 ];
