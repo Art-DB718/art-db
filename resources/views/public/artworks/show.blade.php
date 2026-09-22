@@ -303,17 +303,17 @@
         @if ($related->isNotEmpty())
             <div class="mt-24 pt-16 border-t border-gray-200">
                 <h2 class="font-serif text-2xl md:text-3xl mb-10">More by {{ $artwork->artist?->display_name ?? 'this artist' }}</h2>
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 items-start">
                     @foreach ($related as $other)
                         <a href="{{ route('artworks.show', $other) }}" class="block group">
                             @if ($other->primary_image)
-                                <div class="overflow-hidden bg-gray-100">
+                                <div class="overflow-hidden bg-gray-50 flex items-center justify-center">
                                     <img src="{{ \Illuminate\Support\Facades\Storage::url($other->primary_image) }}"
                                          alt="{{ $other->title }}"
-                                         class="w-full aspect-square object-cover group-hover:scale-[1.02] transition-transform duration-300">
+                                         class="w-full h-auto max-h-[400px] object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>
                             @else
-                                <div class="w-full aspect-square bg-gray-100 flex items-center justify-center text-gray-400 text-sm">no image</div>
+                                <div class="w-full aspect-[4/5] bg-gray-100 flex items-center justify-center text-gray-400 text-sm">no image</div>
                             @endif
                             <p class="mt-3 text-sm font-semibold">{{ $other->artist?->display_name ?? '—' }}</p>
                             <p class="text-sm text-gray-600 italic">{{ $other->title }}@if ($other->year_created), {{ $other->year_created }}@endif</p>

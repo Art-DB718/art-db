@@ -45,17 +45,17 @@
                     </div>
                     <a href="{{ route('artworks.index') }}" class="text-xs uppercase tracking-[0.18em] underline underline-offset-4 hover:text-gray-500">View all</a>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 items-start">
                     @foreach ($featuredArtworks as $artwork)
                         <a href="{{ route('artworks.show', $artwork) }}" class="block group">
                             @if ($artwork->primary_image)
-                                <div class="overflow-hidden bg-gray-100">
+                                <div class="overflow-hidden bg-gray-50 flex items-center justify-center">
                                     <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
                                          alt="{{ $artwork->title }}"
-                                         class="w-full aspect-square object-cover group-hover:scale-[1.02] transition-transform duration-300">
+                                         class="w-full h-auto max-h-[600px] object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>
                             @else
-                                <div class="w-full aspect-square bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+                                <div class="w-full aspect-[4/5] bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
                                     no image
                                 </div>
                             @endif
