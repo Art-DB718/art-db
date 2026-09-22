@@ -1,11 +1,11 @@
 <a href="{{ route('artworks.show', $artwork) }}" target="_blank" rel="noopener"
    class="block group rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-gray-400 transition">
     @if ($artwork->primary_image)
-        <div class="bg-gray-50 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+        <div class="bg-gray-50 dark:bg-gray-800 overflow-hidden">
             <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
                  alt="{{ $artwork->title }}"
                  loading="lazy"
-                 class="w-full h-auto max-h-[400px] object-contain group-hover:opacity-90 transition">
+                 class="w-full h-auto object-contain group-hover:opacity-90 transition">
         </div>
     @else
         <div class="w-full aspect-[4/5] bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs text-gray-400">no image</div>

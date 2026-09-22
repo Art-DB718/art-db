@@ -307,10 +307,10 @@
                     @foreach ($related as $other)
                         <a href="{{ route('artworks.show', $other) }}" class="block group">
                             @if ($other->primary_image)
-                                <div class="overflow-hidden bg-gray-50 flex items-center justify-center">
+                                <div class="overflow-hidden bg-gray-50">
                                     <img src="{{ \Illuminate\Support\Facades\Storage::url($other->primary_image) }}"
                                          alt="{{ $other->title }}"
-                                         class="w-full h-auto max-h-[400px] object-contain group-hover:scale-[1.02] transition-transform duration-300">
+                                         class="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>
                             @else
                                 <div class="w-full aspect-[4/5] bg-gray-100 flex items-center justify-center text-gray-400 text-sm">no image</div>

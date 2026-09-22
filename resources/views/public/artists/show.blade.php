@@ -167,10 +167,10 @@
                     @foreach ($artworks as $artwork)
                         <a href="{{ route('artworks.show', $artwork) }}" class="block group">
                             @if ($artwork->primary_image)
-                                <div class="overflow-hidden bg-gray-50 flex items-center justify-center">
+                                <div class="overflow-hidden bg-gray-50">
                                     <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
                                          alt="{{ $artwork->title }}"
-                                         class="w-full h-auto max-h-[600px] object-contain group-hover:scale-[1.02] transition-transform duration-300">
+                                         class="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>
                             @else
                                 <div class="w-full aspect-[4/5] bg-white flex items-center justify-center text-gray-400 text-sm">no image</div>
