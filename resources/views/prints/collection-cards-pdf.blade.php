@@ -14,7 +14,7 @@
         .card { page-break-after: always; }
         .card:last-child { page-break-after: auto; }
         .photo-wrap { text-align: center; margin-bottom: 18pt; }
-        .photo { width: 100%; max-height: 340pt; }
+        .photo { max-width: 100%; max-height: 340pt; }
         .header { border-bottom: 2pt solid #1f2937; padding-bottom: 8pt; margin-bottom: 12pt; }
         .artist { font-size: 12pt; font-weight: bold; color: #374151; margin-bottom: 2pt; }
         h1 { margin: 0; font-size: 18pt; font-style: italic; font-weight: normal; }

@@ -9,7 +9,7 @@
         body { font-family: DejaVu Sans, sans-serif; color: #1f2937; margin: 0; font-size: 10pt; }
         .card { page-break-after: always; }
         .card:last-child { page-break-after: auto; }
-        .photo { width: 100%; max-height: 340pt; margin-bottom: 14pt; }
+        .photo { max-width: 100%; max-height: 340pt; margin-bottom: 14pt; }
         .photo-wrap { text-align: center; margin-bottom: 14pt; }
         .header { border-bottom: 2pt solid #1f2937; padding-bottom: 8pt; margin-bottom: 10pt; }
         .artist { font-size: 11pt; font-weight: bold; color: #374151; margin-bottom: 2pt; }

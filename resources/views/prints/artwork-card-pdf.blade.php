@@ -7,7 +7,7 @@
         @page { margin: 1.2cm; }
         * { box-sizing: border-box; }
         body { font-family: DejaVu Sans, sans-serif; color: #1f2937; margin: 0; font-size: 11pt; }
-        .photo { width: 100%; max-height: 340pt; margin-bottom: 18pt; }
+        .photo { max-width: 100%; max-height: 340pt; margin-bottom: 18pt; }
         .photo-wrap { text-align: center; margin-bottom: 18pt; }
         .header { border-bottom: 2pt solid #1f2937; padding-bottom: 8pt; margin-bottom: 12pt; }
         .artist { font-size: 12pt; font-weight: bold; color: #374151; margin-bottom: 2pt; }

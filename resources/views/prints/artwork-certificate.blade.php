@@ -16,8 +16,8 @@
         h1 { text-align: center; font-size: 2.2rem; letter-spacing: 0.15em; margin: 0 0 2rem; }
         .intro { text-align: center; font-style: italic; color: #4b5563; margin-bottom: 2rem; line-height: 1.6; }
         .artwork-block { display: flex; gap: 2rem; align-items: flex-start; margin-bottom: 2rem; }
-        .artwork-block img { width: 200px; height: 200px; object-fit: cover; border-radius: 4px; border: 1px solid #e5e7eb; flex: none; }
-        .artwork-block .placeholder { width: 200px; height: 200px; background: #f3f4f6; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #9ca3af; flex: none; }
+        .artwork-block img { max-width: 220px; max-height: 260px; width: auto; height: auto; border-radius: 4px; border: 1px solid #e5e7eb; flex: none; display: block; }
+        .artwork-block .placeholder { width: 200px; height: 260px; background: #f3f4f6; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #9ca3af; flex: none; }
         .artwork-info { flex: 1; line-height: 1.6; }
         .artwork-info .artist { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.25rem; }
         .artwork-info .title { font-size: 1.15rem; font-style: italic; margin-bottom: 0.75rem; }
