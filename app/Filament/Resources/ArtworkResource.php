@@ -393,8 +393,116 @@ class ArtworkResource extends Resource
                 Tables\Filters\SelectFilter::make('medium')->relationship('medium', 'name'),
                 Tables\Filters\SelectFilter::make('status')->relationship('status', 'name'),
                 Tables\Filters\TernaryFilter::make('is_published'),
+
+                // Year — mode picker + conditional inputs, mirrors the public
+                // /artworks filter so gallery staff can query by exact year,
+                // range, before/after, or a decade bucket.
+                Tables\Filters\Filter::make('year')
+                    ->form([
+                        Forms\Components\Select::make('mode')
+                            ->label('Year filter')
+                            ->options([
+                                'exact'  => 'Specific year',
+                                'range'  => 'Between years (from – to)',
+                                'after'  => 'After year (≥)',
+                                'before' => 'Before year (≤)',
+                                'decade' => 'Decade',
+                            ])
+                            ->placeholder('Any year')
+                            ->live(),
+                        Forms\Components\TextInput::make('year')
+                            ->numeric()
+                            ->minValue(1000)
+                            ->maxValue((int) date('Y'))
+                            ->placeholder('e.g. 1975')
+                            ->visible(fn (Forms\Get $get) => in_array($get('mode'), ['exact', 'after', 'before'], true)),
+                        Forms\Components\TextInput::make('year_from')
+                            ->label('From')
+                            ->numeric()
+                            ->visible(fn (Forms\Get $get) => $get('mode') === 'range'),
+                        Forms\Components\TextInput::make('year_to')
+                            ->label('To')
+                            ->numeric()
+                            ->visible(fn (Forms\Get $get) => $get('mode') === 'range'),
+                        Forms\Components\Select::make('decade')
+                            ->options(collect(range((int) floor(date('Y') / 10) * 10, 1900, -10))
+                                ->mapWithKeys(fn ($d) => [$d => "{$d}s ({$d}–".($d + 9).')'])
+                                ->all())
+                            ->visible(fn (Forms\Get $get) => $get('mode') === 'decade'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return match ($data['mode'] ?? null) {
+                            'exact'  => filled($data['year'] ?? null)      ? $query->where('year_created', (int) $data['year']) : $query,
+                            'after'  => filled($data['year'] ?? null)      ? $query->where('year_created', '>=', (int) $data['year']) : $query,
+                            'before' => filled($data['year'] ?? null)      ? $query->where('year_created', '<=', (int) $data['year']) : $query,
+                            'range'  => $query
+                                ->when(filled($data['year_from'] ?? null), fn ($q) => $q->where('year_created', '>=', (int) $data['year_from']))
+                                ->when(filled($data['year_to']   ?? null), fn ($q) => $q->where('year_created', '<=', (int) $data['year_to'])),
+                            'decade' => filled($data['decade'] ?? null)    ? $query->whereBetween('year_created', [(int) $data['decade'], (int) $data['decade'] + 9]) : $query,
+                            default  => $query,
+                        };
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        return match ($data['mode'] ?? null) {
+                            'exact'  => filled($data['year'] ?? null)   ? 'Year: '.$data['year'] : null,
+                            'after'  => filled($data['year'] ?? null)   ? 'After '.$data['year'] : null,
+                            'before' => filled($data['year'] ?? null)   ? 'Before '.$data['year'] : null,
+                            'range'  => (filled($data['year_from'] ?? null) || filled($data['year_to'] ?? null))
+                                ? 'Year '.($data['year_from'] ?? '…').'–'.($data['year_to'] ?? '…') : null,
+                            'decade' => filled($data['decade'] ?? null) ? $data['decade'].'s' : null,
+                            default  => null,
+                        };
+                    }),
+
+                // Availability — for_sale vs price_on_request.
+                Tables\Filters\SelectFilter::make('availability')
+                    ->options([
+                        'for_sale'   => 'For sale (price shown)',
+                        'on_request' => 'Price on request',
+                    ])
+                    ->query(function ($query, array $data) {
+                        return match ($data['value'] ?? null) {
+                            'for_sale' => $query->whereNotNull('price')
+                                ->where('price', '>', 0)
+                                ->where(fn ($q) => $q->whereNull('price_on_request')->orWhere('price_on_request', false)),
+                            'on_request' => $query->where('price_on_request', true),
+                            default      => $query,
+                        };
+                    }),
+
+                // Size preset — buckets on the larger of height/width.
+                Tables\Filters\SelectFilter::make('size')
+                    ->options([
+                        'small'  => 'Small (≤ 40 cm)',
+                        'medium' => 'Medium (41–100 cm)',
+                        'large'  => 'Large (> 100 cm)',
+                    ])
+                    ->query(function ($query, array $data) {
+                        return match ($data['value'] ?? null) {
+                            'small'  => $query->where('height_cm', '<=', 40)->where('width_cm', '<=', 40),
+                            'medium' => $query->where(fn ($q) => $q
+                                ->where(fn ($qq) => $qq->whereBetween('height_cm', [41, 100])->orWhereBetween('width_cm', [41, 100]))
+                                ->where(fn ($qq) => $qq->where('height_cm', '<=', 100)->where('width_cm', '<=', 100))),
+                            'large'  => $query->where(fn ($q) => $q->where('height_cm', '>', 100)->orWhere('width_cm', '>', 100)),
+                            default  => $query,
+                        };
+                    }),
+
+                Tables\Filters\TernaryFilter::make('is_signed')->label('Signed'),
+                Tables\Filters\TernaryFilter::make('is_framed')->label('Framed'),
+                Tables\Filters\TernaryFilter::make('has_certificate_of_authenticity')->label('Certificate'),
+                Tables\Filters\Filter::make('limited_edition')
+                    ->label('Limited edition')
+                    ->toggle()
+                    ->query(fn ($query) => $query->where(fn ($q) => $q
+                        ->whereNotNull('edition_number')
+                        ->orWhereNotNull('edition_total'))),
+
                 Tables\Filters\TrashedFilter::make(),
             ])
+            ->filtersLayout(Tables\Enums\FiltersLayout::AboveContentCollapsible)
+            ->filtersFormColumns(3)
+            ->deferFilters()
             ->actions([
                 Tables\Actions\ActionGroup::make([
                 Tables\Actions\EditAction::make(),
