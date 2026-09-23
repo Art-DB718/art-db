@@ -18,6 +18,30 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
+/*
+ * GET /admin/force-logout — deterministic sign-out that flushes the whole
+ * session and forgets the session cookie before redirecting to the login
+ * page. Filament's own POST /admin/logout works in isolation, but its
+ * AccountWidget flow races the response redirect against a still-cached
+ * Livewire page and the user ends up bounced through /admin → /admin/billing.
+ * This GET route is bound to the visible "Sign out" button and guarantees a
+ * one-shot logout with cache headers that stop the browser from restoring
+ * the pre-logout page from bfcache.
+ */
+Route::get('/admin/force-logout', function () {
+    \Illuminate\Support\Facades\Auth::guard('web')->logout();
+    session()->flush();
+    session()->invalidate();
+    session()->regenerateToken();
+
+    return redirect('/admin/login')
+        ->withHeaders([
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma'        => 'no-cache',
+            'Expires'       => '0',
+        ]);
+})->name('admin.force-logout');
+
 // Verejný web (Fáza 2) — domovská stránka + stub routes pre ostatné sekcie.
 Route::get('/', HomeController::class)->name('home');
 
