@@ -37,10 +37,14 @@ class EnforceSubscriptionStatus
 
         // Read-only roles only block writes. Active + trial pass everything through.
         if ($user->isReadOnly() && in_array($request->method(), self::WRITE_METHODS, true)) {
-            // Always allow billing-related routes through so user can resubscribe.
+            // Always allow billing-related routes + logout through so user can
+            // resubscribe OR sign out. Blocking POST /admin/logout would trap a
+            // past-due user in the app with no way to switch accounts.
             if ($request->routeIs('filament.admin.pages.billing*')
+                || $request->routeIs('filament.admin.auth.logout')
                 || $request->routeIs('cashier.*')
-                || str_starts_with($request->path(), 'stripe/')) {
+                || str_starts_with($request->path(), 'stripe/')
+                || $request->path() === 'admin/logout') {
                 return $next($request);
             }
 
