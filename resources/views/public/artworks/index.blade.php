@@ -87,13 +87,45 @@
                         </select>
                     </div>
 
-                    <div>
-                        <p class="block text-xs uppercase tracking-[0.18em] text-gray-500 mb-2">Year</p>
-                        <div class="grid grid-cols-2 gap-2">
+                    {{-- YEAR — mode picker + conditional inputs.
+                         'any' hides everything, 'exact/after/before' show one
+                         year input, 'range' shows from-to, 'decade' shows a
+                         century/decade select. Alpine handles the toggle so
+                         the panel stays compact when the user isn't
+                         filtering by year. --}}
+                    <div x-data="{ mode: '{{ request('year_mode', 'any') }}' }">
+                        <label for="year_mode" class="block text-xs uppercase tracking-[0.18em] text-gray-500 mb-2">Year</label>
+                        <select name="year_mode" id="year_mode" x-model="mode"
+                                class="w-full px-3 py-2 border border-gray-300 text-sm bg-white focus:outline-none focus:border-gray-900">
+                            <option value="any">Any year</option>
+                            <option value="exact">Specific year</option>
+                            <option value="range">Between years (from – to)</option>
+                            <option value="after">After year (≥)</option>
+                            <option value="before">Before year (≤)</option>
+                            <option value="decade">Decade</option>
+                        </select>
+
+                        <div x-show="mode === 'exact' || mode === 'after' || mode === 'before'" x-cloak class="mt-2">
+                            <input type="number" name="year" placeholder="e.g. 1975"
+                                   value="{{ request('year') }}" min="1000" max="{{ now()->year }}"
+                                   class="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:border-gray-900">
+                        </div>
+
+                        <div x-show="mode === 'range'" x-cloak class="grid grid-cols-2 gap-2 mt-2">
                             <input type="number" name="year_from" placeholder="From" value="{{ request('year_from') }}"
                                    class="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:border-gray-900">
                             <input type="number" name="year_to" placeholder="To" value="{{ request('year_to') }}"
                                    class="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:border-gray-900">
+                        </div>
+
+                        <div x-show="mode === 'decade'" x-cloak class="mt-2">
+                            <select name="decade"
+                                    class="w-full px-3 py-2 border border-gray-300 text-sm bg-white focus:outline-none focus:border-gray-900">
+                                <option value="">Any decade</option>
+                                @for ($d = (int) floor(now()->year / 10) * 10; $d >= 1900; $d -= 10)
+                                    <option value="{{ $d }}" @selected((int) request('decade') === $d)>{{ $d }}s ({{ $d }}–{{ $d + 9 }})</option>
+                                @endfor
+                            </select>
                         </div>
                     </div>
 
@@ -105,6 +137,51 @@
                             <input type="number" step="0.01" name="price_to" placeholder="Max" value="{{ request('price_to') }}"
                                    class="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:border-gray-900">
                         </div>
+                    </div>
+
+                    <div>
+                        <label for="availability" class="block text-xs uppercase tracking-[0.18em] text-gray-500 mb-2">Availability</label>
+                        <select name="availability" id="availability"
+                                class="w-full px-3 py-2 border border-gray-300 text-sm bg-white focus:outline-none focus:border-gray-900">
+                            <option value="">All works</option>
+                            <option value="for_sale"   @selected(request('availability') === 'for_sale')>For sale (price shown)</option>
+                            <option value="on_request" @selected(request('availability') === 'on_request')>Price on request</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="size" class="block text-xs uppercase tracking-[0.18em] text-gray-500 mb-2">Size</label>
+                        <select name="size" id="size"
+                                class="w-full px-3 py-2 border border-gray-300 text-sm bg-white focus:outline-none focus:border-gray-900">
+                            <option value="">Any size</option>
+                            <option value="small"  @selected(request('size') === 'small')>Small (≤ 40 cm)</option>
+                            <option value="medium" @selected(request('size') === 'medium')>Medium (41–100 cm)</option>
+                            <option value="large"  @selected(request('size') === 'large')>Large (&gt; 100 cm)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <p class="block text-xs uppercase tracking-[0.18em] text-gray-500 mb-2">Properties</p>
+                        <label class="flex items-center gap-2 py-1 text-sm text-gray-700 cursor-pointer">
+                            <input type="checkbox" name="signed" value="1" @checked(request()->boolean('signed'))
+                                   class="border-gray-300 text-gray-900 focus:ring-gray-900">
+                            <span>Signed</span>
+                        </label>
+                        <label class="flex items-center gap-2 py-1 text-sm text-gray-700 cursor-pointer">
+                            <input type="checkbox" name="framed" value="1" @checked(request()->boolean('framed'))
+                                   class="border-gray-300 text-gray-900 focus:ring-gray-900">
+                            <span>Framed</span>
+                        </label>
+                        <label class="flex items-center gap-2 py-1 text-sm text-gray-700 cursor-pointer">
+                            <input type="checkbox" name="certificate" value="1" @checked(request()->boolean('certificate'))
+                                   class="border-gray-300 text-gray-900 focus:ring-gray-900">
+                            <span>Certificate of authenticity</span>
+                        </label>
+                        <label class="flex items-center gap-2 py-1 text-sm text-gray-700 cursor-pointer">
+                            <input type="checkbox" name="edition" value="1" @checked(request()->boolean('edition'))
+                                   class="border-gray-300 text-gray-900 focus:ring-gray-900">
+                            <span>Limited edition</span>
+                        </label>
                     </div>
 
                     <div class="flex gap-2 pt-2">

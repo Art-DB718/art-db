@@ -35,17 +35,82 @@ class ArtworkController extends Controller
         if ($request->filled('gallery_id')) {
             $query->whereHas('artist.galleries', fn ($g) => $g->whereKey((int) $request->gallery_id));
         }
-        if ($request->filled('year_from')) {
-            $query->where('year_created', '>=', (int) $request->year_from);
+        // Year filter — flexible mode picks which of the year* inputs apply.
+        // `any` is the default no-op. `range` keeps the classic from/to
+        // inputs; the other modes use a single `year` input so users don't
+        // have to duplicate the same number in both fields.
+        $yearMode = (string) $request->input('year_mode', 'any');
+        if ($yearMode === 'exact' && $request->filled('year')) {
+            $query->where('year_created', (int) $request->year);
+        } elseif ($yearMode === 'after' && $request->filled('year')) {
+            $query->where('year_created', '>=', (int) $request->year);
+        } elseif ($yearMode === 'before' && $request->filled('year')) {
+            $query->where('year_created', '<=', (int) $request->year);
+        } elseif ($yearMode === 'decade' && $request->filled('decade')) {
+            $decade = (int) $request->decade;
+            $query->whereBetween('year_created', [$decade, $decade + 9]);
+        } else {
+            // Default / 'range' / no mode → honour the classic from-to pair.
+            if ($request->filled('year_from')) {
+                $query->where('year_created', '>=', (int) $request->year_from);
+            }
+            if ($request->filled('year_to')) {
+                $query->where('year_created', '<=', (int) $request->year_to);
+            }
         }
-        if ($request->filled('year_to')) {
-            $query->where('year_created', '<=', (int) $request->year_to);
-        }
+
         if ($request->filled('price_from')) {
             $query->where('price', '>=', (float) $request->price_from);
         }
         if ($request->filled('price_to')) {
             $query->where('price', '<=', (float) $request->price_to);
+        }
+
+        // Yes/no artwork-property filters — each is a checkbox in the UI.
+        if ($request->boolean('signed')) {
+            $query->where('is_signed', true);
+        }
+        if ($request->boolean('framed')) {
+            $query->where('is_framed', true);
+        }
+        if ($request->boolean('certificate')) {
+            $query->where('has_certificate_of_authenticity', true);
+        }
+        if ($request->boolean('edition')) {
+            // Limited-edition works have an explicit edition_number OR edition_total.
+            $query->where(fn ($q) => $q
+                ->whereNotNull('edition_number')
+                ->orWhereNotNull('edition_total'));
+        }
+
+        // Availability — mutually exclusive presets over price + price_on_request.
+        $availability = (string) $request->input('availability', '');
+        if ($availability === 'for_sale') {
+            $query->whereNotNull('price')
+                ->where('price', '>', 0)
+                ->where(function ($q) {
+                    $q->whereNull('price_on_request')->orWhere('price_on_request', false);
+                });
+        } elseif ($availability === 'on_request') {
+            $query->where('price_on_request', true);
+        }
+
+        // Size preset — takes the LARGER of height/width as the artwork's
+        // dominant dimension, matches against small/medium/large buckets.
+        $size = (string) $request->input('size', '');
+        if ($size === 'small') {
+            $query->where('height_cm', '<=', 40)->where('width_cm', '<=', 40);
+        } elseif ($size === 'medium') {
+            $query->where(function ($q) {
+                $q->where(function ($qq) {
+                    $qq->whereBetween('height_cm', [41, 100])
+                        ->orWhereBetween('width_cm', [41, 100]);
+                })->where(fn ($qq) => $qq->where('height_cm', '<=', 100)->where('width_cm', '<=', 100));
+            });
+        } elseif ($size === 'large') {
+            $query->where(function ($q) {
+                $q->where('height_cm', '>', 100)->orWhere('width_cm', '>', 100);
+            });
         }
         if ($request->filled('q')) {
             $needle = '%'.$request->q.'%';
