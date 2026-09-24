@@ -35,14 +35,16 @@
             line-height: 1.55;
         }
 
-        /* Header wordmark / logo — centred at top. */
+        /* Header wordmark / logo — centred at top, deliberately larger
+           than the 'Certificate of Authenticity' title below it so the
+           gallery brand reads first. */
         .top { text-align: center; margin-bottom: 34pt; }
-        .top img { max-height: 40pt; max-width: 240pt; }
+        .top img { max-height: 100pt; max-width: 320pt; }
         .top .wordmark {
             font-family: DejaVu Serif, serif;
-            font-size: 14pt;
+            font-size: 22pt;
             letter-spacing: 0.35em;
-            color: #4b5563;
+            color: #374151;
             text-transform: uppercase;
         }
 
@@ -64,7 +66,9 @@
            block inset ≈ 1.5cm on each side). */
         .layout {
             width: 78%;
-            margin: 60pt auto 0;
+            /* Push the photo+specs block ~1.5 cm (≈ 43pt) further down
+               below the intro paragraph. */
+            margin: 103pt auto 0;
             border-collapse: separate;
             border-spacing: 0;
         }
