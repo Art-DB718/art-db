@@ -139,8 +139,11 @@ class ImportArtgalleria extends Command
 
     protected function findOrCreateArtist(?string $name, User $user, Gallery $gallery, bool $dryRun): ?Artist
     {
-        if (! $name || in_array(trim($name), ['', '_ _', '-'], true)) {
-            return null;
+        // Blank / placeholder artist in source → attach to a per-owner
+        // 'Unknown artist' record so the artwork still imports (Art-DB has
+        // NOT NULL artist_id). Kat can reassign in the admin later.
+        if (! $name || in_array(trim($name), ['', '_ _', '-', '_'], true)) {
+            return $this->findOrCreateUnknownArtist($user, $gallery, $dryRun);
         }
 
         // Split "Rudolf Fila" → first=Rudolf last=Fila. Handles single-name too.
@@ -170,6 +173,37 @@ class ImportArtgalleria extends Command
             'last_name'     => $last,
             'owner_user_id' => $user->id,
             'is_published'  => false,
+        ]);
+
+        $this->attachArtistToGallery($artist, $gallery, $dryRun);
+
+        return $artist;
+    }
+
+    protected function findOrCreateUnknownArtist(User $user, Gallery $gallery, bool $dryRun): ?Artist
+    {
+        $artist = Artist::where('owner_user_id', $user->id)
+            ->where('last_name', 'Neznámy autor')
+            ->first();
+
+        if ($artist) {
+            $this->attachArtistToGallery($artist, $gallery, $dryRun);
+
+            return $artist;
+        }
+
+        if ($dryRun) {
+            $this->line('     · would create Artist: Neznámy autor (placeholder)');
+
+            return null;
+        }
+
+        $artist = Artist::create([
+            'first_name'    => '',
+            'last_name'     => 'Neznámy autor',
+            'owner_user_id' => $user->id,
+            'is_published'  => false,
+            'short_bio'     => 'Placeholder for works whose original artist attribution is missing.',
         ]);
 
         $this->attachArtistToGallery($artist, $gallery, $dryRun);
