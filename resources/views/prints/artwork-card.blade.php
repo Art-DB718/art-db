@@ -19,14 +19,17 @@
             background: #f3f4f6;
         }
         .sheet {
-            /* A4 portrait — 210 × 297 mm. Padding = 2 cm page margin. */
+            /* A4 portrait — 210 × 297 mm. Padding = 2 cm page margin.
+               Positioned so the footer can pin to the sheet's bottom
+               regardless of how tall the content flow ends up. */
             width: 210mm;
             min-height: 297mm;
             margin: 0 auto;
             background: #fff;
-            padding: 2cm;
+            padding: 2cm 2cm 3cm;   /* extra bottom padding = footer band */
             border-radius: 6px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            position: relative;
         }
 
         .actions { width: 210mm; margin: 0 auto 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; }
@@ -60,7 +63,17 @@
         .aux { margin-top: 1.2rem; color: #4b5563; font-size: 0.9rem; line-height: 1.6; }
         .aux .aux-label { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.7rem; color: #6b7280; margin-bottom: 0.25rem; font-weight: 700; }
 
-        .gallery-meta { margin-top: 2rem; padding-top: 1rem; font-size: 0.8rem; color: #9ca3af; text-align: center; }
+        /* Footer pinned to the bottom of the A4 sheet, not floating right
+           after the meta block. */
+        .gallery-meta {
+            position: absolute;
+            left: 2cm;
+            right: 2cm;
+            bottom: 1.5cm;
+            font-size: 0.8rem;
+            color: #6b7280;
+            text-align: center;
+        }
 
         @media print {
             body { background: #fff; padding: 0; }

@@ -80,7 +80,10 @@
         }
         .aux .aux-label { text-transform: uppercase; letter-spacing: 0.12em; font-size: 8pt; color: #6b7280; margin-bottom: 4pt; font-weight: bold; }
 
-        .footer { position: fixed; bottom: 0.5cm; left: 2cm; right: 2cm; font-size: 8pt; color: #9ca3af; text-align: center; }
+        /* Footer pinned to the bottom of every A4 page. Kept inside the
+           printable band (>= 1 cm from paper edge) so nothing gets
+           clipped by the printer's own margin. */
+        .footer { position: fixed; bottom: 1.5cm; left: 2cm; right: 2cm; font-size: 9pt; color: #6b7280; text-align: center; }
     </style>
 </head>
 <body>
