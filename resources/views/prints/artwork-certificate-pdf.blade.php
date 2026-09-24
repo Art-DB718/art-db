@@ -11,14 +11,19 @@
         .top h1 { font-size: 24pt; font-weight: normal; margin: 10pt 0 4pt; letter-spacing: 0.18em; }
         .top .sub { font-size: 10pt; color: #6b7280; letter-spacing: 0.2em; text-transform: uppercase; }
         .body { margin: 36pt 0; }
-        .intro { font-size: 11pt; }
-        /* Artwork photo sits between the intro and the spec table so
-           the reader sees the piece before its metadata. Aspect ratio
-           is preserved via max-width + max-height (DomPDF ignores
-           object-fit). */
-        .photo-wrap { text-align: center; margin: 20pt 0 24pt; }
-        .photo      { max-width: 100%; max-height: 300pt; border: 1pt solid #e5e7eb; }
-        .specs { width: 100%; border-collapse: collapse; margin: 24pt 0; }
+        .intro { font-size: 11pt; margin-bottom: 24pt; }
+        /* Two-column layout: photo LEFT, specs RIGHT. DomPDF has no flex
+           or grid, so this is a plain table where each td is one column;
+           vertical-align:top keeps the image and the spec list aligned
+           to the same baseline. */
+        .layout { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .layout td { vertical-align: top; padding: 0; }
+        .layout td.photo-col { width: 46%; padding-right: 24pt; }
+        .layout td.text-col  { width: 54%; }
+        .photo { max-width: 100%; max-height: 340pt; border: 1pt solid #e5e7eb; }
+        .artwork-desc { font-size: 10.5pt; line-height: 1.55; color: #374151; }
+        .artwork-desc p { margin: 0 0 8pt; }
+        .specs { width: 100%; border-collapse: collapse; margin-top: 24pt; }
         .specs td { padding: 6pt 0; border-bottom: 1pt solid #e5e7eb; vertical-align: top; }
         .specs td.label { width: 35%; color: #6b7280; padding-right: 12pt; }
         .specs td.val { font-weight: bold; }
@@ -46,12 +51,29 @@
             <div class="intro">This certificate confirms the authenticity of the following original artwork:</div>
         @endif
 
-        @if ($artwork->primary_image)
-            <div class="photo-wrap">
-                <img class="photo" src="{{ public_path('storage/'.$artwork->primary_image) }}" alt="">
-            </div>
-        @endif
+        {{-- Photo on the left, artwork description on the right. Specs
+             table + signature stay below (full width). If the artwork has
+             no description text at all, the whole thing collapses back to
+             just a big photo. --}}
+        <table class="layout">
+            <tr>
+                <td class="photo-col">
+                    @if ($artwork->primary_image)
+                        <img class="photo" src="{{ public_path('storage/'.$artwork->primary_image) }}" alt="">
+                    @endif
+                </td>
+                <td class="text-col">
+                    @if ($artwork->description)
+                        <div class="artwork-desc">{!! \App\Support\PrintHtml::render($artwork->description) !!}</div>
+                    @endif
+                </td>
+            </tr>
+        </table>
 
+        @php
+            $fmt = fn ($v) => $v === null ? null : rtrim(rtrim(number_format((float) $v, 2, '.', ''), '0'), '.');
+            $dims = collect([$fmt($artwork->height_cm), $fmt($artwork->width_cm), $fmt($artwork->depth_cm)])->filter()->implode(' × ');
+        @endphp
         <table class="specs">
             <tr><td class="label">Artist</td><td class="val">{{ $artwork->artist?->display_name ?? '—' }}</td></tr>
             <tr><td class="label">Title</td><td class="val">{{ $artwork->title }}</td></tr>
@@ -61,11 +83,7 @@
             @if ($artwork->medium?->name)
                 <tr><td class="label">Medium</td><td class="val">{{ $artwork->medium->name }}</td></tr>
             @endif
-            @if ($artwork->height_cm || $artwork->width_cm)
-                @php
-                    $fmt = fn ($v) => $v === null ? null : rtrim(rtrim(number_format((float) $v, 2, '.', ''), '0'), '.');
-                    $dims = collect([$fmt($artwork->height_cm), $fmt($artwork->width_cm), $fmt($artwork->depth_cm)])->filter()->implode(' × ');
-                @endphp
+            @if ($dims)
                 <tr><td class="label">Dimensions</td><td class="val">{{ $dims }} cm</td></tr>
             @endif
             @if ($artwork->edition_number && $artwork->edition_total)

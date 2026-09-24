@@ -13,9 +13,15 @@
         .top h1 { font-size: 22pt; font-weight: normal; margin: 10pt 0 4pt; letter-spacing: 0.18em; }
         .top .sub { font-size: 9pt; color: #6b7280; letter-spacing: 0.2em; text-transform: uppercase; }
         .body { margin: 30pt 0; }
-        .photo-wrap { text-align: center; margin: 16pt 0 20pt; }
-        .photo      { max-width: 100%; max-height: 260pt; border: 1pt solid #e5e7eb; }
-        .specs { width: 100%; border-collapse: collapse; margin: 20pt 0; }
+        /* Two-column layout: photo LEFT, artwork description RIGHT. */
+        .layout { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 14pt; }
+        .layout td { vertical-align: top; padding: 0; }
+        .layout td.photo-col { width: 46%; padding-right: 22pt; }
+        .layout td.text-col  { width: 54%; }
+        .photo { max-width: 100%; max-height: 260pt; border: 1pt solid #e5e7eb; }
+        .artwork-desc { font-size: 10pt; line-height: 1.55; color: #374151; }
+        .artwork-desc p { margin: 0 0 8pt; }
+        .specs { width: 100%; border-collapse: collapse; margin-top: 20pt; }
         .specs td { padding: 6pt 0; border-bottom: 1pt solid #e5e7eb; vertical-align: top; }
         .specs td.label { width: 35%; color: #6b7280; padding-right: 12pt; }
         .specs td.val { font-weight: bold; }
@@ -47,11 +53,20 @@
                     <div>This certificate confirms the authenticity of the following original artwork:</div>
                 @endif
 
-                @if ($artwork->primary_image)
-                    <div class="photo-wrap">
-                        <img class="photo" src="{{ public_path('storage/'.$artwork->primary_image) }}" alt="">
-                    </div>
-                @endif
+                <table class="layout">
+                    <tr>
+                        <td class="photo-col">
+                            @if ($artwork->primary_image)
+                                <img class="photo" src="{{ public_path('storage/'.$artwork->primary_image) }}" alt="">
+                            @endif
+                        </td>
+                        <td class="text-col">
+                            @if ($artwork->description)
+                                <div class="artwork-desc">{!! \App\Support\PrintHtml::render($artwork->description) !!}</div>
+                            @endif
+                        </td>
+                    </tr>
+                </table>
 
                 <table class="specs">
                     <tr><td class="label">Artist</td><td class="val">{{ $artwork->artist?->display_name ?? '—' }}</td></tr>
