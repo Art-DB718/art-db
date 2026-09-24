@@ -75,8 +75,29 @@
         }
 
         @media print {
-            body { background: #fff; padding: 0; }
-            .sheet { box-shadow: none; border-radius: 0; padding: 2rem 3rem; border: none; min-height: 0; }
+            body { background: #fff; padding: 0; margin: 0; }
+            .sheet {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 0;
+                border: none;
+                min-height: 0;
+                max-width: none;
+                width: auto;
+                margin: 0;
+                position: static;
+            }
+            /* Footer flows naturally in print — position:absolute inside a
+               collapsed sheet floats it off-page. */
+            .footer {
+                position: static;
+                left: auto;
+                right: auto;
+                bottom: auto;
+                margin-top: 2rem;
+                padding-top: 1rem;
+                border-top: 1px solid #e5e7eb;
+            }
             .actions, .no-print { display: none !important; }
             @page { size: A4; margin: 2cm; }
         }

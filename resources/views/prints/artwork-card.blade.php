@@ -76,10 +76,31 @@
         }
 
         @media print {
-            body { background: #fff; padding: 0; }
-            /* Let the printer apply the @page margin — sheet becomes
-               plain block, no fixed A4 size (would double-margin). */
-            .sheet { box-shadow: none; border-radius: 0; padding: 0; width: auto; min-height: 0; margin: 0; }
+            body { background: #fff; padding: 0; margin: 0; }
+            /* The printer applies @page margin — sheet must NOT set its
+               own fixed A4 dimensions (that produced a blank second page).
+               Everything collapses to a plain flow block. */
+            .sheet {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 0;
+                width: auto;
+                min-height: 0;
+                margin: 0;
+                position: static;
+            }
+            /* Footer stops being absolute — otherwise it floats over the
+               collapsed sheet and prints nothing where it should. Let it
+               drop into normal flow at the end of the content instead. */
+            .gallery-meta {
+                position: static;
+                left: auto;
+                right: auto;
+                bottom: auto;
+                margin-top: 2rem;
+                padding-top: 1rem;
+                border-top: 1px solid #e5e7eb;
+            }
             .actions, .no-print { display: none !important; }
             @page { size: A4; margin: 2cm; }
         }
