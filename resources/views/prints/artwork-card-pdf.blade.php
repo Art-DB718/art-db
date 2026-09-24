@@ -26,7 +26,7 @@
          * so it fills as much of the page as possible while preserving its
          * real aspect ratio (never stretched, never cropped).
          */
-        @page { margin: 1.8cm; }
+        @page { margin: 2cm; }
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; }
         body {
@@ -58,12 +58,11 @@
         .photo-wrap { width: 100%; text-align: center; margin-bottom: 36pt; }
         .photo      { max-width: 100%; max-height: 520pt; }
 
-        /* Metadata block — indented from the left edge so the copy has a
-           clear margin from the paper edge and everything sits within a
-           consistent inner column. */
+        /* Metadata block — aligned to the left content edge, which is
+           already 2cm from the paper edge via @page margin. No extra
+           padding-left; the block just breathes with the page. */
         .meta {
             color: #1f2937;
-            padding-left: 32%;   /* pushes the metadata into the right column */
             padding-right: 4%;
         }
         .meta .artist  { font-size: 10.5pt; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4pt; }
@@ -72,10 +71,9 @@
         .meta .price   { margin-top: 10pt; font-weight: bold; color: #1f2937; }
 
         /* Optional secondary blocks (description / provenance) sit under
-           the meta in the same right-column so alignment is consistent. */
+           the meta with the same left/right alignment as the paper edges. */
         .aux {
             margin-top: 26pt;
-            padding-left: 32%;
             padding-right: 4%;
             color: #4b5563;
             font-size: 9.5pt;
@@ -83,7 +81,7 @@
         }
         .aux .aux-label { text-transform: uppercase; letter-spacing: 0.12em; font-size: 8pt; color: #6b7280; margin-bottom: 4pt; font-weight: bold; }
 
-        .footer { position: fixed; bottom: 0.5cm; left: 1.8cm; right: 1.8cm; font-size: 8pt; color: #9ca3af; text-align: center; }
+        .footer { position: fixed; bottom: 0.5cm; left: 2cm; right: 2cm; font-size: 8pt; color: #9ca3af; text-align: center; }
     </style>
 </head>
 <body>
