@@ -5,21 +5,19 @@
     <title>{{ $artwork->title }}</title>
     <style>
         /*
-         * Gallery-style artwork card. Layout is deliberately minimalist:
+         * Gallery-style artwork card. Layout:
          *   ┌────────────────────────────────────────────┐
-         *   │                                       LOGO │  ← header (small)
+         *   │                    LOGO                    │  ← header centred
          *   │                                            │
          *   │             ┌──────────────┐               │
-         *   │             │              │               │
          *   │             │   ARTWORK    │  ← dominant   │
-         *   │             │  (max ~70%)  │               │
-         *   │             │              │               │
          *   │             └──────────────┘               │
-         *   │  ARTIST NAME                               │
-         *   │  Title, Year                               │
-         *   │  medium / edition                          │
-         *   │  dimensions                                │
-         *   │  price                                     │
+         *   │                                            │
+         *   │              ARTIST NAME                   │
+         *   │              Title, Year                   │
+         *   │              medium / edition              │
+         *   │              dimensions                    │
+         *   │              price                         │
          *   └────────────────────────────────────────────┘
          *
          * DomPDF caveats: no flex, no object-fit, no CSS grid — everything
@@ -28,49 +26,64 @@
          * so it fills as much of the page as possible while preserving its
          * real aspect ratio (never stretched, never cropped).
          */
-        @page { margin: 1.4cm; }
+        @page { margin: 1.8cm; }
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; }
         body {
             font-family: DejaVu Sans, sans-serif;
             color: #1f2937;
-            font-size: 10pt;
-            line-height: 1.4;
+            font-size: 10.5pt;
+            line-height: 1.55;
         }
 
-        /* Header: logo (image or text) pinned to the top-right corner. */
+        /* Header: logo (image or wordmark) centred at the top. Sized so it
+           reads clearly but still leaves the artwork as the page's focal
+           point. */
         .header {
             width: 100%;
-            margin-bottom: 24pt;
-            text-align: right;
-            color: #4b5563;
+            margin-bottom: 32pt;
+            text-align: center;
+            color: #374151;
         }
-        .header img { max-height: 28pt; max-width: 120pt; }
+        .header img { max-height: 60pt; max-width: 240pt; }
         .header .wordmark {
             font-family: DejaVu Serif, serif;
-            font-size: 11pt;
+            font-size: 14pt;
             letter-spacing: 0.35em;
-            color: #4b5563;
+            color: #374151;
         }
 
         /* Big centered artwork; capped by max-height so the meta block
            below always has room even for portrait pieces. */
-        .photo-wrap { width: 100%; text-align: center; margin-bottom: 32pt; }
-        .photo      { max-width: 100%; max-height: 560pt; }
+        .photo-wrap { width: 100%; text-align: center; margin-bottom: 36pt; }
+        .photo      { max-width: 100%; max-height: 520pt; }
 
-        /* Metadata block, bottom-left. */
-        .meta { color: #1f2937; }
-        .meta .artist  { font-size: 10pt; font-weight: bold; letter-spacing: 0.06em; text-transform: uppercase; }
-        .meta .title   { font-style: italic; }
-        .meta .line    { margin-top: 2pt; }
-        .meta .price   { margin-top: 6pt; }
+        /* Metadata block — indented from the left edge so the copy has a
+           clear margin from the paper edge and everything sits within a
+           consistent inner column. */
+        .meta {
+            color: #1f2937;
+            padding-left: 32%;   /* pushes the metadata into the right column */
+            padding-right: 4%;
+        }
+        .meta .artist  { font-size: 10.5pt; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4pt; }
+        .meta .title   { font-style: italic; font-size: 11pt; margin-bottom: 8pt; }
+        .meta .line    { margin-top: 3pt; color: #374151; }
+        .meta .price   { margin-top: 10pt; font-weight: bold; color: #1f2937; }
 
-        /* Optional secondary blocks (description / provenance) stay small
-           and quiet under the meta. Show only when the setting is on. */
-        .aux { margin-top: 22pt; color: #4b5563; font-size: 9.5pt; line-height: 1.5; }
-        .aux .aux-label { text-transform: uppercase; letter-spacing: 0.1em; font-size: 8pt; color: #6b7280; margin-bottom: 3pt; font-weight: bold; }
+        /* Optional secondary blocks (description / provenance) sit under
+           the meta in the same right-column so alignment is consistent. */
+        .aux {
+            margin-top: 26pt;
+            padding-left: 32%;
+            padding-right: 4%;
+            color: #4b5563;
+            font-size: 9.5pt;
+            line-height: 1.6;
+        }
+        .aux .aux-label { text-transform: uppercase; letter-spacing: 0.12em; font-size: 8pt; color: #6b7280; margin-bottom: 4pt; font-weight: bold; }
 
-        .footer { position: fixed; bottom: 0.4cm; left: 1.4cm; right: 1.4cm; font-size: 8pt; color: #9ca3af; text-align: center; }
+        .footer { position: fixed; bottom: 0.5cm; left: 1.8cm; right: 1.8cm; font-size: 8pt; color: #9ca3af; text-align: center; }
     </style>
 </head>
 <body>
