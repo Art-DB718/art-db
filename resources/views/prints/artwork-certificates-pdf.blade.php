@@ -18,9 +18,9 @@
         .layout td { vertical-align: top; padding: 0; }
         .layout td.photo-col { width: 46%; padding-right: 22pt; }
         .layout td.text-col  { width: 54%; }
-        .photo { max-width: 100%; max-height: 260pt; border: 1pt solid #e5e7eb; }
+        .photo { max-width: 100%; max-height: 260pt; }
         .specs { width: 100%; border-collapse: collapse; }
-        .specs td { padding: 6pt 0; border-bottom: 1pt solid #e5e7eb; vertical-align: top; }
+        .specs td { padding: 4pt 0; vertical-align: top; }
         .specs td.label { width: 35%; color: #6b7280; padding-right: 12pt; }
         .specs td.val { font-weight: bold; }
         .signature { margin-top: 50pt; }
@@ -78,11 +78,6 @@
                         </td>
                     </tr>
                 </table>
-            </div>
-
-            <div class="signature">
-                <div class="line"></div>
-                <div class="label">{{ $settings->cert_signature_label ?: 'For the gallery' }}</div>
             </div>
 
             <div class="cert-footer">
