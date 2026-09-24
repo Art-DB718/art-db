@@ -146,12 +146,32 @@ class ImportArtgalleriaSales extends Command
         return preg_match('/INV-[A-Za-z0-9_-]+/', $desc, $m) ? $m[0] : null;
     }
 
-    /** Find a Contact by fuzzy name match against 'Firstname Lastname'. */
-    protected function findBuyer(int $userId, string $name): ?Contact
+    /**
+     * Find a Contact from artgalleria's display blob. The scrape gives us
+     * "Firstname Lastname  - email@x" (or just "Company"), so email is the
+     * highest-signal identifier we can pull out; fall back to name / org
+     * fold if no email or no email match.
+     */
+    protected function findBuyer(int $userId, string $blob): ?Contact
     {
+        // 1) Email — cleanest match.
+        if (preg_match('/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/', $blob, $m)) {
+            $c = Contact::where('owner_user_id', $userId)->where('email', strtolower($m[0]))->first();
+            if ($c) return $c;
+        }
+        // 2) Strip everything from " - " onwards + fold, try full name /
+        //    last-name only / organization.
+        $name = trim(preg_replace('/\s*-\s*[^-]*$/', '', $blob));
         $needle = $this->fold($name);
-        return Contact::where('owner_user_id', $userId)->get()
-            ->first(fn (Contact $c) => $this->fold(trim(($c->first_name ?? '').' '.($c->last_name ?? ''))) === $needle);
+        if ($needle === '') return null;
+
+        $all = Contact::where('owner_user_id', $userId)->get();
+        foreach ($all as $c) {
+            if ($this->fold(trim(($c->first_name ?? '').' '.($c->last_name ?? ''))) === $needle) return $c;
+            if ($this->fold($c->organization ?? '') === $needle) return $c;
+            if ($this->fold($c->last_name ?? '')   === $needle) return $c;
+        }
+        return null;
     }
 
     protected function fold(string $s): string
