@@ -66,10 +66,21 @@ class ImportArtgalleriaArtists extends Command
             if (in_array($first, ['_'], true)) $first = '';
             if (in_array($last,  ['_'], true)) $last  = '';
 
+            // Try exact match first (fast), then fall back to diacritics-
+            // insensitive comparison so "Peter Kľúčik" matches "Peter Klúčik"
+            // and stray whitespace / capitalisation isn't a blocker.
             $artist = Artist::where('owner_user_id', $user->id)
                 ->where('first_name', $first)
                 ->where('last_name',  $last)
                 ->first();
+
+            if (! $artist) {
+                $needleFirst = $this->normalizeName($first);
+                $needleLast  = $this->normalizeName($last);
+                $artist = Artist::where('owner_user_id', $user->id)->get()
+                    ->first(fn (Artist $a) => $this->normalizeName($a->first_name) === $needleFirst
+                        && $this->normalizeName($a->last_name)  === $needleLast);
+            }
 
             if (! $artist) {
                 $notMatched++;
@@ -97,6 +108,27 @@ class ImportArtgalleriaArtists extends Command
             $updated, $dryRun ? 'would update' : 'updated', $skipped, $notMatched));
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Fold a name to a diacritics-less, lowercase, single-spaced form so
+     * "Peter Kľúčik" and "peter klucik  " compare as equal. Uses PHP's
+     * Normalizer if available (preferred, handles composed chars); falls
+     * back to iconv//TRANSLIT otherwise.
+     */
+    protected function normalizeName(?string $s): string
+    {
+        $s = trim((string) $s);
+        if ($s === '') return '';
+        if (class_exists(\Normalizer::class)) {
+            $s = \Normalizer::normalize($s, \Normalizer::FORM_D);
+            $s = preg_replace('/\p{Mn}+/u', '', $s);
+        } else {
+            $s = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $s) ?: $s;
+        }
+        $s = strtolower($s);
+        $s = preg_replace('/\s+/', ' ', $s);
+        return $s;
     }
 
     /**
