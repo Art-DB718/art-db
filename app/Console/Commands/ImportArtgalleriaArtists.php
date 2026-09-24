@@ -75,11 +75,16 @@ class ImportArtgalleriaArtists extends Command
                 ->first();
 
             if (! $artist) {
-                $needleFirst = $this->normalizeName($first);
-                $needleLast  = $this->normalizeName($last);
+                // Compare by full name (first + last concatenated + folded)
+                // so a source that puts everything in lastname ('Monogramista
+                // T•D') still matches a DB row that split it ('Monogramista'
+                // / 'T•D'), and vice versa. Also clears the "_" placeholder
+                // wherever it appears so "_/Petrík" matches "/Petrík".
+                $needle = $this->normalizeName(str_replace('_', '', $first.' '.$last));
                 $artist = Artist::where('owner_user_id', $user->id)->get()
-                    ->first(fn (Artist $a) => $this->normalizeName($a->first_name) === $needleFirst
-                        && $this->normalizeName($a->last_name)  === $needleLast);
+                    ->first(fn (Artist $a) => $this->normalizeName(
+                        str_replace('_', '', $a->first_name.' '.$a->last_name)
+                    ) === $needle);
             }
 
             if (! $artist) {
