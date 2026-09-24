@@ -42,7 +42,7 @@
 
             <div class="body">
                 @if ($settings->cert_intro)
-                    <div>{!! nl2br(e($settings->cert_intro)) !!}</div>
+                    <div>{!! \App\Support\PrintHtml::render($settings->cert_intro) !!}</div>
                 @else
                     <div>This certificate confirms the authenticity of the following original artwork:</div>
                 @endif

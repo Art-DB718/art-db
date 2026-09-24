@@ -36,8 +36,12 @@
     </div>
 
     <div class="body">
+        {{-- cert_intro is admin-authored via a rich-text editor and may
+             already contain <p>/<br> tags. Feed it through the render
+             helper so those tags render as HTML instead of leaking as
+             literal '</p>' text on the page. --}}
         @if ($settings->cert_intro)
-            <div class="intro">{!! nl2br(e($settings->cert_intro)) !!}</div>
+            <div class="intro">{!! \App\Support\PrintHtml::render($settings->cert_intro) !!}</div>
         @else
             <div class="intro">This certificate confirms the authenticity of the following original artwork:</div>
         @endif
