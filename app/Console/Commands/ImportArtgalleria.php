@@ -195,6 +195,7 @@ class ImportArtgalleria extends Command
             'artist_id'             => $artist?->id,
             'owner_user_id'         => $user->id,
             'title'                 => $item['title'] ?? 'Untitled',
+            'status_id'             => $this->mapStatusId($item['artwork_status_id'] ?? null),
             'year_created'          => $this->parseYear($item['artwork_year'] ?? null),
             'materials'             => $item['medium_text'] ?? null,
             'height_cm'             => isset($item['height']) ? $toCm($item['height']) : null,
@@ -218,6 +219,41 @@ class ImportArtgalleria extends Command
                 ? (float) $item['insured_value'] : null,
             'is_published'          => false,
         ], fn($v) => $v !== null && $v !== '' && $v !== false);
+    }
+
+    /**
+     * Map an artgalleria status label ("For Sale", "Sold", …) to the id
+     * of the matching art-db ArtworkStatus row. Cached per run to avoid
+     * hammering the reference table on every artwork.
+     */
+    protected array $statusCache = [];
+
+    protected function mapStatusId(?string $label): ?int
+    {
+        if (! $label) {
+            return null;
+        }
+        $label = trim($label);
+        if ($label === '' || in_array(strtolower($label), ['0', 'null'], true)) {
+            return null;
+        }
+        if (array_key_exists($label, $this->statusCache)) {
+            return $this->statusCache[$label];
+        }
+        // Explicit artgalleria → art-db name aliases; anything not listed here
+        // is matched case-insensitively against ArtworkStatus.name as-is.
+        $aliases = [
+            'For Sale'         => 'For sale',
+            'For Rent'         => 'for rent',
+            'For Sale or Rent' => 'For sale or rent',
+            'Sold'             => 'Sold',
+            'Not Available'    => 'Not for sale',
+            'Details Pending'  => 'Details pending',
+        ];
+        $target = $aliases[$label] ?? $label;
+        $row = \App\Models\ArtworkStatus::whereRaw('LOWER(name) = ?', [strtolower($target)])->first();
+
+        return $this->statusCache[$label] = $row?->id;
     }
 
     protected function parseYear(?string $raw): ?int
