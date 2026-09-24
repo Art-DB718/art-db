@@ -36,45 +36,45 @@
             line-height: 1.55;
         }
 
-        /* Header: logo (image or wordmark) centred at the top. Sized so it
-           reads clearly but still leaves the artwork as the page's focal
-           point. */
+        /* Header: logo (image or wordmark) centred at the top. Sized to
+           match the cert so the two prints read as a set. */
         .header {
             width: 100%;
             margin-bottom: 32pt;
             text-align: center;
             color: #374151;
         }
-        .header img { max-height: 60pt; max-width: 240pt; }
+        .header img { max-height: 100pt; max-width: 320pt; }
         .header .wordmark {
             font-family: DejaVu Serif, serif;
-            font-size: 14pt;
+            font-size: 22pt;
             letter-spacing: 0.35em;
             color: #374151;
+            text-transform: uppercase;
         }
 
         /* Big centered artwork; capped by max-height so the meta block
            below always has room even for portrait pieces. */
-        .photo-wrap { width: 100%; text-align: center; margin-bottom: 36pt; }
-        .photo      { max-width: 100%; max-height: 520pt; }
+        .photo-wrap { width: 100%; text-align: center; margin-bottom: 43pt; }
+        .photo      { max-width: 100%; max-height: 480pt; }
 
-        /* Metadata block — aligned to the left content edge, which is
-           already 2cm from the paper edge via @page margin. No extra
-           padding-left; the block just breathes with the page. */
+        /* Metadata block — centred with the same 78%-wide inset as the
+           certificate so the two prints share a common inner column. */
         .meta {
+            width: 78%;
+            margin: 0 auto;
             color: #1f2937;
-            padding-right: 4%;
         }
         .meta .artist  { font-size: 10.5pt; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4pt; }
         .meta .title   { font-style: italic; font-size: 11pt; margin-bottom: 8pt; }
         .meta .line    { margin-top: 3pt; color: #374151; }
         .meta .price   { margin-top: 10pt; font-weight: bold; color: #1f2937; }
 
-        /* Optional secondary blocks (description / provenance) sit under
-           the meta with the same left/right alignment as the paper edges. */
+        /* Optional secondary blocks (description / provenance) share the
+           same centred column as the meta so alignment is consistent. */
         .aux {
-            margin-top: 26pt;
-            padding-right: 4%;
+            width: 78%;
+            margin: 26pt auto 0;
             color: #4b5563;
             font-size: 9.5pt;
             line-height: 1.6;
