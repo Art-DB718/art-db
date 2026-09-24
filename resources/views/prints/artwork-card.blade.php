@@ -2,63 +2,69 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Artwork — {{ $artwork->title }}</title>
+    <title>{{ $artwork->title }}</title>
     <style>
+        /*
+         * Browser-viewable artwork card. Mirrors the PDF layout so both
+         * prints read as one gallery-branded set: large centred logo,
+         * dominant photo, meta block in a 78% centred column with a
+         * 1.5 cm gap under the image.
+         */
         * { box-sizing: border-box; }
-        body { font-family: Helvetica, Arial, sans-serif; color: #1f2937; margin: 0; padding: 2.5rem 1.5rem; background: #f3f4f6; }
-        .sheet { max-width: 820px; margin: 0 auto; background: #fff; padding: 2.5rem 3rem; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            margin: 0;
+            padding: 2.5rem 1.5rem;
+            background: #f3f4f6;
+        }
+        .sheet {
+            max-width: 820px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 2.5rem 3rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
         .actions { max-width: 820px; margin: 0 auto 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; }
         .actions button, .actions a { font: inherit; padding: 0.5rem 0.9rem; border-radius: 6px; border: 1px solid #d1d5db; background: #fff; color: #1f2937; cursor: pointer; text-decoration: none; }
         .actions button.primary { background: #1f2937; color: #fff; border-color: #1f2937; }
-        .photo { width: 100%; max-height: 460px; object-fit: contain; background: #f9fafb; border-radius: 4px; margin-bottom: 1.5rem; display: block; }
-        .photo-placeholder { width: 100%; aspect-ratio: 4/3; background: #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 2rem; margin-bottom: 1.5rem; }
-        .title-row { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #1f2937; padding-bottom: 0.75rem; margin-bottom: 1rem; gap: 1rem; }
-        h1 { margin: 0; font-size: 1.6rem; font-style: italic; }
-        .artist { font-size: 1.1rem; font-weight: 600; color: #374151; margin-bottom: 0.15rem; }
-        .price { font-size: 1.4rem; font-weight: 700; white-space: nowrap; }
-        .specs { display: grid; grid-template-columns: max-content 1fr; gap: 0.4rem 1.5rem; margin-bottom: 1.5rem; font-size: 0.95rem; }
-        .specs dt { color: #6b7280; font-weight: 600; }
-        .specs dd { margin: 0; }
-        .description { line-height: 1.6; color: #374151; white-space: pre-wrap; }
-        .gallery-meta { margin-top: 2rem; padding-top: 1rem; border-top: 1px dashed #d1d5db; font-size: 0.85rem; color: #6b7280; text-align: center; }
+
+        /* Header — logo / wordmark centred, dominant on the page. */
+        .header { text-align: center; margin-bottom: 2rem; color: #374151; }
+        .header img { max-height: 100px; max-width: 320px; display: inline-block; }
+        .header .wordmark {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.35em;
+            color: #374151;
+            text-transform: uppercase;
+        }
+
+        /* Dominant artwork. */
+        .photo-wrap { text-align: center; margin-bottom: 43px; /* ~1.5 cm */ }
+        .photo      { max-width: 100%; max-height: 480px; height: auto; display: inline-block; }
+
+        /* Meta block — centred inner column, 78% of sheet width. */
+        .meta { width: 78%; margin: 0 auto; color: #1f2937; }
+        .meta .artist  { font-size: 0.9rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.25rem; }
+        .meta .title   { font-style: italic; font-size: 1rem; margin-bottom: 0.4rem; }
+        .meta .line    { margin-top: 0.15rem; color: #374151; }
+        .meta .price   { margin-top: 0.6rem; font-weight: 700; color: #1f2937; }
+
+        /* Optional secondary blocks (About / Provenance). */
+        .aux { width: 78%; margin: 1.5rem auto 0; color: #4b5563; font-size: 0.9rem; line-height: 1.6; }
+        .aux .aux-label { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.7rem; color: #6b7280; margin-bottom: 0.25rem; font-weight: 700; }
+
+        .gallery-meta { margin-top: 2rem; padding-top: 1rem; font-size: 0.8rem; color: #9ca3af; text-align: center; }
+
         @media print {
             body { background: #fff; padding: 0; }
             .sheet { box-shadow: none; border-radius: 0; padding: 1.5rem; }
             .actions, .no-print { display: none !important; }
+            @page { size: A4; margin: 2cm; }
         }
-    </style>
-    @php
-        $size = $settings->card_size ?? 'a4';
-        $sheetWidth = match ($size) {
-            'a5'     => '580px',
-            'letter' => '850px',
-            default  => '820px',
-        };
-        $photoMax = match ($size) {
-            'a5'     => '320px',
-            'letter' => '480px',
-            default  => '460px',
-        };
-        $padding = match ($size) {
-            'a5'    => '1.75rem 2rem',
-            default => '2.5rem 3rem',
-        };
-        $titleSize = match ($size) {
-            'a5'    => '1.3rem',
-            default => '1.6rem',
-        };
-        $pageSize = match ($size) {
-            'a5'     => 'A5',
-            'letter' => 'letter',
-            default  => 'A4',
-        };
-    @endphp
-    <style>
-        /* Size-specific overrides driven by Design printouts → Artwork Card → Paper size */
-        .sheet { max-width: {{ $sheetWidth }} !important; padding: {{ $padding }} !important; }
-        .photo { max-height: {{ $photoMax }} !important; }
-        h1     { font-size: {{ $titleSize }} !important; }
-        @page  { size: {{ $pageSize }}; margin: 1.2cm; }
     </style>
 </head>
 <body>
@@ -74,8 +80,10 @@
             $fmt($artwork->depth_cm),
         ])->filter()->implode(' × ');
         $edition = $artwork->edition_number && $artwork->edition_total
-            ? $artwork->edition_number.' / '.$artwork->edition_total
+            ? $artwork->edition_number.'/'.$artwork->edition_total
             : ($artwork->edition_notes ?: null);
+        $techniqueParts = array_filter([$artwork->materials ?: $artwork->medium?->name, $edition]);
+        $technique = implode(' ', $techniqueParts);
     @endphp
 
     <div class="actions no-print">
@@ -84,57 +92,47 @@
     </div>
 
     <div class="sheet">
-        @if ($artwork->primary_image)
-            <img class="photo" src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}" alt="{{ $artwork->title }}">
-        @else
-            <div class="photo-placeholder">no photo</div>
-        @endif
-
-        <div class="title-row">
-            <div>
-                <div class="artist">{{ $artwork->artist?->display_name ?? '—' }}</div>
-                <h1>{{ $artwork->title }}@if ($year), {{ $year }}@endif</h1>
-            </div>
-            @if ($settings->card_show_price)
-                @if ($artwork->price && ! $artwork->price_on_request)
-                    <div class="price">{{ number_format((float) $artwork->price, 0, '.', ' ') }} {{ $artwork->currency }}</div>
-                @elseif ($artwork->price_on_request)
-                    <div class="price" style="font-size:1rem;color:#6b7280;font-weight:500;">Price on request</div>
-                @endif
+        <div class="header">
+            @if ($settings->logo_path)
+                <img src="{{ \Illuminate\Support\Facades\Storage::url($settings->logo_path) }}" alt="">
+            @elseif ($settings->company_name)
+                <div class="wordmark">{{ $settings->company_name }}</div>
             @endif
         </div>
 
-        <dl class="specs">
-            @if ($artwork->medium?->name)<dt>Medium</dt><dd>{{ $artwork->medium->name }}</dd>@endif
-            @if ($artwork->materials)<dt>Materials</dt><dd>{{ $artwork->materials }}</dd>@endif
-            @if ($dims)<dt>Dimensions</dt><dd>{{ $dims }} cm</dd>@endif
-            @if ($edition)<dt>Edition</dt><dd>{{ $edition }}</dd>@endif
-            @if ($artwork->is_signed)
-                <dt>Signed</dt>
-                <dd>Yes{{ $artwork->signature_description ? ' — '.$artwork->signature_description : '' }}</dd>
-            @endif
-            @if ($artwork->is_framed)<dt>Framed</dt><dd>Yes</dd>@endif
-        </dl>
-
-        @if ($artwork->description)
-            <div class="description">{{ $artwork->description }}</div>
+        @if ($artwork->primary_image)
+            <div class="photo-wrap">
+                <img class="photo" src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}" alt="{{ $artwork->title }}">
+            </div>
         @endif
 
-        @if ($settings->card_show_gallery && filled($artwork->gallery_images))
-            <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px dashed #d1d5db;">
-                <strong style="display:block;margin-bottom:0.5rem;color:#6b7280;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.08em;">Gallery</strong>
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.5rem;">
-                    @foreach ((array) $artwork->gallery_images as $img)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url($img) }}" alt=""
-                             style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;display:block;">
-                    @endforeach
-                </div>
+        <div class="meta">
+            <div class="artist">{{ $artwork->artist?->display_name ?? '—' }}</div>
+            <div class="title"><em>{{ $artwork->title }}</em>@if ($year), {{ $year }}@endif</div>
+            @if ($technique)<div class="line">{{ $technique }}</div>@endif
+            @if ($dims)<div class="line">{{ $dims }} cm</div>@endif
+            @if ($settings->card_show_price)
+                @if ($artwork->price && ! $artwork->price_on_request)
+                    <div class="line price">{{ $artwork->currency }} {{ number_format((float) $artwork->price, 0, '.', ' ') }}</div>
+                @elseif ($artwork->price_on_request)
+                    <div class="line price">Price on request</div>
+                @endif
+            @endif
+            @if ($artwork->is_signed && $artwork->signature_description)
+                <div class="line">Signed — {{ $artwork->signature_description }}</div>
+            @endif
+        </div>
+
+        @if ($artwork->description)
+            <div class="aux">
+                <div class="aux-label">About</div>
+                {{ $artwork->description }}
             </div>
         @endif
 
         @if ($settings->card_show_provenance && $artwork->provenance)
-            <div class="description" style="margin-top:1.25rem;padding-top:1rem;border-top:1px dashed #d1d5db;">
-                <strong style="display:block;margin-bottom:0.3rem;color:#6b7280;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.08em;">Provenance</strong>
+            <div class="aux">
+                <div class="aux-label">Provenance</div>
                 {{ $artwork->provenance }}
             </div>
         @endif

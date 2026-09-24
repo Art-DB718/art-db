@@ -4,36 +4,81 @@
     <meta charset="UTF-8">
     <title>Certificate — {{ $artwork->title }}</title>
     <style>
+        /*
+         * Browser-viewable Certificate of Authenticity. Mirrors the PDF:
+         * large centred logo → title → intro → photo | specs → footer.
+         * No signature block, no provenance.
+         */
         * { box-sizing: border-box; }
-        body { font-family: 'Georgia', 'Times New Roman', serif; color: #1f2937; margin: 0; padding: 2.5rem 1.5rem; background: #f3f4f6; }
-        .sheet { max-width: 820px; margin: 0 auto; background: #fff; padding: 4rem 4rem 3rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid #d1d5db; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #1f2937;
+            margin: 0;
+            padding: 2.5rem 1.5rem;
+            background: #f3f4f6;
+        }
+        .sheet {
+            max-width: 820px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 3rem 3rem 2rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            position: relative;
+            min-height: calc(297mm - 4cm); /* A4 height minus top+bottom @page margin */
+        }
         .actions { max-width: 820px; margin: 0 auto 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; }
         .actions button, .actions a { font: inherit; font-family: Helvetica, Arial, sans-serif; padding: 0.5rem 0.9rem; border-radius: 6px; border: 1px solid #d1d5db; background: #fff; color: #1f2937; cursor: pointer; text-decoration: none; }
         .actions button.primary { background: #1f2937; color: #fff; border-color: #1f2937; }
-        .header { text-align: center; border-bottom: 3px double #1f2937; padding-bottom: 1.5rem; margin-bottom: 2rem; }
-        .header img { max-height: 64px; max-width: 220px; margin-bottom: 1rem; }
-        .company { font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.9rem; color: #4b5563; }
-        h1 { text-align: center; font-size: 2.2rem; letter-spacing: 0.15em; margin: 0 0 2rem; }
-        .intro { text-align: center; font-style: italic; color: #4b5563; margin-bottom: 2rem; line-height: 1.6; }
-        .artwork-block { display: flex; gap: 2rem; align-items: flex-start; margin-bottom: 2rem; }
-        .artwork-block img { max-width: 220px; max-height: 260px; width: auto; height: auto; border-radius: 4px; border: 1px solid #e5e7eb; flex: none; display: block; }
-        .artwork-block .placeholder { width: 200px; height: 260px; background: #f3f4f6; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #9ca3af; flex: none; }
-        .artwork-info { flex: 1; line-height: 1.6; }
-        .artwork-info .artist { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .artwork-info .title { font-size: 1.15rem; font-style: italic; margin-bottom: 0.75rem; }
-        .artwork-info dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.3rem 1rem; font-size: 0.95rem; margin: 0; }
-        .artwork-info dt { color: #6b7280; }
-        .artwork-info dd { margin: 0; }
-        .statement { margin: 2rem 0; padding: 1.25rem; border-left: 3px solid #1f2937; background: #f9fafb; line-height: 1.6; font-style: italic; }
-        .signature-block { display: flex; gap: 2rem; margin-top: 3rem; }
-        .signature-block > div { flex: 1; }
-        .signature-line { border-bottom: 1px solid #4b5563; height: 2.5rem; margin-bottom: 0.4rem; }
-        .signature-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; }
-        .footer-ids { margin-top: 2rem; text-align: center; font-size: 0.75rem; color: #9ca3af; }
+
+        /* Header — dominant logo/wordmark, centred. */
+        .header { text-align: center; margin-bottom: 2rem; }
+        .header img { max-height: 100px; max-width: 320px; display: inline-block; }
+        .header .wordmark {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.35em;
+            color: #374151;
+            text-transform: uppercase;
+        }
+
+        .title { text-align: center; font-size: 1.6rem; margin: 1rem 0 1.5rem; color: #1f2937; }
+        .intro { text-align: center; color: #374151; margin: 0 auto 3rem; max-width: 500px; line-height: 1.6; }
+        .intro p { margin: 0 0 0.4rem; }
+
+        /* Photo | specs block, centred in a 78% inner column with a
+           1.5 cm gap below the intro. */
+        .artwork-block {
+            width: 78%;
+            margin: 43px auto 0; /* ~1.5 cm above */
+            display: table;
+        }
+        .artwork-block .row  { display: table-row; }
+        .artwork-block .photo-col, .artwork-block .specs-col { display: table-cell; vertical-align: top; }
+        .artwork-block .photo-col { width: 46%; padding-right: 24px; }
+        .artwork-block .specs-col { width: 54%; padding-top: 8px; }
+        .artwork-block img { max-width: 100%; max-height: 300px; height: auto; display: block; }
+
+        .specs { width: 100%; border-collapse: collapse; }
+        .specs td { padding: 4px 0; vertical-align: top; color: #1f2937; }
+        .specs td.label { color: #4b5563; padding-right: 8px; width: 32%; }
+        .specs td.val   { font-weight: 700; }
+
+        .footer {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 3rem;
+            right: 3rem;
+            font-size: 0.85rem;
+            color: #4b5563;
+            text-align: center;
+        }
+
         @media print {
             body { background: #fff; padding: 0; }
-            .sheet { box-shadow: none; border-radius: 0; padding: 2rem; border: none; }
+            .sheet { box-shadow: none; border-radius: 0; padding: 2rem 3rem; border: none; min-height: 0; }
             .actions, .no-print { display: none !important; }
+            @page { size: A4; margin: 2cm; }
         }
     </style>
 </head>
@@ -45,9 +90,14 @@
         }
         $fmt = fn ($v) => $v === null ? null : rtrim(rtrim(number_format((float) $v, 2, '.', ''), '0'), '.');
         $dims = collect([$fmt($artwork->height_cm), $fmt($artwork->width_cm), $fmt($artwork->depth_cm)])->filter()->implode(' × ');
-        $edition = $artwork->edition_number && $artwork->edition_total
-            ? $artwork->edition_number.' / '.$artwork->edition_total
-            : ($artwork->edition_notes ?: null);
+
+        $addressParts = array_filter([
+            trim(collect([$settings->address_line1, $settings->address_line2, $settings->postal_code, $settings->city])->filter()->implode(', ')),
+            $settings->phone   ? 'mobil: '.$settings->phone      : null,
+            $settings->email   ? 'email: '.$settings->email      : null,
+            $settings->website ? 'web: '.$settings->website      : null,
+        ]);
+        $footerLine = implode(', ', $addressParts);
     @endphp
 
     <div class="actions no-print">
@@ -59,55 +109,52 @@
         <div class="header">
             @if ($settings->logo_path)
                 <img src="{{ \Illuminate\Support\Facades\Storage::url($settings->logo_path) }}" alt="">
+            @elseif ($settings->company_name)
+                <div class="wordmark">{{ $settings->company_name }}</div>
             @endif
-            <div class="company">{{ $settings->company_name ?? config('app.name', 'ArtDB') }}</div>
         </div>
 
-        <h1>Certificate of Authenticity</h1>
+        <div class="title">Certificate of Authenticity</div>
 
         <div class="intro">
             @if (filled($settings->cert_intro))
-                {!! $settings->cert_intro !!}
+                {!! \App\Support\PrintHtml::render($settings->cert_intro) !!}
             @else
-                This certificate confirms that the artwork described below is an original work
-                by the named artist and was acquired from {{ $settings->company_name ?? 'us' }}.
+                <p>{{ $settings->company_name ?? config('app.name') }} confirms the authenticity of the artwork described below.</p>
             @endif
         </div>
 
         <div class="artwork-block">
-            @if ($artwork->primary_image)
-                <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}" alt="">
-            @else
-                <div class="placeholder">—</div>
-            @endif
-            <div class="artwork-info">
-                <div class="artist">{{ $artwork->artist?->display_name ?? '—' }}</div>
-                <div class="title">{{ $artwork->title }}@if ($year), {{ $year }}@endif</div>
-                <dl>
-                    @if ($artwork->medium?->name)<dt>Medium</dt><dd>{{ $artwork->medium->name }}</dd>@endif
-                    @if ($artwork->materials)<dt>Materials</dt><dd>{{ $artwork->materials }}</dd>@endif
-                    @if ($dims)<dt>Dimensions</dt><dd>{{ $dims }} cm</dd>@endif
-                    @if ($edition)<dt>Edition</dt><dd>{{ $edition }}</dd>@endif
-                    @if ($artwork->is_signed)<dt>Signature</dt><dd>{{ $artwork->signature_description ?: 'Signed by the artist' }}</dd>@endif
-                </dl>
+            <div class="row">
+                <div class="photo-col">
+                    @if ($artwork->primary_image)
+                        <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}" alt="">
+                    @endif
+                </div>
+                <div class="specs-col">
+                    <table class="specs">
+                        <tr><td class="label">Artist</td><td class="val">{{ $artwork->artist?->display_name ?? '—' }}</td></tr>
+                        <tr><td class="label">Title</td><td class="val">{{ $artwork->title }}</td></tr>
+                        @if ($dims)
+                            <tr><td class="label">Dimensions</td><td class="val">{{ $dims }} cm</td></tr>
+                        @endif
+                        @if ($artwork->medium?->name || $artwork->materials)
+                            <tr><td class="label">Medium</td><td class="val">{{ $artwork->materials ?: $artwork->medium?->name }}</td></tr>
+                        @endif
+                        @if ($year)
+                            <tr><td class="label">Year</td><td class="val">{{ $year }}</td></tr>
+                        @endif
+                        @if ($artwork->edition_number && $artwork->edition_total)
+                            <tr><td class="label">Edition</td><td class="val">{{ $artwork->edition_number }} / {{ $artwork->edition_total }}</td></tr>
+                        @endif
+                    </table>
+                </div>
             </div>
         </div>
 
-        @if ($artwork->provenance)
-            <div class="statement"><strong>Provenance:</strong><br>{{ $artwork->provenance }}</div>
+        @if ($footerLine)
+            <div class="footer">{{ $footerLine }}</div>
         @endif
-
-        <div class="signature-block">
-            <div>
-                <div class="signature-line"></div>
-                <div class="signature-label">{{ $settings->cert_signature_label ?: ('Issued by — '.($settings->company_name ?? 'Gallery')) }}</div>
-            </div>
-            <div>
-                <div class="signature-line">{{ now()->format('d. m. Y') }}</div>
-                <div class="signature-label">Date</div>
-            </div>
-        </div>
-
     </div>
 
     <script>window.addEventListener('load', () => setTimeout(() => window.print(), 350));</script>
