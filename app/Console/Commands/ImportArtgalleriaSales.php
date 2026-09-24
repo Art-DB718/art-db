@@ -27,6 +27,7 @@ class ImportArtgalleriaSales extends Command
 {
     protected $signature = 'import:artgalleria-sales
         {json : Sales JSON from browser scraper}
+        {--payments= : Optional payments JSON (from invoice list scrape) — sets paid_amount / payment_status / due_date-based overdue}
         {--user= : Owner user id}
         {--dry-run}';
 
@@ -46,6 +47,17 @@ class ImportArtgalleriaSales extends Command
         // Pre-build (owner-scoped) inventory_id → artwork lookup.
         $artByInv = Artwork::where('owner_user_id', $user->id)
             ->pluck('id', 'inventory_id')->toArray();
+
+        // Optional payments overlay: build custom_id → {paid, status} map
+        // from the invoice list scrape (edit page doesn't carry paid info).
+        $payments = [];
+        if ($p = $this->option('payments')) {
+            if (! is_file($p)) { $this->error("Payments file not found: $p"); return 1; }
+            foreach (json_decode(file_get_contents($p), true) as $row) {
+                $key = trim((string) ($row['custom_id'] ?? ''));
+                if ($key !== '') $payments[$key] = $row;
+            }
+        }
 
         $created = $updated = $failed = 0;
         foreach (json_decode(file_get_contents($path), true) as $i => $inv) {
@@ -78,6 +90,11 @@ class ImportArtgalleriaSales extends Command
             $taxAmt  = round($subtotal * ($taxRate / 100), 2);
             $total   = round($subtotal + $taxAmt, 2);
 
+            // Overlay payment info if provided. Artgalleria's list view has
+            // canonical 'Amount Paid' + 'Status' columns; edit page doesn't.
+            $pay = $payments[$invoiceNum] ?? null;
+            [$paidAmount, $paymentStatus] = $this->derivePayment($pay, $total);
+
             $attrs = [
                 'invoice_number'    => $invoiceNum,
                 'buyer_contact_id'  => $buyer?->id,
@@ -89,8 +106,8 @@ class ImportArtgalleriaSales extends Command
                 'tax_amount'        => $taxAmt,
                 'discount_amount'   => (float) ($inv['discount_amount'] ?? 0),
                 'total'             => $total,
-                'paid_amount'       => 0,
-                'payment_status'    => 'draft',
+                'paid_amount'       => $paidAmount,
+                'payment_status'    => $paymentStatus,
                 'owner_user_id'     => $user->id,
             ];
 
@@ -180,6 +197,27 @@ class ImportArtgalleriaSales extends Command
         if ($s === '') return '';
         $s = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $s) ?: $s;
         return strtolower(preg_replace('/\s+/', ' ', $s));
+    }
+
+    /**
+     * Translate the (paid, status) pair from the invoice list into
+     * (paid_amount, payment_status). Handles the artgalleria quirk that
+     * status='Paid' is set manually and often doesn't reflect
+     * amount_paid — treat 'Paid' as fully paid regardless. Voided invoices
+     * map to cancelled; overdue rows keep whatever was paid so far.
+     */
+    protected function derivePayment(?array $pay, float $total): array
+    {
+        if (! $pay) return [0.0, 'draft'];
+        $status = strtolower(trim((string) ($pay['status'] ?? '')));
+        $paidRaw = (float) preg_replace('/[^\d.-]/', '', (string) ($pay['amount_paid'] ?? '0'));
+
+        if (str_starts_with($status, 'paid'))    return [max($paidRaw, $total), 'paid'];
+        if (str_starts_with($status, 'voided'))  return [0.0, 'cancelled'];
+        if (str_starts_with($status, 'overdue')) return [$paidRaw, 'overdue'];
+        if ($paidRaw > 0 && $paidRaw < $total)   return [$paidRaw, 'partial'];
+        if ($paidRaw >= $total && $total > 0)    return [$paidRaw, 'paid'];
+        return [$paidRaw, 'draft'];
     }
 
     protected function parseDate(?string $s): ?string
