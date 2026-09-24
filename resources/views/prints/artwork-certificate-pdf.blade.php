@@ -12,6 +12,12 @@
         .top .sub { font-size: 10pt; color: #6b7280; letter-spacing: 0.2em; text-transform: uppercase; }
         .body { margin: 36pt 0; }
         .intro { font-size: 11pt; }
+        /* Artwork photo sits between the intro and the spec table so
+           the reader sees the piece before its metadata. Aspect ratio
+           is preserved via max-width + max-height (DomPDF ignores
+           object-fit). */
+        .photo-wrap { text-align: center; margin: 20pt 0 24pt; }
+        .photo      { max-width: 100%; max-height: 300pt; border: 1pt solid #e5e7eb; }
         .specs { width: 100%; border-collapse: collapse; margin: 24pt 0; }
         .specs td { padding: 6pt 0; border-bottom: 1pt solid #e5e7eb; vertical-align: top; }
         .specs td.label { width: 35%; color: #6b7280; padding-right: 12pt; }
@@ -34,6 +40,12 @@
             <div class="intro">{!! nl2br(e($settings->cert_intro)) !!}</div>
         @else
             <div class="intro">This certificate confirms the authenticity of the following original artwork:</div>
+        @endif
+
+        @if ($artwork->primary_image)
+            <div class="photo-wrap">
+                <img class="photo" src="{{ public_path('storage/'.$artwork->primary_image) }}" alt="">
+            </div>
         @endif
 
         <table class="specs">
