@@ -56,10 +56,20 @@
         .intro { text-align: center; color: #374151; margin: 0 auto 60pt; max-width: 440pt; }
         .intro p { margin: 0 0 6pt; }
 
-        /* Bottom section: photo LEFT, spec labels RIGHT. */
-        .layout { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 60pt; }
+        /* Bottom section: photo LEFT, spec labels RIGHT.
+           The table is narrower than the page's content width and pushed
+           in from both sides with margin auto, so the whole photo + specs
+           block sits centred on the page with a clear ~1.5–2cm cushion
+           from each paper edge (paper edge → page margin 2cm → extra
+           block inset ≈ 1.5cm on each side). */
+        .layout {
+            width: 78%;
+            margin: 60pt auto 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
         .layout td { vertical-align: top; padding: 0; }
-        .layout td.photo-col { width: 46%; padding-right: 32pt; }
+        .layout td.photo-col { width: 46%; padding-right: 24pt; }
         .layout td.specs-col { width: 54%; padding-top: 8pt; }
         .photo { max-width: 100%; max-height: 300pt; }
 
