@@ -40,11 +40,11 @@
            match the cert so the two prints read as a set. */
         .header {
             width: 100%;
-            margin-bottom: 32pt;
+            margin-bottom: 18pt;
             text-align: center;
             color: #374151;
         }
-        .header img { max-height: 100pt; max-width: 320pt; }
+        .header img { max-height: 80pt; max-width: 280pt; }
         .header .wordmark {
             font-family: DejaVu Serif, serif;
             font-size: 22pt;
@@ -55,29 +55,29 @@
 
         /* Big centered artwork; capped by max-height so the meta block
            below always has room even for portrait pieces. */
-        .photo-wrap { width: 100%; text-align: center; margin-bottom: 43pt; }
-        .photo      { max-width: 100%; max-height: 480pt; }
+        .photo-wrap { width: 100%; text-align: center; margin-bottom: 22pt; }
+        .photo      { max-width: 100%; max-height: 560pt; }
 
-        /* Metadata block — centred with the same 78%-wide inset as the
-           certificate so the two prints share a common inner column. */
+        /* Metadata block — text centred so it visually aligns with the
+           centred photo above (no off-axis shift for portrait pieces). */
         .meta {
-            width: 78%;
-            margin: 0 auto;
             color: #1f2937;
+            text-align: center;
         }
         .meta .artist  { font-size: 10.5pt; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4pt; }
         .meta .title   { font-style: italic; font-size: 11pt; margin-bottom: 8pt; }
         .meta .line    { margin-top: 3pt; color: #374151; }
         .meta .price   { margin-top: 10pt; font-weight: bold; color: #1f2937; }
 
-        /* Optional secondary blocks (description / provenance) share the
-           same centred column as the meta so alignment is consistent. */
+        /* Optional secondary blocks (description / provenance) inherit
+           the centred alignment. */
         .aux {
             width: 78%;
-            margin: 26pt auto 0;
+            margin: 22pt auto 0;
             color: #4b5563;
             font-size: 9.5pt;
             line-height: 1.6;
+            text-align: center;
         }
         .aux .aux-label { text-transform: uppercase; letter-spacing: 0.12em; font-size: 8pt; color: #6b7280; margin-bottom: 4pt; font-weight: bold; }
 

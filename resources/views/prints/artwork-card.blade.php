@@ -32,8 +32,8 @@
         .actions button.primary { background: #1f2937; color: #fff; border-color: #1f2937; }
 
         /* Header — logo / wordmark centred, dominant on the page. */
-        .header { text-align: center; margin-bottom: 2rem; color: #374151; }
-        .header img { max-height: 100px; max-width: 320px; display: inline-block; }
+        .header { text-align: center; margin-bottom: 1.2rem; color: #374151; }
+        .header img { max-height: 80px; max-width: 280px; display: inline-block; }
         .header .wordmark {
             font-family: Georgia, 'Times New Roman', serif;
             font-size: 1.4rem;
@@ -43,18 +43,18 @@
         }
 
         /* Dominant artwork. */
-        .photo-wrap { text-align: center; margin-bottom: 43px; /* ~1.5 cm */ }
-        .photo      { max-width: 100%; max-height: 480px; height: auto; display: inline-block; }
+        .photo-wrap { text-align: center; margin-bottom: 22px; }
+        .photo      { max-width: 100%; max-height: 560px; height: auto; display: inline-block; }
 
-        /* Meta block — centred inner column, 78% of sheet width. */
-        .meta { width: 78%; margin: 0 auto; color: #1f2937; }
+        /* Meta block — text centred so it aligns with the centred photo. */
+        .meta { color: #1f2937; text-align: center; }
         .meta .artist  { font-size: 0.9rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.25rem; }
         .meta .title   { font-style: italic; font-size: 1rem; margin-bottom: 0.4rem; }
         .meta .line    { margin-top: 0.15rem; color: #374151; }
         .meta .price   { margin-top: 0.6rem; font-weight: 700; color: #1f2937; }
 
         /* Optional secondary blocks (About / Provenance). */
-        .aux { width: 78%; margin: 1.5rem auto 0; color: #4b5563; font-size: 0.9rem; line-height: 1.6; }
+        .aux { width: 78%; margin: 1.2rem auto 0; color: #4b5563; font-size: 0.9rem; line-height: 1.6; text-align: center; }
         .aux .aux-label { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.7rem; color: #6b7280; margin-bottom: 0.25rem; font-weight: 700; }
 
         .gallery-meta { margin-top: 2rem; padding-top: 1rem; font-size: 0.8rem; color: #9ca3af; text-align: center; }
