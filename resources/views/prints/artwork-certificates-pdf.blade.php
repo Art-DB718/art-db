@@ -19,9 +19,7 @@
         .layout td.photo-col { width: 46%; padding-right: 22pt; }
         .layout td.text-col  { width: 54%; }
         .photo { max-width: 100%; max-height: 260pt; border: 1pt solid #e5e7eb; }
-        .artwork-desc { font-size: 10pt; line-height: 1.55; color: #374151; }
-        .artwork-desc p { margin: 0 0 8pt; }
-        .specs { width: 100%; border-collapse: collapse; margin-top: 20pt; }
+        .specs { width: 100%; border-collapse: collapse; }
         .specs td { padding: 6pt 0; border-bottom: 1pt solid #e5e7eb; vertical-align: top; }
         .specs td.label { width: 35%; color: #6b7280; padding-right: 12pt; }
         .specs td.val { font-weight: bold; }
@@ -61,28 +59,24 @@
                             @endif
                         </td>
                         <td class="text-col">
-                            @if ($artwork->description)
-                                <div class="artwork-desc">{!! \App\Support\PrintHtml::render($artwork->description) !!}</div>
-                            @endif
+                            <table class="specs">
+                                <tr><td class="label">Artist</td><td class="val">{{ $artwork->artist?->display_name ?? '—' }}</td></tr>
+                                <tr><td class="label">Title</td><td class="val">{{ $artwork->title }}</td></tr>
+                                @if ($artwork->year_created)
+                                    <tr><td class="label">Year</td><td class="val">{{ $artwork->year_created }}@if ($artwork->year_created_end) – {{ $artwork->year_created_end }}@endif</td></tr>
+                                @endif
+                                @if ($artwork->medium?->name)
+                                    <tr><td class="label">Medium</td><td class="val">{{ $artwork->medium->name }}</td></tr>
+                                @endif
+                                @if ($dims)
+                                    <tr><td class="label">Dimensions</td><td class="val">{{ $dims }} cm</td></tr>
+                                @endif
+                                @if ($artwork->edition_number && $artwork->edition_total)
+                                    <tr><td class="label">Edition</td><td class="val">{{ $artwork->edition_number }} / {{ $artwork->edition_total }}</td></tr>
+                                @endif
+                            </table>
                         </td>
                     </tr>
-                </table>
-
-                <table class="specs">
-                    <tr><td class="label">Artist</td><td class="val">{{ $artwork->artist?->display_name ?? '—' }}</td></tr>
-                    <tr><td class="label">Title</td><td class="val">{{ $artwork->title }}</td></tr>
-                    @if ($artwork->year_created)
-                        <tr><td class="label">Year</td><td class="val">{{ $artwork->year_created }}@if ($artwork->year_created_end) – {{ $artwork->year_created_end }}@endif</td></tr>
-                    @endif
-                    @if ($artwork->medium?->name)
-                        <tr><td class="label">Medium</td><td class="val">{{ $artwork->medium->name }}</td></tr>
-                    @endif
-                    @if ($dims)
-                        <tr><td class="label">Dimensions</td><td class="val">{{ $dims }} cm</td></tr>
-                    @endif
-                    @if ($artwork->edition_number && $artwork->edition_total)
-                        <tr><td class="label">Edition</td><td class="val">{{ $artwork->edition_number }} / {{ $artwork->edition_total }}</td></tr>
-                    @endif
                 </table>
             </div>
 
