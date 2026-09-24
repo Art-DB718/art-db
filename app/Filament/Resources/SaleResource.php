@@ -51,8 +51,30 @@ class SaleResource extends Resource
                         ->label('Buyer')
                         ->relationship('buyer', 'last_name')
                         ->getOptionLabelFromRecordUsing(fn (Contact $record) => $record->display_name)
-                        ->searchable(['first_name', 'last_name', 'organization'])
-                        ->preload(),
+                        ->searchable(['first_name', 'last_name', 'organization', 'email'])
+                        ->preload()
+                        // Inline "Create new contact" — the "+" button next
+                        // to the field opens a minimal modal, saves a Contact
+                        // owned by the current user, and selects it back.
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('first_name')->maxLength(120),
+                            Forms\Components\TextInput::make('last_name')->maxLength(120),
+                            Forms\Components\TextInput::make('organization')->label('Organization')->maxLength(160),
+                            Forms\Components\TextInput::make('email')->email()->maxLength(160),
+                            Forms\Components\TextInput::make('phone')->tel()->maxLength(60),
+                            Forms\Components\TextInput::make('city')->maxLength(120),
+                            Forms\Components\Textarea::make('notes')->rows(2)->maxLength(2000),
+                        ])
+                        ->createOptionModalHeading('Add a new contact')
+                        ->createOptionUsing(function (array $data): int {
+                            $data['owner_user_id'] = auth()->id();
+                            // Require at least one identifying field so we
+                            // don't end up with a row of empty strings.
+                            if (empty($data['first_name']) && empty($data['last_name']) && empty($data['organization'])) {
+                                $data['last_name'] = 'Unnamed contact';
+                            }
+                            return Contact::create($data)->getKey();
+                        }),
                     Forms\Components\DatePicker::make('sale_date')->required()->default(now()),
                     Forms\Components\DatePicker::make('due_date'),
                     Forms\Components\Select::make('payment_status')
