@@ -591,28 +591,10 @@ class ArtworkResource extends Resource
                     ->visible(fn (): bool => ! auth()->user()?->isArtist())
                     ->url(fn (Artwork $record): string => route('artworks.print.maintenance', $record))
                     ->openUrlInNewTab(),
-                Tables\Actions\Action::make('pdfCard')
-                    ->label('Download card (PDF)')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->url(fn (Artwork $record): string => route('artworks.pdf.card', $record))
-                    ->openUrlInNewTab(),
-                Tables\Actions\Action::make('pdfCertificate')
-                    ->label('Download certificate (PDF)')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->visible(fn (): bool => ! auth()->user()?->isCollector())
-                    ->url(fn (Artwork $record): string => route('artworks.pdf.certificate', $record))
-                    ->openUrlInNewTab(),
-                Tables\Actions\Action::make('pdfLabel')
-                    ->label('Download label (PDF)')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->url(fn (Artwork $record): string => route('artworks.pdf.label', $record))
-                    ->openUrlInNewTab(),
-                Tables\Actions\Action::make('pdfMaintenance')
-                    ->label('Download maintenance report (PDF)')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->visible(fn (): bool => ! auth()->user()?->isArtist())
-                    ->url(fn (Artwork $record): string => route('artworks.pdf.maintenance', $record))
-                    ->openUrlInNewTab(),
+                // The 'Download (PDF)' variants were removed from this menu
+                // — the browser print view already surfaces a Save-as-PDF
+                // button and auto-fires window.print(), so keeping four
+                // extra rows here just doubled every item.
                 Tables\Actions\Action::make('enterSale')
                     ->label('Enter sale')
                     ->icon('heroicon-m-banknotes')
