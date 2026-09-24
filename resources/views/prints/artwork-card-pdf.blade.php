@@ -58,26 +58,25 @@
         .photo-wrap { width: 100%; text-align: center; margin-bottom: 22pt; }
         .photo      { max-width: 100%; max-height: 560pt; }
 
-        /* Metadata block — text centred so it visually aligns with the
-           centred photo above (no off-axis shift for portrait pieces). */
+        /* Metadata block — left-aligned under the photo, spans the full
+           A4 content width (no artificial inner-column shrinking) so the
+           text sits inside the standard 2 cm page margin. */
         .meta {
             color: #1f2937;
-            text-align: center;
+            text-align: left;
         }
         .meta .artist  { font-size: 10.5pt; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4pt; }
         .meta .title   { font-style: italic; font-size: 11pt; margin-bottom: 8pt; }
         .meta .line    { margin-top: 3pt; color: #374151; }
         .meta .price   { margin-top: 10pt; font-weight: bold; color: #1f2937; }
 
-        /* Optional secondary blocks (description / provenance) inherit
-           the centred alignment. */
+        /* Optional secondary blocks (description / provenance) match the
+           left-aligned meta so the whole text stack reads as one block. */
         .aux {
-            width: 78%;
-            margin: 22pt auto 0;
+            margin-top: 22pt;
             color: #4b5563;
             font-size: 9.5pt;
             line-height: 1.6;
-            text-align: center;
         }
         .aux .aux-label { text-transform: uppercase; letter-spacing: 0.12em; font-size: 8pt; color: #6b7280; margin-bottom: 4pt; font-weight: bold; }
 

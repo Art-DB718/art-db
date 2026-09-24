@@ -19,15 +19,17 @@
             background: #f3f4f6;
         }
         .sheet {
-            max-width: 820px;
+            /* A4 portrait — 210 × 297 mm. Padding = 2 cm page margin. */
+            width: 210mm;
+            min-height: 297mm;
             margin: 0 auto;
             background: #fff;
-            padding: 2.5rem 3rem;
+            padding: 2cm;
             border-radius: 6px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
 
-        .actions { max-width: 820px; margin: 0 auto 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; }
+        .actions { width: 210mm; margin: 0 auto 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; }
         .actions button, .actions a { font: inherit; padding: 0.5rem 0.9rem; border-radius: 6px; border: 1px solid #d1d5db; background: #fff; color: #1f2937; cursor: pointer; text-decoration: none; }
         .actions button.primary { background: #1f2937; color: #fff; border-color: #1f2937; }
 
@@ -46,22 +48,25 @@
         .photo-wrap { text-align: center; margin-bottom: 22px; }
         .photo      { max-width: 100%; max-height: 560px; height: auto; display: inline-block; }
 
-        /* Meta block — text centred so it aligns with the centred photo. */
-        .meta { color: #1f2937; text-align: center; }
+        /* Meta block — left-aligned under the photo, spans full A4 content
+           width (no artificial inset). */
+        .meta { color: #1f2937; text-align: left; }
         .meta .artist  { font-size: 0.9rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.25rem; }
         .meta .title   { font-style: italic; font-size: 1rem; margin-bottom: 0.4rem; }
         .meta .line    { margin-top: 0.15rem; color: #374151; }
         .meta .price   { margin-top: 0.6rem; font-weight: 700; color: #1f2937; }
 
         /* Optional secondary blocks (About / Provenance). */
-        .aux { width: 78%; margin: 1.2rem auto 0; color: #4b5563; font-size: 0.9rem; line-height: 1.6; text-align: center; }
+        .aux { margin-top: 1.2rem; color: #4b5563; font-size: 0.9rem; line-height: 1.6; }
         .aux .aux-label { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.7rem; color: #6b7280; margin-bottom: 0.25rem; font-weight: 700; }
 
         .gallery-meta { margin-top: 2rem; padding-top: 1rem; font-size: 0.8rem; color: #9ca3af; text-align: center; }
 
         @media print {
             body { background: #fff; padding: 0; }
-            .sheet { box-shadow: none; border-radius: 0; padding: 1.5rem; }
+            /* Let the printer apply the @page margin — sheet becomes
+               plain block, no fixed A4 size (would double-margin). */
+            .sheet { box-shadow: none; border-radius: 0; padding: 0; width: auto; min-height: 0; margin: 0; }
             .actions, .no-print { display: none !important; }
             @page { size: A4; margin: 2cm; }
         }
