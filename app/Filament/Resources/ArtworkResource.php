@@ -358,7 +358,13 @@ class ArtworkResource extends Resource
                 Tables\Columns\TextColumn::make('medium.name')->badge()->color('gray'),
                 Tables\Columns\TextColumn::make('status.name')
                     ->badge()
-                    ->color(fn ($state, $record) => $record->status?->color ?? 'gray'),
+                    ->color(fn (?string $state): string => match (strtolower($state ?? '')) {
+                        'sold'                                       => 'danger',   // red
+                        'for sale', 'for sale or rent', 'for rent'  => 'success',  // green
+                        'not for sale', 'not available'              => 'warning',  // yellow
+                        'details pending'                            => 'info',     // blue
+                        default                                      => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('price')
                     ->money(fn ($record) => $record->currency ?? 'EUR')
                     ->sortable(),
@@ -503,6 +509,8 @@ class ArtworkResource extends Resource
             ->filtersLayout(Tables\Enums\FiltersLayout::AboveContentCollapsible)
             ->filtersFormColumns(3)
             ->deferFilters()
+            ->paginated([25, 50, 100, 200])
+            ->defaultPaginationPageOption(50)
             ->actions([
                 Tables\Actions\ActionGroup::make([
                 Tables\Actions\EditAction::make(),
