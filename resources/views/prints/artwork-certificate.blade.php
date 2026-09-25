@@ -95,8 +95,6 @@
                 right: auto;
                 bottom: auto;
                 margin-top: 2rem;
-                padding-top: 1rem;
-                border-top: 1px solid #e5e7eb;
             }
             .actions, .no-print { display: none !important; }
             @page { size: A4; margin: 2cm; }

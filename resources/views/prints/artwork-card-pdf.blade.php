@@ -44,10 +44,10 @@
             text-align: center;
             color: #374151;
         }
-        .header img { max-height: 80pt; max-width: 280pt; }
+        .header img { max-height: 110pt; max-width: 360pt; }
         .header .wordmark {
             font-family: DejaVu Serif, serif;
-            font-size: 22pt;
+            font-size: 30pt;
             letter-spacing: 0.35em;
             color: #374151;
             text-transform: uppercase;
@@ -55,12 +55,16 @@
 
         /* Big centered artwork; capped by max-height so the meta block
            below always has room even for portrait pieces. */
-        .photo-wrap { width: 100%; text-align: center; margin-bottom: 22pt; }
+        /* Photo + meta share a common centred column so the meta text
+           left edge lines up with the photo's own left edge. Column is
+           80% of the page's content width; photo scales inside it and
+           meta lines up at column-left. */
+        .stage      { width: 80%; margin: 0 auto; }
+        .photo-wrap { width: 100%; text-align: left; margin-bottom: 22pt; }
         .photo      { max-width: 100%; max-height: 560pt; }
 
-        /* Metadata block — left-aligned under the photo, spans the full
-           A4 content width (no artificial inner-column shrinking) so the
-           text sits inside the standard 2 cm page margin. */
+        /* Metadata block — sits inside .stage so its left edge lines up
+           with the photo's left edge. */
         .meta {
             color: #1f2937;
             text-align: left;
@@ -120,7 +124,9 @@
         @endif
     </div>
 
-    {{-- DOMINANT ARTWORK --}}
+    {{-- Photo + meta live inside one centred column so the meta's left
+         edge lines up with the photo's left edge. --}}
+    <div class="stage">
     @if ($artwork->primary_image)
         <div class="photo-wrap">
             <img class="photo" src="{{ public_path('storage/'.$artwork->primary_image) }}" alt="">
@@ -160,6 +166,7 @@
             {{ $artwork->provenance }}
         </div>
     @endif
+    </div>{{-- /.stage --}}
 
     @php
         $cardFooter = $settings->card_footer_text

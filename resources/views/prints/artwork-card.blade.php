@@ -38,22 +38,21 @@
 
         /* Header — logo / wordmark centred, dominant on the page. */
         .header { text-align: center; margin-bottom: 1.2rem; color: #374151; }
-        .header img { max-height: 80px; max-width: 280px; display: inline-block; }
+        .header img { max-height: 110px; max-width: 360px; display: inline-block; }
         .header .wordmark {
             font-family: Georgia, 'Times New Roman', serif;
-            font-size: 1.4rem;
+            font-size: 1.9rem;
             letter-spacing: 0.35em;
             color: #374151;
             text-transform: uppercase;
         }
 
-        /* Dominant artwork. */
-        .photo-wrap { text-align: center; margin-bottom: 22px; }
-        .photo      { max-width: 100%; max-height: 560px; height: auto; display: inline-block; }
-
-        /* Meta block — left-aligned under the photo, spans full A4 content
-           width (no artificial inset). */
-        .meta { color: #1f2937; text-align: left; }
+        /* Photo + meta share a common centred column so the meta text
+           starts flush with the photo's left edge. */
+        .stage      { width: 80%; margin: 0 auto; }
+        .photo-wrap { text-align: left; margin-bottom: 22px; }
+        .photo      { max-width: 100%; max-height: 560px; height: auto; display: block; }
+        .meta       { color: #1f2937; text-align: left; }
         .meta .artist  { font-size: 0.9rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.25rem; }
         .meta .title   { font-style: italic; font-size: 1rem; margin-bottom: 0.4rem; }
         .meta .line    { margin-top: 0.15rem; color: #374151; }
@@ -98,8 +97,6 @@
                 right: auto;
                 bottom: auto;
                 margin-top: 2rem;
-                padding-top: 1rem;
-                border-top: 1px solid #e5e7eb;
             }
             .actions, .no-print { display: none !important; }
             @page { size: A4; margin: 2cm; }
@@ -139,6 +136,7 @@
             @endif
         </div>
 
+        <div class="stage">
         @if ($artwork->primary_image)
             <div class="photo-wrap">
                 <img class="photo" src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}" alt="{{ $artwork->title }}">
@@ -175,6 +173,7 @@
                 {{ $artwork->provenance }}
             </div>
         @endif
+        </div>{{-- /.stage --}}
 
         @php
             $cardFooter = $settings->card_footer_text
