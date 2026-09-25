@@ -569,27 +569,33 @@ class ArtworkResource extends Resource
                             ->success()->send();
                         $livewire->redirect(self::getUrl('edit', ['record' => $copy]));
                     }),
+                // 'Print …' actions now open the server-side A4 PDF
+                // directly. The old HTML print route relied on the browser
+                // honouring @page size:A4, which not every browser does —
+                // opening the DomPDF file in the browser's PDF viewer gives
+                // a reliably A4-sized page from which the user can print
+                // or Save-as-PDF.
                 Tables\Actions\Action::make('printCard')
                     ->label('Print artwork card')
                     ->icon('heroicon-m-printer')
-                    ->url(fn (Artwork $record): string => route('artworks.print.card', $record))
+                    ->url(fn (Artwork $record): string => route('artworks.pdf.card', $record))
                     ->openUrlInNewTab(),
                 Tables\Actions\Action::make('printCertificate')
                     ->label('Print certificate')
                     ->icon('heroicon-m-shield-check')
                     ->visible(fn (): bool => ! auth()->user()?->isCollector())
-                    ->url(fn (Artwork $record): string => route('artworks.print.certificate', $record))
+                    ->url(fn (Artwork $record): string => route('artworks.pdf.certificate', $record))
                     ->openUrlInNewTab(),
                 Tables\Actions\Action::make('printLabel')
                     ->label('Print label')
                     ->icon('heroicon-m-tag')
-                    ->url(fn (Artwork $record): string => route('artworks.print.label', $record))
+                    ->url(fn (Artwork $record): string => route('artworks.pdf.label', $record))
                     ->openUrlInNewTab(),
                 Tables\Actions\Action::make('printMaintenance')
                     ->label('Print maintenance report')
                     ->icon('heroicon-m-wrench-screwdriver')
                     ->visible(fn (): bool => ! auth()->user()?->isArtist())
-                    ->url(fn (Artwork $record): string => route('artworks.print.maintenance', $record))
+                    ->url(fn (Artwork $record): string => route('artworks.pdf.maintenance', $record))
                     ->openUrlInNewTab(),
                 // The 'Download (PDF)' variants were removed from this menu
                 // — the browser print view already surfaces a Save-as-PDF
