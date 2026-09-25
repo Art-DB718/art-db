@@ -74,7 +74,7 @@ class WebserviceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('name')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('type')->badge()
                     ->formatStateUsing(fn (?string $state) => self::TYPES[$state] ?? $state),
                 Tables\Columns\IconColumn::make('is_active')->boolean()->label('Active'),

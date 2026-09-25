@@ -479,7 +479,7 @@ class PrivateRoomResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('cover_image')->disk('public')->square()->size(50),
-                Tables\Columns\TextColumn::make('title')->searchable()->sortable()->limit(40),
+                Tables\Columns\TextColumn::make('title')->searchableAccentless()->sortable()->limit(40),
                 Tables\Columns\TextColumn::make('recipients_count')
                     ->counts('recipients')
                     ->label('Recipients')

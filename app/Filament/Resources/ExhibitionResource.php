@@ -274,10 +274,10 @@ class ExhibitionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('poster_image')->disk('public')->square()->size(50),
-                Tables\Columns\TextColumn::make('title')->searchable()->sortable()->limit(40),
+                Tables\Columns\TextColumn::make('title')->searchableAccentless()->sortable()->limit(40),
                 Tables\Columns\TextColumn::make('type')->badge()
                     ->formatStateUsing(fn (?string $state) => self::TYPES[$state] ?? $state),
-                Tables\Columns\TextColumn::make('venue')->searchable()->toggleable(),
+                Tables\Columns\TextColumn::make('venue')->searchableAccentless()->toggleable(),
                 Tables\Columns\TextColumn::make('start_date')->date()->sortable(),
                 Tables\Columns\TextColumn::make('end_date')->date()->sortable(),
                 Tables\Columns\TextColumn::make('status')->badge()

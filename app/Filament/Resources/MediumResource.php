@@ -49,7 +49,7 @@ class MediumResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('name')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('parent.name')->label('Parent')->badge()->color('gray')
                     ->placeholder('— top level —'),
                 Tables\Columns\TextColumn::make('artworks_count')->counts('artworks')->label('Artworks'),

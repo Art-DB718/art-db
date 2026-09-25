@@ -230,7 +230,7 @@ class ArtistResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('profile_image')->disk('public')->circular()->size(40),
-                Tables\Columns\TextColumn::make('display_name')->label('Name')->searchable(['first_name', 'last_name'])->sortable(),
+                Tables\Columns\TextColumn::make('display_name')->label('Name')->searchableAccentless(['first_name', 'last_name'])->sortable(),
                 Tables\Columns\TextColumn::make('birth_year')->sortable(),
                 Tables\Columns\TextColumn::make('life_status')
                     ->label('Úmrtie')

@@ -49,8 +49,8 @@ class Maintenance extends Page implements HasTable
             ->query(Artwork::query()->has('maintenances')->with(['artist', 'maintenances']))
             ->columns([
                 Tables\Columns\ImageColumn::make('primary_image')->disk('public')->square()->size(50),
-                Tables\Columns\TextColumn::make('inventory_id')->label('Inv. ID')->searchable()->fontFamily('mono')->size('xs'),
-                Tables\Columns\TextColumn::make('title')->searchable()->sortable()->limit(40),
+                Tables\Columns\TextColumn::make('inventory_id')->label('Inv. ID')->searchableAccentless()->fontFamily('mono')->size('xs'),
+                Tables\Columns\TextColumn::make('title')->searchableAccentless()->sortable()->limit(40),
                 Tables\Columns\TextColumn::make('artist.last_name')
                     ->label('Artist')
                     ->formatStateUsing(fn (Artwork $record) => trim(($record->artist?->first_name ?? '').' '.($record->artist?->last_name ?? '')) ?: '—')

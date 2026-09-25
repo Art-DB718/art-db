@@ -216,11 +216,11 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('invoice_number')->searchable()->sortable()
+                Tables\Columns\TextColumn::make('invoice_number')->searchableAccentless()->sortable()
                     ->fontFamily('mono')->size('xs'),
                 Tables\Columns\TextColumn::make('buyer.last_name')->label('Buyer')
                     ->formatStateUsing(fn ($state, $record) => $record->buyer?->display_name ?? '—')
-                    ->searchable(),
+                    ->searchableAccentless(['buyer.first_name', 'buyer.last_name', 'buyer.organization']),
                 Tables\Columns\TextColumn::make('sale_date')->date()->sortable(),
                 Tables\Columns\TextColumn::make('payment_status')->badge()
                     ->formatStateUsing(fn (?string $state) => self::PAYMENT_STATUSES[$state] ?? $state)

@@ -49,7 +49,7 @@ class ArtworkStatusResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('name')->searchableAccentless()->sortable(),
                 Tables\Columns\ColorColumn::make('color'),
                 Tables\Columns\IconColumn::make('is_public')->boolean()->label('Public'),
                 Tables\Columns\IconColumn::make('counts_as_available')->boolean()->label('Available'),

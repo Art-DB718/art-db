@@ -120,7 +120,7 @@ class GalleryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('logo')->disk('public')->circular()->size(40),
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('name')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('city')->toggleable(),
                 Tables\Columns\TextColumn::make('artists_count')->counts('artists')->label('Artists')->sortable(),
                 Tables\Columns\IconColumn::make('is_published')->boolean()->label('Public'),

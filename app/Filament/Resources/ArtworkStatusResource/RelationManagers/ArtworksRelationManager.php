@@ -21,7 +21,7 @@ class ArtworksRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\ImageColumn::make('primary_image')->disk('public')->square()->size(40),
                 Tables\Columns\TextColumn::make('inventory_id')->label('Inv.')->fontFamily('mono')->size('xs'),
-                Tables\Columns\TextColumn::make('title')->searchable()->sortable()->limit(40),
+                Tables\Columns\TextColumn::make('title')->searchableAccentless()->sortable()->limit(40),
                 Tables\Columns\TextColumn::make('artist.last_name')
                     ->label('Artist')
                     ->formatStateUsing(fn (Artwork $r) => $r->artist?->display_name ?? '—')

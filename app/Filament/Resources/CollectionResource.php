@@ -142,7 +142,7 @@ class CollectionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->searchable()->sortable()
+                    ->searchableAccentless()->sortable()
                     ->weight('medium')
                     ->description(fn (Collection $r): ?string => $r->parent?->title
                         ? '↳ in '.$r->parent->title

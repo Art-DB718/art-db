@@ -341,19 +341,13 @@ class ArtworkResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('primary_image')->disk('public')->square()->size(50),
-                Tables\Columns\TextColumn::make('inventory_id')->searchable()->sortable()->copyable()->fontFamily('mono')->size('xs'),
+                Tables\Columns\TextColumn::make('inventory_id')->searchableAccentless()->sortable()->copyable()->fontFamily('mono')->size('xs'),
                 Tables\Columns\TextColumn::make('artist.last_name')
                     ->label('Artist')
                     ->formatStateUsing(fn ($record): string => $record->artist?->display_name ?? '—')
-                    ->searchable(query: function ($query, string $search) {
-                        $query->whereHas('artist', function ($q) use ($search) {
-                            $needle = '%'.$search.'%';
-                            $q->where('first_name', 'ilike', $needle)
-                              ->orWhere('last_name', 'ilike', $needle);
-                        });
-                    })
+                    ->searchableAccentless(['artist.first_name', 'artist.last_name'])
                     ->sortable(),
-                Tables\Columns\TextColumn::make('title')->searchable()->sortable()->limit(40),
+                Tables\Columns\TextColumn::make('title')->searchableAccentless()->sortable()->limit(40),
                 Tables\Columns\TextColumn::make('year_created')->sortable(),
                 Tables\Columns\TextColumn::make('medium.name')->badge()->color('gray'),
                 Tables\Columns\TextColumn::make('status.name')

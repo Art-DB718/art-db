@@ -64,11 +64,11 @@ class LocationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('name')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
                     ->formatStateUsing(fn (?string $state) => self::TYPES[$state] ?? $state),
-                Tables\Columns\TextColumn::make('city')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('city')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('country.name')->label('Country')->sortable(),
                 Tables\Columns\TextColumn::make('artworks_count')->counts('artworks')->label('Artworks'),
             ])

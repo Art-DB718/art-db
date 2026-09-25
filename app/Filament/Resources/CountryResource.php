@@ -46,7 +46,7 @@ class CountryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('name')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('iso_alpha2')->label('Alpha-2')->badge(),
                 Tables\Columns\TextColumn::make('iso_alpha3')->label('Alpha-3')->badge()->color('gray'),
                 Tables\Columns\TextColumn::make('artists_count')->counts('artists')->label('Artists'),

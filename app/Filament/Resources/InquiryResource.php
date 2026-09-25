@@ -111,7 +111,7 @@ class InquiryResource extends Resource
                         : 'heroicon-m-arrow-up-tray'),
                 Tables\Columns\TextColumn::make('artwork.title')
                     ->label('Artwork')
-                    ->searchable()
+                    ->searchableAccentless(['artwork.title'])
                     ->limit(40),
                 Tables\Columns\TextColumn::make('artwork.artist.last_name')
                     ->label('Artist')

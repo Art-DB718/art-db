@@ -64,12 +64,12 @@ class ArtistClaimResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('artist.display_name')
                     ->label('Artist')
-                    ->searchable()
+                    ->searchableAccentless(['artist.first_name', 'artist.last_name'])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('claimant.name')
                     ->label('Claimant')
                     ->description(fn (ArtistClaim $r) => $r->claimant?->email)
-                    ->searchable(),
+                    ->searchableAccentless(['claimant.name', 'claimant.email']),
                 Tables\Columns\BadgeColumn::make('status')
                     ->colors([
                         'warning' => ArtistClaim::STATUS_PENDING,

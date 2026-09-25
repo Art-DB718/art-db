@@ -72,10 +72,10 @@ class ContactResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('last_name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('first_name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('organization')->searchable()->toggleable(),
-                Tables\Columns\TextColumn::make('email')->searchable()->copyable()->icon('heroicon-m-envelope'),
+                Tables\Columns\TextColumn::make('last_name')->searchableAccentless()->sortable(),
+                Tables\Columns\TextColumn::make('first_name')->searchableAccentless()->sortable(),
+                Tables\Columns\TextColumn::make('organization')->searchableAccentless()->toggleable(),
+                Tables\Columns\TextColumn::make('email')->searchableAccentless()->copyable()->icon('heroicon-m-envelope'),
                 Tables\Columns\TextColumn::make('group.name')->label('Group')->badge()->color('gray'),
                 Tables\Columns\TextColumn::make('country.name')->label('Country')->toggleable(),
                 Tables\Columns\IconColumn::make('subscribed_to_newsletter')->boolean()->label('Newsletter'),

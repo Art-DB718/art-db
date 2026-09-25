@@ -40,7 +40,7 @@ class GenreResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('name')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('artworks_count')->counts('artworks')->label('Artworks'),
                 Tables\Columns\TextColumn::make('description')->limit(60)->toggleable(),
             ])
