@@ -722,26 +722,44 @@ class ArtworkResource extends Resource
                         ->modalDescription('Pick which sections show on each artwork page + how the selected works are ordered.')
                         ->modalSubmitActionLabel('Create PDF')
                         ->form([
-                            Forms\Components\Select::make('sort_by')
-                                ->label('Sort artworks by')
-                                ->options([
-                                    'selection' => 'Keep current selection order',
-                                    'artist'    => 'Artist name (A → Z)',
-                                    'title'     => 'Title (A → Z)',
-                                    'year'      => 'Year (newest first)',
-                                    'inventory' => 'Inventory ID',
-                                ])
-                                ->default('artist')
-                                ->required(),
+                            Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\Select::make('per_page')
+                                    ->label('Artworks per page')
+                                    ->options([
+                                        1  => '1 (one full page each)',
+                                        2  => '2 per page',
+                                        4  => '4 per page (2 × 2 grid)',
+                                        6  => '6 per page (2 × 3 grid)',
+                                        8  => '8 per page (2 × 4 grid)',
+                                        9  => '9 per page (3 × 3 grid)',
+                                        10 => '10 per page (2 × 5 grid)',
+                                        12 => '12 per page (3 × 4 grid)',
+                                    ])
+                                    ->default(1)
+                                    ->required(),
+                                Forms\Components\Select::make('sort_by')
+                                    ->label('Sort artworks by')
+                                    ->options([
+                                        'selection' => 'Keep current selection order',
+                                        'artist'    => 'Artist name (A → Z)',
+                                        'title'     => 'Title (A → Z)',
+                                        'year'      => 'Year (newest first)',
+                                        'inventory' => 'Inventory ID',
+                                    ])
+                                    ->default('artist')
+                                    ->required(),
+                            ]),
                             Forms\Components\Grid::make(2)->schema([
                                 Forms\Components\Toggle::make('show_price')
                                     ->label('Show price')
                                     ->default(true),
                                 Forms\Components\Toggle::make('show_description')
                                     ->label('Show artwork description')
+                                    ->helperText('Only used when 1 artwork per page.')
                                     ->default(true),
                                 Forms\Components\Toggle::make('show_provenance')
                                     ->label('Show provenance')
+                                    ->helperText('Only used when 1 artwork per page.')
                                     ->default(false),
                                 Forms\Components\Toggle::make('include_cover')
                                     ->label('Include cover page')
@@ -765,6 +783,7 @@ class ArtworkResource extends Resource
                                     'show_description' => (bool) ($data['show_description'] ?? true),
                                     'show_provenance'  => (bool) ($data['show_provenance']  ?? false),
                                     'include_cover'    => (bool) ($data['include_cover']    ?? true),
+                                    'per_page'         => (int)  ($data['per_page']         ?? 1),
                                 ],
                             ])->setPaper('a4');
 
