@@ -718,11 +718,54 @@ class ArtworkResource extends Resource
                         ->label('Catalogue (PDF)')
                         ->icon('heroicon-o-book-open')
                         ->color('gray')
-                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                        ->modalHeading('Create PDF Catalogue')
+                        ->modalDescription('Pick which sections show on each artwork page + how the selected works are ordered.')
+                        ->modalSubmitActionLabel('Create PDF')
+                        ->form([
+                            Forms\Components\Select::make('sort_by')
+                                ->label('Sort artworks by')
+                                ->options([
+                                    'selection' => 'Keep current selection order',
+                                    'artist'    => 'Artist name (A → Z)',
+                                    'title'     => 'Title (A → Z)',
+                                    'year'      => 'Year (newest first)',
+                                    'inventory' => 'Inventory ID',
+                                ])
+                                ->default('artist')
+                                ->required(),
+                            Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\Toggle::make('show_price')
+                                    ->label('Show price')
+                                    ->default(true),
+                                Forms\Components\Toggle::make('show_description')
+                                    ->label('Show artwork description')
+                                    ->default(true),
+                                Forms\Components\Toggle::make('show_provenance')
+                                    ->label('Show provenance')
+                                    ->default(false),
+                                Forms\Components\Toggle::make('include_cover')
+                                    ->label('Include cover page')
+                                    ->default(true),
+                            ]),
+                        ])
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data) {
                             $artworks = $records->load(['artist', 'medium', 'genre']);
+                            $artworks = match ($data['sort_by'] ?? 'artist') {
+                                'artist'    => $artworks->sortBy(fn ($a) => strtolower(($a->artist?->last_name ?? '').' '.($a->artist?->first_name ?? '')))->values(),
+                                'title'     => $artworks->sortBy(fn ($a) => strtolower((string) $a->title))->values(),
+                                'year'      => $artworks->sortByDesc('year_created')->values(),
+                                'inventory' => $artworks->sortBy('inventory_id')->values(),
+                                default     => $artworks->values(),
+                            };
                             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('prints.artwork-catalogue-pdf', [
                                 'artworks' => $artworks,
                                 'settings' => \App\Models\InvoiceSetting::current(),
+                                'options'  => [
+                                    'show_price'       => (bool) ($data['show_price']       ?? true),
+                                    'show_description' => (bool) ($data['show_description'] ?? true),
+                                    'show_provenance'  => (bool) ($data['show_provenance']  ?? false),
+                                    'include_cover'    => (bool) ($data['include_cover']    ?? true),
+                                ],
                             ])->setPaper('a4');
 
                             return response()->streamDownload(
