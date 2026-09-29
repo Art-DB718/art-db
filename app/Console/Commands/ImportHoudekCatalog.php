@@ -83,11 +83,12 @@ class ImportHoudekCatalog extends Command
 
         $artist = $this->findOrCreateArtist($user, $gallery, $dryRun);
 
+        // If the photo folder isn't there, run metadata-only — Kat can
+        // attach photos in the admin later. Individual missing files
+        // already fall through with a warning in copyPrimaryImage().
         $importDir = base_path('database/imports/houdek-2026');
         if (! is_dir($importDir)) {
-            $this->error("Import directory not found: {$importDir}");
-
-            return self::FAILURE;
+            $this->warn("Photo folder not found ({$importDir}) — creating records without images.");
         }
 
         $this->info(sprintf(
