@@ -39,4 +39,16 @@ class Contact extends Model
     public function country()  { return $this->belongsTo(Country::class); }
     public function group()    { return $this->belongsTo(ContactGroup::class, 'group_id'); }
     public function sales()    { return $this->hasMany(Sale::class, 'buyer_contact_id'); }
+
+    /** Many-to-many groups (a contact can be in several groups). */
+    public function groups()
+    {
+        return $this->belongsToMany(ContactGroup::class, 'contact_contact_group')->withTimestamps();
+    }
+
+    /** Artists this contact is interested in / follows. */
+    public function interestedArtists()
+    {
+        return $this->belongsToMany(Artist::class, 'contact_artist_interest')->withTimestamps();
+    }
 }

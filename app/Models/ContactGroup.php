@@ -22,5 +22,16 @@ class ContactGroup extends Model
 
     public function parent()   { return $this->belongsTo(self::class, 'parent_id'); }
     public function children() { return $this->hasMany(self::class, 'parent_id'); }
-    public function contacts() { return $this->hasMany(Contact::class, 'group_id'); }
+
+    /**
+     * Legacy 1-N relation (contacts.group_id). Kept because a few code
+     * paths still read it; new code should prefer contacts() below.
+     */
+    public function primaryContacts() { return $this->hasMany(Contact::class, 'group_id'); }
+
+    /** Many-to-many contacts via contact_contact_group pivot. */
+    public function contacts()
+    {
+        return $this->belongsToMany(Contact::class, 'contact_contact_group')->withTimestamps();
+    }
 }

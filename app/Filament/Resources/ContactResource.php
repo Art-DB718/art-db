@@ -31,8 +31,21 @@ class ContactResource extends Resource
                     Forms\Components\TextInput::make('organization')->maxLength(255)->columnSpan(2),
                     Forms\Components\TextInput::make('email')->email()->maxLength(255),
                     Forms\Components\TextInput::make('phone')->tel()->maxLength(255),
-                    Forms\Components\Select::make('group_id')
-                        ->relationship('group', 'name')->searchable()->preload()->label('Contact group'),
+                    // Many-to-many groups — contact can belong to several.
+                    // Free-text "+" quick-creates a new group inline.
+                    Forms\Components\Select::make('groups')
+                        ->relationship('groups', 'name')
+                        ->multiple()
+                        ->searchable()
+                        ->preload()
+                        ->label('Groups')
+                        ->columnSpan(2)
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name')
+                                ->required()->maxLength(255),
+                            Forms\Components\Textarea::make('description')
+                                ->rows(2),
+                        ]),
                     Forms\Components\Select::make('source')
                         ->options([
                             'website'     => 'Website',
@@ -58,7 +71,17 @@ class ContactResource extends Resource
             ])->collapsed(),
 
             Forms\Components\Section::make('CRM')->schema([
+                Forms\Components\Select::make('interestedArtists')
+                    ->label('Interested in artists')
+                    ->relationship('interestedArtists', 'last_name')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => trim(($record->first_name ?? '').' '.($record->last_name ?? '')))
+                    ->multiple()
+                    ->searchable(['first_name', 'last_name'])
+                    ->preload()
+                    ->helperText('Which artists the contact follows or is likely to buy from.')
+                    ->columnSpanFull(),
                 Forms\Components\TagsInput::make('interests')
+                    ->label('Free-text tags (e.g. painting, sculpture)')
                     ->placeholder('painting, sculpture, …')
                     ->columnSpanFull(),
                 Forms\Components\DateTimePicker::make('last_contact_at'),
@@ -76,14 +99,18 @@ class ContactResource extends Resource
                 Tables\Columns\TextColumn::make('first_name')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('organization')->searchableAccentless()->toggleable(),
                 Tables\Columns\TextColumn::make('email')->searchableAccentless()->copyable()->icon('heroicon-m-envelope'),
-                Tables\Columns\TextColumn::make('group.name')->label('Group')->badge()->color('gray'),
+                Tables\Columns\TextColumn::make('groups.name')->label('Groups')->badge()->color('gray'),
+                Tables\Columns\TextColumn::make('interestedArtists.last_name')->label('Interests')->badge()->color('info')->toggleable(),
                 Tables\Columns\TextColumn::make('country.name')->label('Country')->toggleable(),
                 Tables\Columns\IconColumn::make('subscribed_to_newsletter')->boolean()->label('Newsletter'),
                 Tables\Columns\TextColumn::make('sales_count')->counts('sales')->label('Sales'),
             ])
             ->defaultSort('last_name')
             ->filters([
-                Tables\Filters\SelectFilter::make('group')->relationship('group', 'name'),
+                Tables\Filters\SelectFilter::make('groups')->relationship('groups', 'name')->multiple()->preload(),
+                Tables\Filters\SelectFilter::make('interestedArtists')->label('Interested in artist')
+                    ->relationship('interestedArtists', 'last_name')
+                    ->searchable()->preload(),
                 Tables\Filters\SelectFilter::make('country')->relationship('country', 'name'),
                 Tables\Filters\TernaryFilter::make('subscribed_to_newsletter')->label('Newsletter'),
                 Tables\Filters\TrashedFilter::make(),
