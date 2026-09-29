@@ -46,7 +46,7 @@ class PrivateRoomResource extends Resource
                             ->required()->maxLength(255)->columnSpanFull(),
                         Forms\Components\Textarea::make('welcome_message')
                             ->rows(4)->columnSpanFull()
-                            ->helperText('Shown at the top of the private room for the client.'),
+                            ->helperText('Shown at the top of the private room AND used as the main body of the email sent to recipients.'),
                         Forms\Components\FileUpload::make('cover_image')
                             ->image()->disk('public')->directory('private-rooms'),
                         Forms\Components\DateTimePicker::make('expires_at')
@@ -525,17 +525,23 @@ class PrivateRoomResource extends Resource
         }
     }
 
-    /** Jednoduché HTML telo emailu s odkazom na private room. */
+    /**
+     * HTML telo emailu s odkazom na private room.
+     * Ak je vyplnená welcome_message, používa sa ako hlavný text emailu
+     * (rovnaký text, ktorý klient uvidí aj v hlavičke roomu).
+     * Ak je prázdna, fallback na neutrálnu anglickú vetu.
+     */
     protected static function privateRoomEmailHtml(PrivateRoom $record, Contact $contact): string
     {
-        $welcome = filled($record->welcome_message)
-            ? '<p>'.nl2br(e($record->welcome_message)).'</p>'
-            : '';
+        $body = filled($record->welcome_message)
+            ? '<div style="white-space:pre-wrap;line-height:1.55;">'.nl2br(e($record->welcome_message)).'</div>'
+            : '<p>We have prepared a private selection for you.</p>';
+
         $url = e($record->publicUrl());
 
         return '<p>Dear '.e($contact->display_name).',</p>'
-            .$welcome
-            .'<p>We have prepared a private selection for you. View it here:<br>'
+            .$body
+            .'<p style="margin-top:1.25em;">View the private room here:<br>'
             .'<a href="'.$url.'">'.$url.'</a></p>'
             .'<p>Best regards,</p>';
     }
