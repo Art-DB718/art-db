@@ -237,9 +237,8 @@ class ImportHoudekCatalog extends Command
 
     protected function resolveMediumId(string $mediumName, User $user, bool $dryRun): ?int
     {
-        $medium = Medium::where('owner_user_id', $user->id)
-            ->whereRaw('LOWER(name) = ?', [strtolower($mediumName)])
-            ->first();
+        // Mediums are global (no owner scope). Match case-insensitively.
+        $medium = Medium::whereRaw('LOWER(name) = ?', [strtolower($mediumName)])->first();
 
         if ($medium) {
             return $medium->id;
@@ -249,12 +248,7 @@ class ImportHoudekCatalog extends Command
             return null;
         }
 
-        $medium = Medium::create([
-            'name'          => $mediumName,
-            'owner_user_id' => $user->id,
-        ]);
-
-        return $medium->id;
+        return Medium::create(['name' => $mediumName])->id;
     }
 
     protected function copyPrimaryImage(int $page, string $importDir, int $ownerId, string $inventoryId): ?string
