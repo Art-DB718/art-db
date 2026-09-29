@@ -56,17 +56,83 @@ class PrivateRoomResource extends Resource
                 Forms\Components\Wizard\Step::make('Choose Artworks')
                     ->icon('heroicon-o-photo')
                     ->schema([
+                        // Narrowing filters — each one restricts the artwork
+                        // picker below. All optional; combine as needed.
+                        Forms\Components\Grid::make(3)->schema([
+                            Forms\Components\Select::make('filter_artist_id')
+                                ->label('Filter by artist')
+                                ->dehydrated(false)
+                                ->options(fn () => \App\Models\Artist::query()
+                                    ->orderBy('last_name')->orderBy('first_name')
+                                    ->get()->mapWithKeys(fn ($a) => [$a->id => trim(($a->first_name ?? '').' '.($a->last_name ?? ''))])
+                                    ->all())
+                                ->searchable()
+                                ->preload()
+                                ->live(),
+                            Forms\Components\Select::make('filter_collection_id')
+                                ->label('Filter by collection')
+                                ->dehydrated(false)
+                                ->options(fn () => \App\Models\Collection::query()
+                                    ->orderBy('title')->pluck('title', 'id')->all())
+                                ->searchable()
+                                ->preload()
+                                ->live(),
+                            Forms\Components\Select::make('filter_medium_id')
+                                ->label('Filter by technique')
+                                ->dehydrated(false)
+                                ->options(fn () => \App\Models\Medium::query()
+                                    ->orderBy('name')->pluck('name', 'id')->all())
+                                ->searchable()
+                                ->preload()
+                                ->live(),
+                        ]),
+
                         Forms\Components\Select::make('artworks')
-                            ->relationship('artworks', 'title')
+                            ->relationship(
+                                name: 'artworks',
+                                titleAttribute: 'title',
+                                // Apply the three filters + join artist so the
+                                // "search by title" also matches artist names.
+                                modifyQueryUsing: function ($query, Forms\Get $get) {
+                                    if ($artistId = $get('filter_artist_id')) {
+                                        $query->where('artist_id', $artistId);
+                                    }
+                                    if ($collectionId = $get('filter_collection_id')) {
+                                        $query->whereHas('collections', fn ($q) => $q->where('collections.id', $collectionId));
+                                    }
+                                    if ($mediumId = $get('filter_medium_id')) {
+                                        $query->where('medium_id', $mediumId);
+                                    }
+                                    return $query->with(['artist', 'medium']);
+                                },
+                            )
                             ->multiple()
-                            ->searchable(['title', 'inventory_id'])
+                            // Search matches title, inventory ID and artist name.
+                            ->getSearchResultsUsing(function (string $search) {
+                                return Artwork::query()
+                                    ->with('artist')
+                                    ->where(function ($q) use ($search) {
+                                        $like = '%'.$search.'%';
+                                        $q->where('title', 'ilike', $like)
+                                          ->orWhere('inventory_id', 'ilike', $like)
+                                          ->orWhereHas('artist', function ($sub) use ($like) {
+                                              $sub->where('first_name', 'ilike', $like)
+                                                  ->orWhere('last_name', 'ilike', $like);
+                                          });
+                                    })
+                                    ->limit(50)
+                                    ->get()
+                                    ->mapWithKeys(fn (Artwork $r) => [$r->id => self::artworkOptionLabel($r)])
+                                    ->all();
+                            })
+                            ->getOptionLabelUsing(fn ($value): string => ($a = Artwork::with('artist')->find($value)) ? self::artworkOptionLabel($a) : '—')
                             ->preload()
                             ->allowHtml()
                             ->getOptionLabelFromRecordUsing(fn (Artwork $record): string => self::artworkOptionLabel($record))
                             ->live()
                             ->afterStateUpdated(fn ($state, Forms\Get $get, Forms\Set $set) => self::syncManualLineup($state, $get, $set))
                             ->columnSpanFull()
-                            ->helperText('Each option shows a thumbnail, the artist and the title — like in Collections.'),
+                            ->helperText('Narrow the list with the filters above, or type to search by title, inventory ID or artist name.'),
                     ]),
 
                 Forms\Components\Wizard\Step::make('Pricing & Sort')
