@@ -530,6 +530,7 @@ class PrivateRoomResource extends Resource
      * Ak je vyplnená welcome_message, používa sa ako hlavný text emailu
      * (rovnaký text, ktorý klient uvidí aj v hlavičke roomu).
      * Ak je prázdna, fallback na neutrálnu anglickú vetu.
+     * Podpis obsahuje meno galérie, ktorá room vytvorila.
      */
     protected static function privateRoomEmailHtml(PrivateRoom $record, Contact $contact): string
     {
@@ -539,11 +540,17 @@ class PrivateRoomResource extends Resource
 
         $url = e($record->publicUrl());
 
+        // Meno galérie: Gallery vlastnená autorom roomu; fallback na
+        // company_name z invoice settings, potom na app.name.
+        $galleryName = \App\Models\Gallery::where('owner_user_id', $record->owner_user_id)->value('name')
+            ?? \App\Models\InvoiceSetting::current()?->company_name
+            ?? config('app.name');
+
         return '<p>Dear '.e($contact->display_name).',</p>'
             .$body
             .'<p style="margin-top:1.25em;">View the private room here:<br>'
             .'<a href="'.$url.'">'.$url.'</a></p>'
-            .'<p>Best regards,</p>';
+            .'<p>Best regards,<br>'.e($galleryName).'</p>';
     }
 
     public static function table(Table $table): Table
