@@ -160,12 +160,6 @@
             {{ $artwork->description }}
         </div>
     @endif
-    @if ($settings->card_show_provenance && $artwork->provenance)
-        <div class="aux">
-            <div class="aux-label">Provenance</div>
-            {{ $artwork->provenance }}
-        </div>
-    @endif
     </div>{{-- /.stage --}}
 
     @php
