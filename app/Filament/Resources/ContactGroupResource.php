@@ -62,6 +62,13 @@ class ContactGroupResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            ContactGroupResource\RelationManagers\ContactsRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
