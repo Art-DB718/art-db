@@ -62,6 +62,17 @@ class GalleryController extends Controller
                 ->orderBy('first_name')
                 ->get();
 
-        return view('public.galleries.show', compact('gallery', 'artworks', 'alsoShowing'));
+        // "Presented artists" — artists this gallery user OWNS and has flagged
+        // as featured (is_featured). Same as marking an artist to publish on
+        // the home page. Shown on the gallery's public profile.
+        $presentedArtists = Artist::query()
+            ->where('owner_user_id', $gallery->owner_user_id)
+            ->where('is_published', true)
+            ->where('is_featured', true)
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->get();
+
+        return view('public.galleries.show', compact('gallery', 'artworks', 'alsoShowing', 'presentedArtists'));
     }
 }

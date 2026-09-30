@@ -65,12 +65,27 @@
                 <div class="prose max-w-2xl mb-12">{{ $gallery->description }}</div>
             @endif
 
-            <h2 class="font-serif text-2xl mb-6">Represented artists</h2>
-            @if ($gallery->artists->isEmpty())
-                <p class="text-gray-500 italic mb-12">No artists yet.</p>
-            @else
+            @if ($gallery->artists->isNotEmpty())
+                <h2 class="font-serif text-2xl mb-6">Represented artists</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 border border-gray-200 mb-16">
                     @foreach ($gallery->artists as $artist)
+                        <a href="{{ route('artists.show', $artist) }}" class="bg-white p-6 hover:bg-gray-50 transition block">
+                            @if ($artist->profile_image)
+                                <img src="{{ \Illuminate\Support\Facades\Storage::url($artist->profile_image) }}" alt="" class="w-16 h-16 object-cover rounded-full mb-3">
+                            @endif
+                            <p class="font-serif text-lg leading-tight">{{ $artist->display_name }}</p>
+                            @if ($artist->birth_year)
+                                <p class="text-xs text-gray-500 mt-1">b. {{ $artist->birth_year }}</p>
+                            @endif
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+
+            @if ($presentedArtists->isNotEmpty())
+                <h2 class="font-serif text-2xl mb-6">Presented artists</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 border border-gray-200 mb-16">
+                    @foreach ($presentedArtists as $artist)
                         <a href="{{ route('artists.show', $artist) }}" class="bg-white p-6 hover:bg-gray-50 transition block">
                             @if ($artist->profile_image)
                                 <img src="{{ \Illuminate\Support\Facades\Storage::url($artist->profile_image) }}" alt="" class="w-16 h-16 object-cover rounded-full mb-3">
