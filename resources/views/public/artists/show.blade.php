@@ -111,8 +111,12 @@
                         </div>
                     @endif
 
+                    {{-- Contact button — only when the artist runs their own
+                         art-db profile (owner is a User with role=Artist).
+                         For gallery-managed artists we route enquiries via
+                         the individual artwork pages instead. --}}
                     @auth
-                        @if (! auth()->user()->isArtist())
+                        @if (! auth()->user()->isArtist() && $artist->owner?->isArtist())
                             <div class="mt-6">
                                 <a href="#contact-artist"
                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-xs uppercase tracking-[0.18em] hover:bg-gray-700 transition">
@@ -231,9 +235,12 @@
         </section>
     @endif
 
-    {{-- CONTACT FORM — Gallery / Collector only --}}
+    {{-- CONTACT FORM — Gallery / Collector only, AND only when the artist
+         has their own art-db profile. Gallery-managed artists don't get
+         this form; enquiries go via each artwork instead so the gallery
+         receives them directly. --}}
     @auth
-        @if (! auth()->user()->isArtist())
+        @if (! auth()->user()->isArtist() && $artist->owner?->isArtist())
             <section id="contact-artist" class="py-16 bg-gray-50 border-t border-gray-200">
                 <div class="max-w-2xl mx-auto px-6">
                     <h2 class="font-serif text-3xl mb-2">Contact {{ $artist->display_name }}</h2>
