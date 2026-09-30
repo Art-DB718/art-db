@@ -125,6 +125,8 @@ class ContactResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('last_name')
+            ->paginated([10, 25, 50])
+            ->defaultPaginationPageOption(25)
             ->filters([
                 Tables\Filters\SelectFilter::make('groups')->relationship('groups', 'name')->multiple()->preload(),
                 Tables\Filters\SelectFilter::make('interestedArtists')->label('Interested in artist')
