@@ -228,8 +228,15 @@ class PrivateRoomResource extends Resource
                                 if (empty($groupIds)) {
                                     return;
                                 }
+                                // Membership lives on the M:N pivot
+                                // (contact_contact_group). The old 1-N
+                                // group_id was left in place for legacy
+                                // reads but new group assignments — every
+                                // artgalleria-imported member — live only
+                                // on the pivot, so we query through the
+                                // relation.
                                 $contactIds = Contact::query()
-                                    ->whereIn('group_id', $groupIds)
+                                    ->whereHas('groups', fn ($q) => $q->whereIn('contact_groups.id', $groupIds))
                                     ->pluck('id')
                                     ->all();
                                 $merged = collect($get('recipients') ?? [])
