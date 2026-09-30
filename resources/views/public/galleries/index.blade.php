@@ -22,9 +22,11 @@
                             @if ($gallery->city)
                                 <p class="text-xs text-gray-500">{{ $gallery->city }}</p>
                             @endif
-                            <p class="mt-4 text-xs uppercase tracking-[0.18em] text-gray-500">
-                                {{ $gallery->artists_count }} {{ Str::plural('artist', $gallery->artists_count) }}
-                            </p>
+                            @if ($gallery->artists_count > 0)
+                                <p class="mt-4 text-xs uppercase tracking-[0.18em] text-gray-500">
+                                    {{ $gallery->artists_count }} {{ Str::plural('artist', $gallery->artists_count) }}
+                                </p>
+                            @endif
                         </a>
                     @endforeach
                 </div>
