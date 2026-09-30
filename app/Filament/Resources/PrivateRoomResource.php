@@ -530,7 +530,9 @@ class PrivateRoomResource extends Resource
      * Ak je vyplnená welcome_message, používa sa ako hlavný text emailu
      * (rovnaký text, ktorý klient uvidí aj v hlavičke roomu).
      * Ak je prázdna, fallback na neutrálnu anglickú vetu.
-     * Podpis obsahuje meno galérie, ktorá room vytvorila.
+     * Podpis obsahuje meno galérie a jej kontakt (adresu, telefón, e-mail,
+     * web) — všetko z InvoiceSetting::current(), aby email pôsobil ako
+     * oficiálna komunikácia galérie.
      */
     protected static function privateRoomEmailHtml(PrivateRoom $record, Contact $contact): string
     {
@@ -540,17 +542,44 @@ class PrivateRoomResource extends Resource
 
         $url = e($record->publicUrl());
 
+        $settings = \App\Models\InvoiceSetting::current();
+
         // Meno galérie: Gallery vlastnená autorom roomu; fallback na
         // company_name z invoice settings, potom na app.name.
         $galleryName = \App\Models\Gallery::where('owner_user_id', $record->owner_user_id)->value('name')
-            ?? \App\Models\InvoiceSetting::current()?->company_name
+            ?? $settings?->company_name
             ?? config('app.name');
 
-        return '<p>Dear '.e($contact->display_name).',</p>'
+        // Adresa (jeden riadok) + kontakt (telefón, e-mail, web) —
+        // každý údaj zvlášť, len ak je vyplnený.
+        $addressLine = trim(collect([
+            $settings?->address_line1,
+            $settings?->address_line2,
+            $settings?->postal_code,
+            $settings?->city,
+        ])->filter()->implode(', '));
+
+        $signature  = '<p style="margin-top:1.5em;color:#374151;line-height:1.5;">';
+        $signature .= 'S pozdravom,<br><strong>'.e($galleryName).'</strong>';
+        if ($addressLine !== '') {
+            $signature .= '<br>'.e($addressLine);
+        }
+        if (filled($settings?->phone)) {
+            $signature .= '<br>tel: '.e($settings->phone);
+        }
+        if (filled($settings?->email)) {
+            $signature .= '<br>e-mail: <a href="mailto:'.e($settings->email).'">'.e($settings->email).'</a>';
+        }
+        if (filled($settings?->website)) {
+            $signature .= '<br>web: <a href="'.e($settings->website).'">'.e($settings->website).'</a>';
+        }
+        $signature .= '</p>';
+
+        return '<p>Dobrý deň,</p>'
             .$body
             .'<p style="margin-top:1.25em;">View the private room here:<br>'
             .'<a href="'.$url.'">'.$url.'</a></p>'
-            .'<p>Best regards,<br>'.e($galleryName).'</p>';
+            .$signature;
     }
 
     public static function table(Table $table): Table
