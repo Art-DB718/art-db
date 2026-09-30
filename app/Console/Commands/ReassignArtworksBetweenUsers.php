@@ -61,19 +61,25 @@ class ReassignArtworksBetweenUsers extends Command
         $dryRun = ! $this->option('force');
 
         // Diacritics-tolerant match on artist last_name. Postgres unaccent()
-        // extension is already enabled on prod.
+        // extension is already enabled on prod. Note: PHP strtolower() is
+        // ASCII-only, so we let SQL lower() handle both column and param
+        // (Postgres lower() is locale-aware, MySQL LOWER() too).
         $driver = \DB::connection()->getDriverName();
-        $lastNames = $names->map(fn ($n) => strtolower($n))->all();
+        $lastNames = $names->all();
 
         $artistsQuery = Artist::query()->where('owner_user_id', $from->id);
         if ($driver === 'pgsql') {
             $artistsQuery->where(function ($q) use ($lastNames) {
                 foreach ($lastNames as $ln) {
-                    $q->orWhereRaw('unaccent(lower(last_name)) = unaccent(?)', [$ln]);
+                    $q->orWhereRaw('unaccent(lower(last_name)) = unaccent(lower(?))', [$ln]);
                 }
             });
         } else {
-            $artistsQuery->whereIn(\DB::raw('LOWER(last_name)'), $lastNames);
+            $artistsQuery->where(function ($q) use ($lastNames) {
+                foreach ($lastNames as $ln) {
+                    $q->orWhereRaw('LOWER(last_name) = LOWER(?)', [$ln]);
+                }
+            });
         }
 
         $artists = $artistsQuery->get(['id', 'first_name', 'last_name']);
