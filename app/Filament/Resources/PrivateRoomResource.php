@@ -494,29 +494,55 @@ class PrivateRoomResource extends Resource
             ->whereNotNull('contacts.email')
             ->get();
 
+        $sent   = 0;
+        $failed = [];
+
         foreach ($recipients as $contact) {
-            $html = self::privateRoomEmailHtml($record, $contact);
+            // Skip contacts with malformed emails BEFORE calling Mail — an
+            // invalid address on ANY single row used to 500 the whole batch.
+            if (! filter_var((string) $contact->email, FILTER_VALIDATE_EMAIL)) {
+                $failed[] = $contact->display_name.' (invalid e-mail)';
+                continue;
+            }
 
-            Mail::html($html, function ($message) use ($contact, $record) {
-                $message->to($contact->email)
-                    ->subject('Private room: '.$record->title);
-            });
+            try {
+                $html = self::privateRoomEmailHtml($record, $contact);
 
-            $record->recipients()->updateExistingPivot($contact->id, [
-                'status'  => 'sent',
-                'sent_at' => now(),
-            ]);
+                Mail::html($html, function ($message) use ($contact, $record) {
+                    $message->to($contact->email)
+                        ->subject('Private room: '.$record->title);
+                });
+
+                $record->recipients()->updateExistingPivot($contact->id, [
+                    'status'  => 'sent',
+                    'sent_at' => now(),
+                ]);
+                $sent++;
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('private-room send failed', [
+                    'room'    => $record->id,
+                    'contact' => $contact->id,
+                    'error'   => $e->getMessage(),
+                ]);
+                $failed[] = $contact->display_name.' ('.class_basename($e).')';
+            }
         }
 
-        if (! $record->sent_at && $recipients->count() > 0) {
+        if (! $record->sent_at && $sent > 0) {
             $record->update(['sent_at' => now()]);
         }
 
-        $count = $recipients->count();
+        $count = $sent;
+        $failedCount = count($failed);
+        $title = match (true) {
+            $count > 0 && $failedCount === 0 => $count.' private room link(s) sent',
+            $count > 0 && $failedCount  >  0 => "Sent {$count}, failed {$failedCount}",
+            $failedCount > 0                 => 'Failed to send to '.$failedCount.' recipient(s)',
+            default                          => 'No new recipients to send to — all those with an email were already contacted.',
+        };
         $notification = Notification::make()
-            ->title($count > 0
-                ? $count.' private room link(s) sent'
-                : 'No new recipients to send to — all those with an email were already contacted.');
+            ->title($title)
+            ->body(empty($failed) ? null : 'Failed: '.implode(', ', array_slice($failed, 0, 8)).(count($failed) > 8 ? '…' : ''));
         $count > 0 ? $notification->success() : $notification->warning();
         $notification->send();
     }
