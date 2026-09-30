@@ -329,6 +329,13 @@ class ArtistResource extends Resource
         return $query;
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            ArtistResource\RelationManagers\ArtworksRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
