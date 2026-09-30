@@ -16,13 +16,14 @@ class Contact extends Model
         'email', 'phone',
         'address_line1', 'address_line2', 'city', 'postal_code', 'country_id',
         'group_id', 'interests', 'notes', 'source', 'last_contact_at',
-        'subscribed_to_newsletter', 'owner_user_id',
+        'subscribed_to_newsletter', 'newsletter_status_updated_at', 'owner_user_id',
     ];
 
     protected $casts = [
-        'interests'                => 'array',
-        'last_contact_at'          => 'datetime',
-        'subscribed_to_newsletter' => 'boolean',
+        'interests'                    => 'array',
+        'last_contact_at'              => 'datetime',
+        'subscribed_to_newsletter'     => 'boolean',
+        'newsletter_status_updated_at' => 'datetime',
     ];
 
     protected static function booted(): void

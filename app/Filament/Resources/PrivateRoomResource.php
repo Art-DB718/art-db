@@ -575,11 +575,27 @@ class PrivateRoomResource extends Resource
         }
         $signature .= '</p>';
 
+        // Signed unsubscribe/subscribe links — always visible in the
+        // footer regardless of the recipient's current status. Handler
+        // toggles subscribed_to_newsletter and stamps the timestamp so
+        // Kat sees who clicked what in the Contacts table.
+        $subscribeUrl   = \Illuminate\Support\Facades\URL::signedRoute('newsletter.action', ['action' => 'subscribe',   'contact' => $contact->id]);
+        $unsubscribeUrl = \Illuminate\Support\Facades\URL::signedRoute('newsletter.action', ['action' => 'unsubscribe', 'contact' => $contact->id]);
+
+        $footer  = '<hr style="border:0;border-top:1px solid #e5e7eb;margin:2em 0 1em;">';
+        $footer .= '<p style="font-size:0.85em;color:#6b7280;line-height:1.5;">';
+        $footer .= 'You are receiving this email because we selected this private room for you.<br>';
+        $footer .= '<a href="'.e($subscribeUrl).'" style="color:#374151;">Subscribe for more information</a>';
+        $footer .= ' &middot; ';
+        $footer .= '<a href="'.e($unsubscribeUrl).'" style="color:#374151;">Unsubscribe</a>';
+        $footer .= '</p>';
+
         return '<p>Dobrý deň,</p>'
             .$body
             .'<p style="margin-top:1.25em;">View the private room here:<br>'
             .'<a href="'.$url.'">'.$url.'</a></p>'
-            .$signature;
+            .$signature
+            .$footer;
     }
 
     public static function table(Table $table): Table

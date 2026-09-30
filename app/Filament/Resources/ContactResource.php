@@ -102,7 +102,21 @@ class ContactResource extends Resource
                 Tables\Columns\TextColumn::make('groups.name')->label('Groups')->badge()->color('gray'),
                 Tables\Columns\TextColumn::make('interestedArtists.last_name')->label('Interests')->badge()->color('info')->toggleable(),
                 Tables\Columns\TextColumn::make('country.name')->label('Country')->toggleable(),
-                Tables\Columns\IconColumn::make('subscribed_to_newsletter')->boolean()->label('Newsletter'),
+                Tables\Columns\TextColumn::make('subscribed_to_newsletter')
+                    ->label('Newsletter')
+                    ->badge()
+                    ->formatStateUsing(fn (?bool $state, $record): string => match (true) {
+                        $state === true  && $record->newsletter_status_updated_at !== null => 'Subscribed '.$record->newsletter_status_updated_at->format('d.m.Y'),
+                        $state === true                                                     => 'Subscribed',
+                        $state === false && $record->newsletter_status_updated_at !== null => 'Unsubscribed '.$record->newsletter_status_updated_at->format('d.m.Y'),
+                        default                                                             => '—',
+                    })
+                    ->color(fn (?bool $state): string => match ($state) {
+                        true  => 'success',
+                        false => 'danger',
+                        default => 'gray',
+                    })
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('sales_count')->counts('sales')->label('Sales'),
             ])
             ->defaultSort('last_name')

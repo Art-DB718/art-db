@@ -12,6 +12,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MyArtworksController;
 use App\Http\Controllers\MyCollectionController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\PrivateRoomController;
 use App\Http\Controllers\ProfileController;
@@ -44,6 +45,13 @@ Route::get('/admin/force-logout', function () {
 
 // Verejný web (Fáza 2) — domovská stránka + stub routes pre ostatné sekcie.
 Route::get('/', HomeController::class)->name('home');
+
+// One-click subscribe/unsubscribe from email footers. Signed URL — signature
+// is generated per-contact when the email is composed; tampered links 403.
+Route::get('/newsletter/{action}/{contact}', NewsletterSubscriptionController::class)
+    ->where('action', 'subscribe|unsubscribe')
+    ->where('contact', '[0-9]+')
+    ->name('newsletter.action');
 
 Route::get('/artworks', [ArtworkController::class, 'index'])->name('artworks.index');
 Route::get('/artworks/{artwork:slug}', [ArtworkController::class, 'show'])->name('artworks.show');
