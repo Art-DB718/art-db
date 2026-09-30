@@ -99,8 +99,8 @@ class ContactResource extends Resource
                 Tables\Columns\TextColumn::make('first_name')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('organization')->searchableAccentless()->toggleable(),
                 Tables\Columns\TextColumn::make('email')->searchableAccentless()->copyable()->icon('heroicon-m-envelope'),
-                Tables\Columns\TextColumn::make('groups.name')->label('Groups')->badge()->color('gray'),
-                Tables\Columns\TextColumn::make('interestedArtists.last_name')->label('Interests')->badge()->color('info')->toggleable(),
+                Tables\Columns\TextColumn::make('groups.name')->label('Groups')->badge()->color('gray')->limitList(3),
+                Tables\Columns\TextColumn::make('interestedArtists.last_name')->label('Interests')->badge()->color('info')->limitList(3)->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('country.name')->label('Country')->toggleable(),
                 Tables\Columns\TextColumn::make('subscribed_to_newsletter')
                     ->label('Newsletter')
@@ -124,7 +124,7 @@ class ContactResource extends Resource
                 Tables\Filters\SelectFilter::make('groups')->relationship('groups', 'name')->multiple()->preload(),
                 Tables\Filters\SelectFilter::make('interestedArtists')->label('Interested in artist')
                     ->relationship('interestedArtists', 'last_name')
-                    ->searchable()->preload(),
+                    ->searchable(),
                 Tables\Filters\SelectFilter::make('country')->relationship('country', 'name'),
                 Tables\Filters\TernaryFilter::make('subscribed_to_newsletter')->label('Newsletter'),
                 Tables\Filters\TrashedFilter::make(),
