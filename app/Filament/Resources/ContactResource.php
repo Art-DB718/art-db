@@ -163,6 +163,16 @@ class ContactResource extends Resource
                             $room = \App\Models\PrivateRoom::find($data['private_room_id']);
                             if (! $room) return;
 
+                            // Chráň sa pred kontaktom bez e-mailu — Mail::to(null)
+                            // by hodilo 500. Ukáž toast a ukonči.
+                            if (blank($record->email)) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Contact has no e-mail address')
+                                    ->body('Add an e-mail to '.$record->display_name.' before sending.')
+                                    ->danger()->send();
+                                return;
+                            }
+
                             // Attach contact ako recipient (pivot)
                             $room->recipients()->syncWithoutDetaching([
                                 $record->id => ['status' => 'sent', 'sent_at' => now()],
