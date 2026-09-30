@@ -27,6 +27,7 @@ class ReassignArtworksBetweenUsers extends Command
         {--from= : Source user e-mail}
         {--to= : Target user e-mail}
         {--artists= : Comma-separated artist LAST names to include}
+        {--artist-ids= : Comma-separated artist IDs (skips name matching entirely)}
         {--dry-run : Print what would move without writing to DB}
         {--force : Actually perform the move (without this it is dry-run)}';
 
@@ -40,9 +41,13 @@ class ReassignArtworksBetweenUsers extends Command
             ->map(fn ($n) => trim($n))
             ->filter()
             ->values();
+        $ids       = collect(explode(',', (string) $this->option('artist-ids')))
+            ->map(fn ($n) => (int) trim($n))
+            ->filter()
+            ->values();
 
-        if ($fromEmail === '' || $toEmail === '' || $names->isEmpty()) {
-            $this->error('--from, --to and --artists are required.');
+        if ($fromEmail === '' || $toEmail === '' || ($names->isEmpty() && $ids->isEmpty())) {
+            $this->error('--from, --to and either --artists or --artist-ids are required.');
             return self::FAILURE;
         }
 
@@ -68,7 +73,10 @@ class ReassignArtworksBetweenUsers extends Command
         $lastNames = $names->all();
 
         $artistsQuery = Artist::query()->where('owner_user_id', $from->id);
-        if ($driver === 'pgsql') {
+        if ($ids->isNotEmpty()) {
+            // Explicit IDs — skip name matching entirely.
+            $artistsQuery->whereIn('id', $ids->all());
+        } elseif ($driver === 'pgsql') {
             $artistsQuery->where(function ($q) use ($lastNames) {
                 foreach ($lastNames as $ln) {
                     $q->orWhereRaw('unaccent(lower(last_name)) = unaccent(lower(?))', [$ln]);
