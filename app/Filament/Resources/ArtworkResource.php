@@ -822,10 +822,89 @@ class ArtworkResource extends Resource
                             );
                         })
                         ->deselectRecordsAfterCompletion(),
+
+                    // === Status shortcuts — pick a bunch of works and flip
+                    //     them all to the same status in one click. Uses
+                    //     ArtworkStatus.name matching (case-insensitive) so
+                    //     the row stays in sync with the badge on the table.
+                    Tables\Actions\BulkAction::make('markForSale')
+                        ->label('Mark as For sale')
+                        ->icon('heroicon-o-check-badge')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => self::bulkSetStatus($records, 'For sale'))
+                        ->deselectRecordsAfterCompletion(),
+                    Tables\Actions\BulkAction::make('markSold')
+                        ->label('Mark as Sold')
+                        ->icon('heroicon-o-banknotes')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => self::bulkSetStatus($records, 'Sold'))
+                        ->deselectRecordsAfterCompletion(),
+                    Tables\Actions\BulkAction::make('markNotForSale')
+                        ->label('Mark as Not for sale')
+                        ->icon('heroicon-o-no-symbol')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => self::bulkSetStatus($records, 'Not for sale'))
+                        ->deselectRecordsAfterCompletion(),
+
+                    // === Add selected works to a collection. Existing
+                    //     collections + a "+ New collection…" quick-create
+                    //     inside the modal.
+                    Tables\Actions\BulkAction::make('addToCollection')
+                        ->label('Add to collection')
+                        ->icon('heroicon-o-rectangle-stack')
+                        ->color('gray')
+                        ->modalHeading('Add selected artworks to a collection')
+                        ->form([
+                            Forms\Components\Select::make('collection_id')
+                                ->label('Collection')
+                                ->options(fn () => \App\Models\Collection::orderBy('title')->pluck('title', 'id')->all())
+                                ->searchable()
+                                ->required()
+                                ->createOptionForm([
+                                    Forms\Components\TextInput::make('title')->required()->maxLength(255),
+                                    Forms\Components\Textarea::make('description')->rows(2),
+                                ])
+                                ->createOptionUsing(fn (array $data) => \App\Models\Collection::create($data)->id),
+                        ])
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data) {
+                            $collection = \App\Models\Collection::find((int) $data['collection_id']);
+                            if (! $collection) return;
+                            // syncWithoutDetaching keeps existing members and
+                            // ignores duplicates — safe to run repeatedly.
+                            $collection->artworks()->syncWithoutDetaching($records->pluck('id')->all());
+                            \Filament\Notifications\Notification::make()
+                                ->title(sprintf('Added %d artwork(s) to "%s"', $records->count(), $collection->title))
+                                ->success()->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
+    }
+
+    /**
+     * Set every selected artwork's status_id to the ArtworkStatus row whose
+     * name matches (case-insensitive). No-op if that status doesn't exist
+     * on this install.
+     */
+    protected static function bulkSetStatus(\Illuminate\Database\Eloquent\Collection $records, string $statusName): void
+    {
+        $status = \App\Models\ArtworkStatus::whereRaw('LOWER(name) = ?', [strtolower($statusName)])->first();
+        if (! $status) {
+            \Filament\Notifications\Notification::make()
+                ->title("Status '{$statusName}' not found — create it under Artwork Statuses first.")
+                ->danger()->send();
+            return;
+        }
+        $count = \App\Models\Artwork::whereIn('id', $records->pluck('id'))->update(['status_id' => $status->id]);
+        \Filament\Notifications\Notification::make()
+            ->title(sprintf('Marked %d artwork(s) as %s', $count, $status->name))
+            ->success()->send();
     }
 
     public static function getEloquentQuery(): Builder
