@@ -99,9 +99,12 @@ class ContactResource extends Resource
                 Tables\Columns\TextColumn::make('first_name')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('organization')->searchableAccentless()->toggleable(),
                 Tables\Columns\TextColumn::make('email')->searchableAccentless()->copyable()->icon('heroicon-m-envelope'),
-                Tables\Columns\TextColumn::make('groups.name')->label('Groups')->badge()->color('gray')->limitList(3),
-                Tables\Columns\TextColumn::make('interestedArtists.last_name')->label('Interests')->badge()->color('info')->limitList(3)->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('country.name')->label('Country')->toggleable(),
+                Tables\Columns\TextColumn::make('groups.name')->label('Groups')->badge()->color('gray')->limitList(3)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('interestedArtists.last_name')->label('Interests')->badge()->color('info')->limitList(3)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('country.name')->label('Country')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('subscribed_to_newsletter')
                     ->label('Newsletter')
                     ->badge()
@@ -116,8 +119,10 @@ class ContactResource extends Resource
                         false => 'danger',
                         default => 'gray',
                     })
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('sales_count')->counts('sales')->label('Sales'),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('sales_count')->counts('sales')->label('Sales')
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('last_name')
             ->filters([
