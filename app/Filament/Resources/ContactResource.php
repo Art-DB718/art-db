@@ -119,8 +119,13 @@ class ContactResource extends Resource
                         false => 'danger',
                         default => 'gray',
                     })
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('purchased_artwork_lines_count')
+                    ->counts('purchasedArtworkLines')
+                    ->label('Artworks bought')
+                    ->badge()
+                    ->color(fn (int $state) => $state > 0 ? 'success' : 'gray')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('sales_count')->counts('sales')->label('Sales')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

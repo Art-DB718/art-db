@@ -52,4 +52,21 @@ class Contact extends Model
     {
         return $this->belongsToMany(Artist::class, 'contact_artist_interest')->withTimestamps();
     }
+
+    /**
+     * Line items from every sale where this contact is the buyer — used to
+     * count how many individual artworks the contact has purchased (a single
+     * sale can span several works).
+     */
+    public function purchasedArtworkLines()
+    {
+        return $this->hasManyThrough(
+            SaleLineItem::class,
+            Sale::class,
+            'buyer_contact_id',   // FK on sales
+            'sale_id',            // FK on sale_line_items
+            'id',                 // local key on contacts
+            'id',                 // local key on sales
+        );
+    }
 }
