@@ -26,15 +26,15 @@
     <div class="wrap">
         <div class="icon">{{ $action === 'subscribe' ? '✓' : '✕' }}</div>
         @if ($action === 'subscribe')
-            <h1>Ďakujeme za prihlásenie</h1>
-            <p>{{ $contact->email ?: 'Váš kontakt' }} je zapísaný na odber našich noviniek.</p>
+            <h1>Thanks for subscribing</h1>
+            <p>{{ $contact->email ?: 'Your contact' }} is signed up to receive our updates.</p>
         @else
-            <h1>Odhlásené</h1>
-            <p>{{ $contact->email ?: 'Váš kontakt' }} už nebude dostávať naše e-maily.</p>
-            <p class="muted">Ak sa jedná o omyl, kontaktujte nás priamo — radi vás znova prihlásime.</p>
+            <h1>You've been unsubscribed</h1>
+            <p>{{ $contact->email ?: 'Your contact' }} will no longer receive our emails.</p>
+            <p class="muted">If this was a mistake, get in touch and we'll add you back.</p>
         @endif
 
-        <a class="cta" href="{{ url('/') }}">Prejsť na art-db.org →</a>
+        <a class="cta" href="{{ url('/') }}">Go to art-db.org →</a>
     </div>
 </body>
 </html>
