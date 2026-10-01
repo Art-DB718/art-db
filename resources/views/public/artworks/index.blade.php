@@ -17,9 +17,13 @@
     <section class="py-12">
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-10">
 
-            {{-- FILTER SIDEBAR --}}
+            {{-- FILTER SIDEBAR — sticks to top-24 and caps at viewport
+                 height so a long filter list scrolls internally instead of
+                 pushing the sidebar off-screen (sticky only "feels" sticky
+                 when the element fits in the viewport). --}}
             <aside>
-                <form method="GET" action="{{ route('artworks.index') }}" class="space-y-6 sticky top-24">
+                <form method="GET" action="{{ route('artworks.index') }}"
+                      class="space-y-6 sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 -mr-2">
 
                     @if (request('per_page'))
                         <input type="hidden" name="per_page" value="{{ request('per_page') }}">
