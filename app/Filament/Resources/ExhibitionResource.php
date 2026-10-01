@@ -60,9 +60,24 @@ class ExhibitionResource extends Resource
                             ->helperText('Where the exhibition physically takes place — shown under the exhibition on the public page.')
                             ->rows(2)
                             ->maxLength(500),
-                        Forms\Components\DatePicker::make('start_date'),
-                        Forms\Components\DatePicker::make('end_date'),
-                        Forms\Components\DateTimePicker::make('opening_at')->label('Opening (date & time)'),
+                        // Non-native pickers so past AND future dates are
+                        // equally allowed and the display format matches
+                        // what Kat types (D.M.YYYY). Native browser inputs
+                        // reject anything that isn't ISO yyyy-mm-dd, which
+                        // was the "invalid date" she was hitting.
+                        Forms\Components\DatePicker::make('start_date')
+                            ->native(false)
+                            ->displayFormat('d.m.Y')
+                            ->closeOnDateSelection(),
+                        Forms\Components\DatePicker::make('end_date')
+                            ->native(false)
+                            ->displayFormat('d.m.Y')
+                            ->closeOnDateSelection(),
+                        Forms\Components\DateTimePicker::make('opening_at')
+                            ->label('Opening (date & time)')
+                            ->native(false)
+                            ->displayFormat('d.m.Y H:i')
+                            ->seconds(false),
                         Forms\Components\TextInput::make('curator')->maxLength(255),
                     ]),
                     Forms\Components\Textarea::make('description')->rows(4)->columnSpanFull(),
