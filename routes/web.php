@@ -11,6 +11,7 @@ use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MyArtworksController;
 use App\Http\Controllers\MyCollectionController;
+use App\Http\Controllers\EmailTrackingController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Controllers\PrintController;
@@ -52,6 +53,11 @@ Route::get('/newsletter/{action}/{contact}', NewsletterSubscriptionController::c
     ->where('action', 'subscribe|unsubscribe')
     ->where('contact', '[0-9]+')
     ->name('newsletter.action');
+
+// Email open tracking — 1x1 transparent GIF embedded in private-room
+// emails. First GET stamps contact_private_room.opened_at.
+Route::get('/email-pixel/room/{room}/contact/{contact}', [EmailTrackingController::class, 'pixel'])
+    ->name('email.pixel');
 
 Route::get('/artworks', [ArtworkController::class, 'index'])->name('artworks.index');
 Route::get('/artworks/{artwork:slug}', [ArtworkController::class, 'show'])->name('artworks.show');

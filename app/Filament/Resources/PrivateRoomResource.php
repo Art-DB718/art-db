@@ -623,12 +623,18 @@ class PrivateRoomResource extends Resource
         $footer .= '<a href="'.e($unsubscribeUrl).'" style="color:#374151;">Unsubscribe</a>';
         $footer .= '</p>';
 
+        // Invisible 1x1 tracking pixel — the first time the recipient's
+        // mail client loads this image we stamp opened_at on the pivot.
+        $pixelUrl = e(route('email.pixel', ['room' => $record->id, 'contact' => $contact->id]));
+        $pixel = '<img src="'.$pixelUrl.'" width="1" height="1" alt="" style="display:block;border:0;width:1px;height:1px;overflow:hidden;">';
+
         return '<p>Dobrý deň,</p>'
             .$body
             .'<p style="margin-top:1.25em;">View the private room here:<br>'
             .'<a href="'.$url.'">'.$url.'</a></p>'
             .$signature
-            .$footer;
+            .$footer
+            .$pixel;
     }
 
     public static function table(Table $table): Table
@@ -670,6 +676,13 @@ class PrivateRoomResource extends Resource
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            PrivateRoomResource\RelationManagers\RecipientsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

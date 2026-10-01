@@ -44,7 +44,7 @@ class PrivateRoom extends Model
     public function recipients()
     {
         return $this->belongsToMany(Contact::class, 'contact_private_room')
-            ->withPivot('status', 'sent_at')
+            ->withPivot('status', 'sent_at', 'opened_at')
             ->withTimestamps();
     }
 
