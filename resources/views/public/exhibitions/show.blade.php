@@ -153,39 +153,50 @@
                 </div>
             </div>
 
-            {{-- LIGHTBOX. The outer wrapper is a fixed, viewport-sized
-                 flex container that centers the img and dims the page
-                 behind it. Controls are also `fixed` so they always
-                 anchor to the browser viewport, no matter the image's
-                 intrinsic size. --}}
+            {{-- LIGHTBOX. Backdrop + scrollable image container at the
+                 image's natural size (max-none on the img). The container
+                 caps at 95vw / 90vh and shows scroll bars when the photo
+                 is larger than that — so the original resolution is
+                 always preserved. Controls use inline styles with
+                 explicit `left`/`right` to avoid any utility-class
+                 purge or RTL surprise. --}}
             <div x-show="open" x-cloak x-transition.opacity
-                 class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+                 class="fixed inset-0 z-50 bg-black/90"
                  x-on:click.self="open = false">
 
-                <img x-bind:src="images[index]"
-                     x-bind:alt="'Installation view ' + (index + 1)"
-                     class="block max-w-[90vw] max-h-[88vh] w-auto h-auto object-contain select-none">
+                {{-- centered scrollable container --}}
+                <div class="w-full h-full flex items-center justify-center p-4"
+                     x-on:click.self="open = false">
+                    <div class="overflow-auto"
+                         style="max-width: 95vw; max-height: 90vh;"
+                         x-on:click.self="open = false">
+                        <img x-bind:src="images[index]"
+                             x-bind:alt="'Installation view ' + (index + 1)"
+                             class="block select-none"
+                             style="max-width: none; max-height: none; width: auto; height: auto;">
+                    </div>
+                </div>
+
+                {{-- close × top-right --}}
+                <button type="button" x-on:click="open = false"
+                        aria-label="Close"
+                        style="position: fixed; top: 1rem; right: 1.25rem; z-index: 60; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.9); font-size: 2.25rem; line-height: 1; background: transparent; border: 0; cursor: pointer;">×</button>
+
+                {{-- prev ‹ left edge --}}
+                <button type="button" x-show="images.length > 1" x-on:click="prev()"
+                        aria-label="Previous"
+                        style="position: fixed; top: 50%; left: 0.5rem; transform: translateY(-50%); z-index: 60; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.85); font-size: 3rem; line-height: 1; background: transparent; border: 0; cursor: pointer; user-select: none;">‹</button>
+
+                {{-- next › right edge --}}
+                <button type="button" x-show="images.length > 1" x-on:click="next()"
+                        aria-label="Next"
+                        style="position: fixed; top: 50%; right: 0.5rem; transform: translateY(-50%); z-index: 60; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.85); font-size: 3rem; line-height: 1; background: transparent; border: 0; cursor: pointer; user-select: none;">›</button>
+
+                {{-- counter 1/5 bottom center --}}
+                <div x-show="images.length > 1"
+                     style="position: fixed; bottom: 1rem; left: 0; right: 0; text-align: center; color: rgba(255,255,255,0.7); font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; pointer-events: none; z-index: 60;"
+                     x-text="(index + 1) + ' / ' + images.length"></div>
             </div>
-
-            {{-- Controls — rendered as siblings of the backdrop but with
-                 their own `fixed` positioning + a higher z-index so they
-                 sit above the overlay without being contained by the
-                 flex-centered image. x-show mirrors `open`. --}}
-            <button type="button" x-show="open" x-cloak x-on:click="open = false"
-                    aria-label="Close"
-                    class="fixed top-4 right-5 z-[60] w-10 h-10 flex items-center justify-center text-white/90 hover:text-white text-4xl leading-none">×</button>
-
-            <button type="button" x-show="open && images.length > 1" x-cloak x-on:click="prev()"
-                    aria-label="Previous"
-                    class="fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-[60] w-12 h-12 flex items-center justify-center text-white/80 hover:text-white text-5xl leading-none select-none">‹</button>
-
-            <button type="button" x-show="open && images.length > 1" x-cloak x-on:click="next()"
-                    aria-label="Next"
-                    class="fixed right-2 md:right-6 top-1/2 -translate-y-1/2 z-[60] w-12 h-12 flex items-center justify-center text-white/80 hover:text-white text-5xl leading-none select-none">›</button>
-
-            <div x-show="open && images.length > 1" x-cloak
-                 class="fixed bottom-4 left-0 right-0 text-center text-xs tracking-[0.18em] uppercase text-white/70 pointer-events-none z-[60]"
-                 x-text="(index + 1) + ' / ' + images.length"></div>
         </section>
     @endif
 
