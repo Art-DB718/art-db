@@ -74,7 +74,7 @@
                             @php $venueText = $exhibition->venue ?: $exhibition->location?->name; @endphp
                             @if ($hostingGallery)
                                 <a href="{{ route('galleries.show', $hostingGallery) }}"
-                                   class="underline decoration-gray-300 hover:decoration-gray-800">{{ $venueText }}</a>
+                                   class="underline underline-offset-4 decoration-gray-800 hover:text-black">{{ $venueText }}</a>
                             @else
                                 {{ $venueText }}
                             @endif
