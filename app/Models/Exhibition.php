@@ -33,6 +33,17 @@ class Exhibition extends Model
         static::creating(function ($m) {
             $m->uuid ??= (string) Str::uuid();
             $m->slug ??= Str::slug($m->title.'-'.Str::random(4));
+
+            // Auto-assign the owner to the currently authenticated user when
+            // one is set and the model doesn't already carry an owner. This
+            // means every exhibition a Gallery (or any logged-in) user
+            // creates in the admin is automatically linked to their
+            // profile — Kat doesn't have to pick it manually, and the
+            // public gallery page can resolve its exhibitions by
+            // owner_user_id without surprises.
+            if (empty($m->owner_user_id) && auth()->check()) {
+                $m->owner_user_id = auth()->id();
+            }
         });
     }
 
