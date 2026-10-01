@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Artist;
 use App\Models\Artwork;
+use App\Models\Exhibition;
 use App\Models\Gallery;
+use Illuminate\Support\Carbon;
 
 class GalleryController extends Controller
 {
@@ -73,6 +75,32 @@ class GalleryController extends Controller
             ->orderBy('first_name')
             ->get();
 
-        return view('public.galleries.show', compact('gallery', 'artworks', 'alsoShowing', 'presentedArtists'));
+        // Exhibitions by this gallery, grouped: current / upcoming / past.
+        // Timeline is derived from dates (not the status enum alone) so
+        // forgotten "upcoming" rows that have already started still land
+        // in the correct bucket. Cancelled rows are excluded.
+        $today = Carbon::today();
+        $exhibitions = Exhibition::query()
+            ->where('owner_user_id', $gallery->owner_user_id)
+            ->where('is_published', true)
+            ->where('status', '!=', 'cancelled')
+            ->orderBy('start_date', 'desc')
+            ->get();
+
+        $currentExhibitions = $exhibitions->filter(fn ($e) =>
+            ($e->start_date && $e->start_date <= $today) &&
+            (! $e->end_date || $e->end_date >= $today)
+        )->values();
+        $upcomingExhibitions = $exhibitions->filter(fn ($e) =>
+            $e->start_date && $e->start_date > $today
+        )->sortBy('start_date')->values();
+        $pastExhibitions = $exhibitions->filter(fn ($e) =>
+            $e->end_date && $e->end_date < $today
+        )->values();
+
+        return view('public.galleries.show', compact(
+            'gallery', 'artworks', 'alsoShowing', 'presentedArtists',
+            'currentExhibitions', 'upcomingExhibitions', 'pastExhibitions',
+        ));
     }
 }

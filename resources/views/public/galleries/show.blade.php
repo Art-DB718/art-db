@@ -142,6 +142,39 @@
                     @endforeach
                 </div>
             @endif
+
+            @if ($currentExhibitions->isNotEmpty() || $upcomingExhibitions->isNotEmpty() || $pastExhibitions->isNotEmpty())
+                <div class="mt-20">
+                    <h2 class="font-serif text-2xl mb-10">Exhibitions</h2>
+
+                    @if ($currentExhibitions->isNotEmpty())
+                        <h3 class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-6">Current</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-14">
+                            @foreach ($currentExhibitions as $exhibition)
+                                @include('public.exhibitions._card', ['exhibition' => $exhibition])
+                            @endforeach
+                        </div>
+                    @endif
+
+                    @if ($upcomingExhibitions->isNotEmpty())
+                        <h3 class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-6">Upcoming</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-14">
+                            @foreach ($upcomingExhibitions as $exhibition)
+                                @include('public.exhibitions._card', ['exhibition' => $exhibition])
+                            @endforeach
+                        </div>
+                    @endif
+
+                    @if ($pastExhibitions->isNotEmpty())
+                        <h3 class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-6">Past</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-14">
+                            @foreach ($pastExhibitions as $exhibition)
+                                @include('public.exhibitions._card', ['exhibition' => $exhibition])
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            @endif
         </div>
     </section>
 </x-layouts.public>
