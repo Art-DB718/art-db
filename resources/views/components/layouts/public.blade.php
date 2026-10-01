@@ -54,6 +54,12 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    {{-- Alpine.js (CDN) — powers the mobile menu toggle, the Artworks
+         sidebar collapse, the Installation views lightbox and every
+         x-* attribute on the public pages. The whole bundle is ~15 KB
+         gzipped and loads with `defer` so it does not block first paint. --}}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+
     {{-- Umami analytics — cookieless, GDPR-safe. Loads only when both env vars set. --}}
     @if (config('services.umami.src') && config('services.umami.website_id'))
         <script defer
