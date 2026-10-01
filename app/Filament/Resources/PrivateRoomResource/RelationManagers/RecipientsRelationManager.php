@@ -43,7 +43,11 @@ class RecipientsRelationManager extends RelationManager
                     ->label('Sent')
                     ->dateTime('d.m.Y H:i')
                     ->placeholder('— not sent —')
-                    ->sortable(),
+                    // Pivot columns can't be auto-sorted via dot-notation —
+                    // Filament needs the fully-qualified pivot column name
+                    // for ORDER BY, otherwise the SQL fails with 500.
+                    ->sortable(query: fn ($query, string $direction) =>
+                        $query->orderBy('contact_private_room.sent_at', $direction)),
 
                 Tables\Columns\TextColumn::make('pivot.opened_at')
                     ->label('Opened')
@@ -58,9 +62,10 @@ class RecipientsRelationManager extends RelationManager
                         filled($record->pivot->sent_at ?? null)      => 'gray',
                         default                                       => 'gray',
                     })
-                    ->sortable(),
+                    ->sortable(query: fn ($query, string $direction) =>
+                        $query->orderBy('contact_private_room.opened_at', $direction)),
             ])
-            ->defaultSort('pivot_sent_at', 'desc')
+            ->defaultSort(fn ($query) => $query->orderBy('contact_private_room.sent_at', 'desc'))
             ->filters([
                 Tables\Filters\Filter::make('opened')
                     ->label('Opened the email')
