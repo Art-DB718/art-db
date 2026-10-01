@@ -153,43 +153,39 @@
                 </div>
             </div>
 
-            {{-- LIGHTBOX — image in its own flex layer (pointer-events
-                 passed to the img only), controls as fixed siblings so
-                 they sit at the viewport edges regardless of image size. --}}
+            {{-- LIGHTBOX. The outer wrapper is a fixed, viewport-sized
+                 flex container that centers the img and dims the page
+                 behind it. Controls are also `fixed` so they always
+                 anchor to the browser viewport, no matter the image's
+                 intrinsic size. --}}
             <div x-show="open" x-cloak x-transition.opacity
-                 class="fixed inset-0 z-50 bg-black/90"
+                 class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
                  x-on:click.self="open = false">
 
-                {{-- image layer --}}
-                <div class="absolute inset-0 flex items-center justify-center p-6 md:p-16 pointer-events-none"
-                     x-on:click.self="open = false">
-                    <img x-bind:src="images[index]"
-                         x-bind:alt="'Installation view ' + (index + 1)"
-                         class="max-h-full max-w-full object-contain select-none pointer-events-auto">
-                </div>
-
-                {{-- close × top-right --}}
-                <button type="button" x-on:click="open = false"
-                        aria-label="Close"
-                        class="absolute top-4 right-5 z-10 w-10 h-10 flex items-center justify-center text-white/90 hover:text-white text-4xl leading-none">×</button>
-
-                {{-- prev ‹ left edge --}}
-                <button type="button" x-on:click="prev()"
-                        aria-label="Previous"
-                        x-show="images.length > 1"
-                        class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center text-white/80 hover:text-white text-5xl leading-none select-none">‹</button>
-
-                {{-- next › right edge --}}
-                <button type="button" x-on:click="next()"
-                        aria-label="Next"
-                        x-show="images.length > 1"
-                        class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center text-white/80 hover:text-white text-5xl leading-none select-none">›</button>
-
-                {{-- counter 1/5 bottom center --}}
-                <div x-show="images.length > 1"
-                     class="absolute bottom-4 left-0 right-0 text-center text-xs tracking-[0.18em] uppercase text-white/70 pointer-events-none"
-                     x-text="(index + 1) + ' / ' + images.length"></div>
+                <img x-bind:src="images[index]"
+                     x-bind:alt="'Installation view ' + (index + 1)"
+                     class="block max-w-[90vw] max-h-[88vh] w-auto h-auto object-contain select-none">
             </div>
+
+            {{-- Controls — rendered as siblings of the backdrop but with
+                 their own `fixed` positioning + a higher z-index so they
+                 sit above the overlay without being contained by the
+                 flex-centered image. x-show mirrors `open`. --}}
+            <button type="button" x-show="open" x-cloak x-on:click="open = false"
+                    aria-label="Close"
+                    class="fixed top-4 right-5 z-[60] w-10 h-10 flex items-center justify-center text-white/90 hover:text-white text-4xl leading-none">×</button>
+
+            <button type="button" x-show="open && images.length > 1" x-cloak x-on:click="prev()"
+                    aria-label="Previous"
+                    class="fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-[60] w-12 h-12 flex items-center justify-center text-white/80 hover:text-white text-5xl leading-none select-none">‹</button>
+
+            <button type="button" x-show="open && images.length > 1" x-cloak x-on:click="next()"
+                    aria-label="Next"
+                    class="fixed right-2 md:right-6 top-1/2 -translate-y-1/2 z-[60] w-12 h-12 flex items-center justify-center text-white/80 hover:text-white text-5xl leading-none select-none">›</button>
+
+            <div x-show="open && images.length > 1" x-cloak
+                 class="fixed bottom-4 left-0 right-0 text-center text-xs tracking-[0.18em] uppercase text-white/70 pointer-events-none z-[60]"
+                 x-text="(index + 1) + ' / ' + images.length"></div>
         </section>
     @endif
 
