@@ -43,8 +43,17 @@ class ExhibitionController extends Controller
             'artworks' => fn ($q) => $q->where('is_published', true)->with(['artist', 'medium']),
         ]);
 
+        // Hosting gallery = the Gallery row owned by whoever created the
+        // exhibition. Used to turn the Venue line into a link to the
+        // gallery's public profile when published.
+        $hostingGallery = \App\Models\Gallery::query()
+            ->where('owner_user_id', $exhibition->owner_user_id)
+            ->where('is_published', true)
+            ->first();
+
         return view('public.exhibitions.show', [
-            'exhibition' => $exhibition,
+            'exhibition'     => $exhibition,
+            'hostingGallery' => $hostingGallery,
         ]);
     }
 }
