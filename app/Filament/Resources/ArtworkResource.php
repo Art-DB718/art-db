@@ -849,6 +849,34 @@ class ArtworkResource extends Resource
                         ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => self::bulkSetStatus($records, 'Not for sale'))
                         ->deselectRecordsAfterCompletion(),
 
+                    // === Publish / unpublish shortcuts — flip is_published
+                    //     on every selected work. Mirrors the per-row toggle
+                    //     but saves clicks when onboarding or hiding a batch.
+                    Tables\Actions\BulkAction::make('publish')
+                        ->label('Publish')
+                        ->icon('heroicon-o-eye')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $count = \App\Models\Artwork::whereIn('id', $records->pluck('id'))->update(['is_published' => true]);
+                            \Filament\Notifications\Notification::make()
+                                ->title(sprintf('%d artwork(s) published', $count))
+                                ->success()->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                    Tables\Actions\BulkAction::make('unpublish')
+                        ->label('Unpublish')
+                        ->icon('heroicon-o-eye-slash')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $count = \App\Models\Artwork::whereIn('id', $records->pluck('id'))->update(['is_published' => false]);
+                            \Filament\Notifications\Notification::make()
+                                ->title(sprintf('%d artwork(s) unpublished', $count))
+                                ->success()->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+
                     // === Add selected works to a collection. Existing
                     //     collections + a "+ New collection…" quick-create
                     //     inside the modal.
