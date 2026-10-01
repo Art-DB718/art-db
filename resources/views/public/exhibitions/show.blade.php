@@ -122,20 +122,62 @@
     @endif
 
     {{-- INSTALLATION VIEWS — moved above Works on view so visitors see
-         the show in situ first, then dig into individual pieces. --}}
+         the show in situ first, then dig into individual pieces.
+         Click any thumbnail to open a lightbox with prev/next arrows
+         (keyboard ← → and Esc also work). --}}
     @if (is_array($exhibition->gallery_images) && count($exhibition->gallery_images))
-        <section class="py-16 border-t border-gray-200">
+        @php $imageUrls = collect($exhibition->gallery_images)->map(fn ($p) => \Illuminate\Support\Facades\Storage::url($p))->values(); @endphp
+        <section class="py-16 border-t border-gray-200"
+                 x-data="{
+                     open: false,
+                     index: 0,
+                     images: @js($imageUrls),
+                     show(i) { this.index = i; this.open = true; },
+                     next() { this.index = (this.index + 1) % this.images.length; },
+                     prev() { this.index = (this.index - 1 + this.images.length) % this.images.length; },
+                 }"
+                 x-on:keydown.escape.window="open = false"
+                 x-on:keydown.arrow-right.window="if (open) next()"
+                 x-on:keydown.arrow-left.window="if (open) prev()">
             <div class="max-w-7xl mx-auto px-6">
                 <h2 class="font-serif text-3xl md:text-4xl mb-10">Installation views</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach ($exhibition->gallery_images as $image)
-                        <a href="{{ \Illuminate\Support\Facades\Storage::url($image) }}" target="_blank" class="block bg-gray-100 overflow-hidden">
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($image) }}"
+                    @foreach ($imageUrls as $i => $url)
+                        <button type="button" x-on:click="show({{ $i }})"
+                                class="block bg-gray-100 overflow-hidden w-full group focus:outline-none focus:ring-2 focus:ring-gray-900">
+                            <img src="{{ $url }}"
                                  alt="{{ $exhibition->title }}"
-                                 class="w-full aspect-[4/3] object-cover hover:opacity-90 transition">
-                        </a>
+                                 class="w-full aspect-[4/3] object-cover group-hover:opacity-90 transition">
+                        </button>
                     @endforeach
                 </div>
+            </div>
+
+            {{-- LIGHTBOX --}}
+            <div x-show="open" x-cloak x-transition.opacity
+                 class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+                 x-on:click.self="open = false">
+                <button type="button" x-on:click="open = false"
+                        aria-label="Close"
+                        class="absolute top-5 right-5 text-white/80 hover:text-white text-3xl leading-none">×</button>
+
+                <button type="button" x-on:click="prev()"
+                        aria-label="Previous"
+                        x-show="images.length > 1"
+                        class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-white/80 hover:text-white text-5xl leading-none select-none">‹</button>
+
+                <img x-bind:src="images[index]"
+                     x-bind:alt="'Installation view ' + (index + 1)"
+                     class="max-h-[90vh] max-w-[92vw] object-contain select-none">
+
+                <button type="button" x-on:click="next()"
+                        aria-label="Next"
+                        x-show="images.length > 1"
+                        class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/80 hover:text-white text-5xl leading-none select-none">›</button>
+
+                <div x-show="images.length > 1"
+                     class="absolute bottom-5 left-1/2 -translate-x-1/2 text-xs tracking-[0.18em] uppercase text-white/70"
+                     x-text="(index + 1) + ' / ' + images.length"></div>
             </div>
         </section>
     @endif
