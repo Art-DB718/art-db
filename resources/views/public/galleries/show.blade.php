@@ -65,55 +65,67 @@
                 <div class="prose max-w-2xl mb-12">{{ $gallery->description }}</div>
             @endif
 
-            @if ($gallery->artists->isNotEmpty())
-                <h2 class="font-serif text-2xl mb-6">Represented artists</h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 border border-gray-200 mb-16">
-                    @foreach ($gallery->artists as $artist)
-                        <a href="{{ route('artists.show', $artist) }}" class="bg-white p-6 hover:bg-gray-50 transition block">
-                            @if ($artist->profile_image)
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($artist->profile_image) }}" alt="" class="w-16 h-16 object-cover rounded-full mb-3">
-                            @endif
-                            <p class="font-serif text-lg leading-tight">{{ $artist->display_name }}</p>
-                            @if ($artist->birth_year)
-                                <p class="text-xs text-gray-500 mt-1">b. {{ $artist->birth_year }}</p>
-                            @endif
-                        </a>
-                    @endforeach
-                </div>
-            @endif
+            {{-- Artists row renderer: shows the first `$initial` cards,
+                 hides the rest behind a "Show all N" toggle. 4 per row on
+                 desktop, 2 on mobile. --}}
+            @php
+                $renderArtistCard = fn ($artist) => view('public.galleries._artist_card', ['artist' => $artist])->render();
+            @endphp
 
-            @if ($presentedArtists->isNotEmpty())
-                <h2 class="font-serif text-2xl mb-6">Presented artists</h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 border border-gray-200 mb-16">
-                    @foreach ($presentedArtists as $artist)
-                        <a href="{{ route('artists.show', $artist) }}" class="bg-white p-6 hover:bg-gray-50 transition block">
-                            @if ($artist->profile_image)
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($artist->profile_image) }}" alt="" class="w-16 h-16 object-cover rounded-full mb-3">
-                            @endif
-                            <p class="font-serif text-lg leading-tight">{{ $artist->display_name }}</p>
-                            @if ($artist->birth_year)
-                                <p class="text-xs text-gray-500 mt-1">b. {{ $artist->birth_year }}</p>
-                            @endif
-                        </a>
-                    @endforeach
+            @if ($gallery->artists->isNotEmpty())
+                @php $items = $gallery->artists; $initial = 4; @endphp
+                <h2 class="font-serif text-2xl mb-6">Represented artists</h2>
+                <div x-data="{ expanded: false }" class="mb-16">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 border border-gray-200">
+                        @foreach ($items->take($initial) as $artist)
+                            {!! $renderArtistCard($artist) !!}
+                        @endforeach
+                    </div>
+                    @if ($items->count() > $initial)
+                        <div x-show="expanded" x-cloak>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 border border-gray-200 border-t-0">
+                                @foreach ($items->slice($initial) as $artist)
+                                    {!! $renderArtistCard($artist) !!}
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <button type="button" x-on:click="expanded = !expanded"
+                                    class="text-xs uppercase tracking-[0.18em] text-gray-600 hover:text-gray-900 border border-gray-300 px-5 py-2">
+                                <span x-show="! expanded">Show all {{ $items->count() }} artists</span>
+                                <span x-show="expanded" x-cloak>Show less</span>
+                            </button>
+                        </div>
+                    @endif
                 </div>
             @endif
 
             @if ($alsoShowing->isNotEmpty())
+                @php $items = $alsoShowing; $initial = 4; @endphp
                 <h2 class="font-serif text-2xl mb-2">Featured artists</h2>
                 <p class="text-sm text-gray-500 mb-6">Artists shown by the gallery outside their represented roster.</p>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 border border-gray-200 mb-16">
-                    @foreach ($alsoShowing as $artist)
-                        <a href="{{ route('artists.show', $artist) }}" class="bg-white p-6 hover:bg-gray-50 transition block">
-                            @if ($artist->profile_image)
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($artist->profile_image) }}" alt="" class="w-16 h-16 object-cover rounded-full mb-3">
-                            @endif
-                            <p class="font-serif text-lg leading-tight">{{ $artist->display_name }}</p>
-                            @if ($artist->birth_year)
-                                <p class="text-xs text-gray-500 mt-1">b. {{ $artist->birth_year }}</p>
-                            @endif
-                        </a>
-                    @endforeach
+                <div x-data="{ expanded: false }" class="mb-16">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 border border-gray-200">
+                        @foreach ($items->take($initial) as $artist)
+                            {!! $renderArtistCard($artist) !!}
+                        @endforeach
+                    </div>
+                    @if ($items->count() > $initial)
+                        <div x-show="expanded" x-cloak>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200 border border-gray-200 border-t-0">
+                                @foreach ($items->slice($initial) as $artist)
+                                    {!! $renderArtistCard($artist) !!}
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <button type="button" x-on:click="expanded = !expanded"
+                                    class="text-xs uppercase tracking-[0.18em] text-gray-600 hover:text-gray-900 border border-gray-300 px-5 py-2">
+                                <span x-show="! expanded">Show all {{ $items->count() }} artists</span>
+                                <span x-show="expanded" x-cloak>Show less</span>
+                            </button>
+                        </div>
+                    @endif
                 </div>
             @endif
 
@@ -121,25 +133,27 @@
             @if ($artworks->isEmpty())
                 <p class="text-gray-500 italic">No published artworks yet.</p>
             @else
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 items-start">
-                    @foreach ($artworks as $artwork)
-                        <a href="{{ route('artworks.show', $artwork) }}" class="block group">
-                            @if ($artwork->primary_image)
-                                <div class="bg-gray-50 mb-3 overflow-hidden">
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
-                                         alt="{{ $artwork->title }}"
-                                         loading="lazy"
-                                         class="w-full h-auto object-contain group-hover:opacity-90 transition">
-                                </div>
-                            @else
-                                <div class="w-full aspect-[4/5] bg-gray-100 mb-3 flex items-center justify-center text-xs text-gray-400">no image</div>
-                            @endif
-                            <p class="text-sm font-medium text-gray-900 leading-tight">{{ $artwork->title }}</p>
-                            @if ($artwork->artist)
-                                <p class="text-xs text-gray-500 mt-1">{{ $artwork->artist->display_name }}@if ($artwork->year_created), {{ $artwork->year_created }}@endif</p>
-                            @endif
-                        </a>
-                    @endforeach
+                @php $initial = 4; @endphp
+                <div x-data="{ expanded: false }">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 items-start">
+                        @foreach ($artworks->take($initial) as $artwork)
+                            @include('public.galleries._artwork_card', ['artwork' => $artwork])
+                        @endforeach
+                    </div>
+                    @if ($artworks->count() > $initial)
+                        <div x-show="expanded" x-cloak class="grid grid-cols-2 md:grid-cols-4 gap-6 items-start mt-6">
+                            @foreach ($artworks->slice($initial) as $artwork)
+                                @include('public.galleries._artwork_card', ['artwork' => $artwork])
+                            @endforeach
+                        </div>
+                        <div class="mt-6 text-center">
+                            <button type="button" x-on:click="expanded = !expanded"
+                                    class="text-xs uppercase tracking-[0.18em] text-gray-600 hover:text-gray-900 border border-gray-300 px-5 py-2">
+                                <span x-show="! expanded">Show all {{ $artworks->count() }} artworks</span>
+                                <span x-show="expanded" x-cloak>Show less</span>
+                            </button>
+                        </div>
+                    @endif
                 </div>
             @endif
 
@@ -147,32 +161,37 @@
                 <div class="mt-20">
                     <h2 class="font-serif text-2xl mb-10">Exhibitions</h2>
 
-                    @if ($currentExhibitions->isNotEmpty())
-                        <h3 class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-6">Current</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-14">
-                            @foreach ($currentExhibitions as $exhibition)
-                                @include('public.exhibitions._card', ['exhibition' => $exhibition])
-                            @endforeach
-                        </div>
-                    @endif
+                    @php $initial = 3; @endphp
 
-                    @if ($upcomingExhibitions->isNotEmpty())
-                        <h3 class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-6">Upcoming</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-14">
-                            @foreach ($upcomingExhibitions as $exhibition)
-                                @include('public.exhibitions._card', ['exhibition' => $exhibition])
-                            @endforeach
+                    @foreach ([
+                        'Current'  => $currentExhibitions,
+                        'Upcoming' => $upcomingExhibitions,
+                        'Past'     => $pastExhibitions,
+                    ] as $label => $group)
+                        @continue($group->isEmpty())
+                        <h3 class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-6">{{ $label }}</h3>
+                        <div x-data="{ expanded: false }" class="mb-14">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                                @foreach ($group->take($initial) as $exhibition)
+                                    @include('public.exhibitions._card', ['exhibition' => $exhibition])
+                                @endforeach
+                            </div>
+                            @if ($group->count() > $initial)
+                                <div x-show="expanded" x-cloak class="grid grid-cols-1 md:grid-cols-3 gap-10 mt-10">
+                                    @foreach ($group->slice($initial) as $exhibition)
+                                        @include('public.exhibitions._card', ['exhibition' => $exhibition])
+                                    @endforeach
+                                </div>
+                                <div class="mt-6 text-center">
+                                    <button type="button" x-on:click="expanded = !expanded"
+                                            class="text-xs uppercase tracking-[0.18em] text-gray-600 hover:text-gray-900 border border-gray-300 px-5 py-2">
+                                        <span x-show="! expanded">Show all {{ $group->count() }} {{ Str::lower($label) }}</span>
+                                        <span x-show="expanded" x-cloak>Show less</span>
+                                    </button>
+                                </div>
+                            @endif
                         </div>
-                    @endif
-
-                    @if ($pastExhibitions->isNotEmpty())
-                        <h3 class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-6">Past</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-14">
-                            @foreach ($pastExhibitions as $exhibition)
-                                @include('public.exhibitions._card', ['exhibition' => $exhibition])
-                            @endforeach
-                        </div>
-                    @endif
+                    @endforeach
                 </div>
             @endif
         </div>

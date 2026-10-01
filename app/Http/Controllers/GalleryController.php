@@ -64,17 +64,6 @@ class GalleryController extends Controller
                 ->orderBy('first_name')
                 ->get();
 
-        // "Presented artists" — artists this gallery user OWNS and has flagged
-        // as featured (is_featured). Same as marking an artist to publish on
-        // the home page. Shown on the gallery's public profile.
-        $presentedArtists = Artist::query()
-            ->where('owner_user_id', $gallery->owner_user_id)
-            ->where('is_published', true)
-            ->where('is_featured', true)
-            ->orderBy('last_name')
-            ->orderBy('first_name')
-            ->get();
-
         // Exhibitions by this gallery, grouped: current / upcoming / past.
         // Timeline is derived from dates (not the status enum alone) so
         // forgotten "upcoming" rows that have already started still land
@@ -99,7 +88,7 @@ class GalleryController extends Controller
         )->values();
 
         return view('public.galleries.show', compact(
-            'gallery', 'artworks', 'alsoShowing', 'presentedArtists',
+            'gallery', 'artworks', 'alsoShowing',
             'currentExhibitions', 'upcomingExhibitions', 'pastExhibitions',
         ));
     }
