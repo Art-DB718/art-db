@@ -33,7 +33,21 @@ class ArtworkController extends Controller
             $query->where('status_id', (int) $request->status_id);
         }
         if ($request->filled('gallery_id')) {
-            $query->whereHas('artist.galleries', fn ($g) => $g->whereKey((int) $request->gallery_id));
+            // Gallery filter matches either:
+            //   a) artworks whose artist is formally represented by the
+            //      gallery (artist_gallery pivot), OR
+            //   b) artworks the gallery user uploaded themselves
+            //      (owner_user_id = gallery.owner_user_id) — covers every
+            //      gallery-managed artist that was never added to the
+            //      "Represented" pivot (e.g. the whole artgalleria import).
+            $galleryId = (int) $request->gallery_id;
+            $gallery   = \App\Models\Gallery::find($galleryId);
+            if ($gallery) {
+                $query->where(function ($q) use ($gallery) {
+                    $q->whereHas('artist.galleries', fn ($g) => $g->whereKey($gallery->id))
+                      ->orWhere('owner_user_id', $gallery->owner_user_id);
+                });
+            }
         }
         // Year filter — flexible mode picks which of the year* inputs apply.
         // `any` is the default no-op. `range` keeps the classic from/to
