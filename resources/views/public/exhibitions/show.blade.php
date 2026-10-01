@@ -121,6 +121,25 @@
         </section>
     @endif
 
+    {{-- INSTALLATION VIEWS — moved above Works on view so visitors see
+         the show in situ first, then dig into individual pieces. --}}
+    @if (is_array($exhibition->gallery_images) && count($exhibition->gallery_images))
+        <section class="py-16 border-t border-gray-200">
+            <div class="max-w-7xl mx-auto px-6">
+                <h2 class="font-serif text-3xl md:text-4xl mb-10">Installation views</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach ($exhibition->gallery_images as $image)
+                        <a href="{{ \Illuminate\Support\Facades\Storage::url($image) }}" target="_blank" class="block bg-gray-100 overflow-hidden">
+                            <img src="{{ \Illuminate\Support\Facades\Storage::url($image) }}"
+                                 alt="{{ $exhibition->title }}"
+                                 class="w-full aspect-[4/3] object-cover hover:opacity-90 transition">
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     {{-- ARTWORKS --}}
     @if ($exhibition->artworks->isNotEmpty())
         <section class="py-16 bg-gray-50 border-t border-gray-200">
@@ -146,24 +165,6 @@
                                     <p class="text-sm text-gray-500 mt-1">{{ $artwork->medium->name }}</p>
                                 @endif
                             </div>
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-    @endif
-
-    {{-- GALLERY IMAGES --}}
-    @if (is_array($exhibition->gallery_images) && count($exhibition->gallery_images))
-        <section class="py-16 border-t border-gray-200">
-            <div class="max-w-7xl mx-auto px-6">
-                <h2 class="font-serif text-3xl md:text-4xl mb-10">Installation views</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach ($exhibition->gallery_images as $image)
-                        <a href="{{ \Illuminate\Support\Facades\Storage::url($image) }}" target="_blank" class="block bg-gray-100 overflow-hidden">
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($image) }}"
-                                 alt="{{ $exhibition->title }}"
-                                 class="w-full aspect-[4/3] object-cover hover:opacity-90 transition">
                         </a>
                     @endforeach
                 </div>
