@@ -153,30 +153,41 @@
                 </div>
             </div>
 
-            {{-- LIGHTBOX --}}
+            {{-- LIGHTBOX — image in its own flex layer (pointer-events
+                 passed to the img only), controls as fixed siblings so
+                 they sit at the viewport edges regardless of image size. --}}
             <div x-show="open" x-cloak x-transition.opacity
-                 class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+                 class="fixed inset-0 z-50 bg-black/90"
                  x-on:click.self="open = false">
+
+                {{-- image layer --}}
+                <div class="absolute inset-0 flex items-center justify-center p-6 md:p-16 pointer-events-none"
+                     x-on:click.self="open = false">
+                    <img x-bind:src="images[index]"
+                         x-bind:alt="'Installation view ' + (index + 1)"
+                         class="max-h-full max-w-full object-contain select-none pointer-events-auto">
+                </div>
+
+                {{-- close × top-right --}}
                 <button type="button" x-on:click="open = false"
                         aria-label="Close"
-                        class="absolute top-5 right-5 text-white/80 hover:text-white text-3xl leading-none">×</button>
+                        class="absolute top-4 right-5 z-10 w-10 h-10 flex items-center justify-center text-white/90 hover:text-white text-4xl leading-none">×</button>
 
+                {{-- prev ‹ left edge --}}
                 <button type="button" x-on:click="prev()"
                         aria-label="Previous"
                         x-show="images.length > 1"
-                        class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-white/80 hover:text-white text-5xl leading-none select-none">‹</button>
+                        class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center text-white/80 hover:text-white text-5xl leading-none select-none">‹</button>
 
-                <img x-bind:src="images[index]"
-                     x-bind:alt="'Installation view ' + (index + 1)"
-                     class="max-h-[90vh] max-w-[92vw] object-contain select-none">
-
+                {{-- next › right edge --}}
                 <button type="button" x-on:click="next()"
                         aria-label="Next"
                         x-show="images.length > 1"
-                        class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/80 hover:text-white text-5xl leading-none select-none">›</button>
+                        class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center text-white/80 hover:text-white text-5xl leading-none select-none">›</button>
 
+                {{-- counter 1/5 bottom center --}}
                 <div x-show="images.length > 1"
-                     class="absolute bottom-5 left-1/2 -translate-x-1/2 text-xs tracking-[0.18em] uppercase text-white/70"
+                     class="absolute bottom-4 left-0 right-0 text-center text-xs tracking-[0.18em] uppercase text-white/70 pointer-events-none"
                      x-text="(index + 1) + ' / ' + images.length"></div>
             </div>
         </section>
