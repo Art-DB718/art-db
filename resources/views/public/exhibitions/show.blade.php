@@ -74,6 +74,13 @@
                     </div>
                 @endif
 
+                @if (filled($exhibition->address))
+                    <div>
+                        <dt class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-1">Address</dt>
+                        <dd class="text-gray-800 whitespace-pre-line">{{ $exhibition->address }}</dd>
+                    </div>
+                @endif
+
                 @if ($exhibition->curator)
                     <div>
                         <dt class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-1">Curator</dt>

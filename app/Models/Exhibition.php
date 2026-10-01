@@ -12,7 +12,7 @@ class Exhibition extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'uuid', 'title', 'slug', 'type', 'venue', 'location_id',
+        'uuid', 'title', 'slug', 'type', 'venue', 'location_id', 'address',
         'start_date', 'end_date', 'opening_at', 'curator',
         'description', 'press_release', 'invitation_message',
         'poster_image', 'gallery_images', 'documents',

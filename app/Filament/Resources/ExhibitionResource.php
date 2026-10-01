@@ -51,9 +51,15 @@ class ExhibitionResource extends Resource
                         Forms\Components\TextInput::make('title')->required()->maxLength(255)->columnSpan(2),
                         Forms\Components\Select::make('type')->options(self::TYPES)->default('group')->required(),
                         Forms\Components\Select::make('status')->options(self::STATUSES)->default('upcoming')->required(),
-                        Forms\Components\TextInput::make('venue')->maxLength(255),
-                        Forms\Components\Select::make('location_id')
-                            ->relationship('location', 'name')->searchable()->preload(),
+                        Forms\Components\TextInput::make('venue')
+                            ->label('Venue name')
+                            ->helperText('e.g. “COMMA Gallery”. For the full street address use the Address field below.')
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('address')
+                            ->label('Address')
+                            ->helperText('Where the exhibition physically takes place — shown under the exhibition on the public page.')
+                            ->rows(2)
+                            ->maxLength(500),
                         Forms\Components\DatePicker::make('start_date'),
                         Forms\Components\DatePicker::make('end_date'),
                         Forms\Components\DateTimePicker::make('opening_at')->label('Opening (date & time)'),
