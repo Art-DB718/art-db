@@ -161,7 +161,8 @@
                  explicit `left`/`right` to avoid any utility-class
                  purge or RTL surprise. --}}
             <div x-show="open" x-cloak x-transition.opacity
-                 class="fixed inset-0 z-50 bg-black/90"
+                 class="fixed inset-0 z-50"
+                 style="background: rgba(0, 0, 0, 0.95);"
                  x-on:click.self="open = false">
 
                 {{-- centered image, scaled down to viewport while
@@ -173,7 +174,7 @@
                     <img x-bind:src="images[index]"
                          x-bind:alt="'Installation view ' + (index + 1)"
                          class="block select-none"
-                         style="max-width: 90vw; max-height: 90vh; width: auto; height: auto; object-fit: contain;">
+                         style="max-width: 90vw; max-height: 90vh; width: auto; height: auto; object-fit: contain; box-shadow: 0 10px 60px rgba(0, 0, 0, 0.6);">
                 </div>
 
                 {{-- close × top-right --}}
