@@ -1,7 +1,7 @@
 <a href="{{ route('artworks.show', $artwork) }}" class="block group">
     @if ($artwork->primary_image)
         <div class="bg-gray-50 mb-3 overflow-hidden">
-            <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
+            <img src="{{ signed_image_url($artwork->primary_image) }}"
                  alt="{{ $artwork->title }}"
                  loading="lazy"
                  class="w-full h-auto object-contain group-hover:opacity-90 transition">

@@ -1,7 +1,7 @@
 <a href="{{ route('exhibitions.show', $exhibition) }}" class="block group">
     @if ($exhibition->poster_image)
         <div class="overflow-hidden bg-gray-100">
-            <img src="{{ \Illuminate\Support\Facades\Storage::url($exhibition->poster_image) }}"
+            <img src="{{ signed_image_url($exhibition->poster_image) }}"
                  alt="{{ $exhibition->title }}"
                  class="w-full aspect-[4/3] object-cover group-hover:scale-[1.02] transition-transform duration-300">
         </div>

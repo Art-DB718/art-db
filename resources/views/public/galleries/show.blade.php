@@ -20,7 +20,7 @@
 
             <header class="mt-6 mb-10 flex flex-col md:flex-row md:items-start gap-6 border-b border-gray-200 pb-8">
                 @if ($gallery->logo)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::url($gallery->logo) }}" alt="{{ $gallery->name }}" class="w-24 h-24 object-contain">
+                    <img src="{{ signed_image_url($gallery->logo) }}" alt="{{ $gallery->name }}" class="w-24 h-24 object-contain">
                 @endif
                 <div class="flex-1">
                     <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-2">Gallery</p>

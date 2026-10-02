@@ -14,6 +14,7 @@ use App\Http\Controllers\MyCollectionController;
 use App\Http\Controllers\EmailTrackingController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NewsletterSubscriptionController;
+use App\Http\Controllers\SecureImageController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\PrivateRoomController;
 use App\Http\Controllers\ProfileController;
@@ -47,6 +48,8 @@ Route::get('/admin/force-logout', function () {
 // Verejný web (Fáza 2) — domovská stránka + stub routes pre ostatné sekcie.
 Route::get('/', HomeController::class)->name('home');
 
+Route::view('/terms', 'public.terms')->name('terms');
+
 // One-click subscribe/unsubscribe from email footers. Signed URL — signature
 // is generated per-contact when the email is composed; tampered links 403.
 Route::get('/newsletter/{action}/{contact}', NewsletterSubscriptionController::class)
@@ -58,6 +61,13 @@ Route::get('/newsletter/{action}/{contact}', NewsletterSubscriptionController::c
 // emails. First GET stamps contact_private_room.opened_at.
 Route::get('/email-pixel/room/{room}/contact/{contact}', [EmailTrackingController::class, 'pixel'])
     ->name('email.pixel');
+
+// Signed image serving — every public-facing <img> on the site routes
+// through this with a 15-min signature so bulk scrapers can't walk
+// the storage tree. Direct /storage/... still works for admin UI.
+Route::get('/i/{path}', SecureImageController::class)
+    ->where('path', '.*')
+    ->name('image.serve');
 
 Route::get('/artworks', [ArtworkController::class, 'index'])->name('artworks.index');
 Route::get('/artworks/{artwork:slug}', [ArtworkController::class, 'show'])->name('artworks.show');

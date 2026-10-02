@@ -220,8 +220,11 @@
             </div>
 
             <div class="text-sm text-gray-500 md:text-right">
-                © {{ now()->year }} {{ config('app.name', 'ArtDB') }}.<br>
-                All rights reserved.
+                © {{ now()->year }} {{ config('app.name', 'ArtDB') }}. All rights reserved.<br>
+                All artwork images and texts remain the property of their respective artists &amp; galleries.<br>
+                <a href="{{ route('terms') }}" class="underline hover:text-gray-800">Terms of Use</a>
+                &middot;
+                <a href="/robots.txt" class="underline hover:text-gray-800">robots.txt</a>
             </div>
         </div>
     </footer>

@@ -247,7 +247,7 @@
                                 <a href="{{ route('artworks.show', $artwork) }}" class="block group">
                                     @if ($artwork->primary_image)
                                         <div class="overflow-hidden bg-gray-50">
-                                            <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
+                                            <img src="{{ signed_image_url($artwork->primary_image) }}"
                                                  alt="{{ $artwork->title }}"
                                                  class="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                         </div>
@@ -270,7 +270,7 @@
                                     <a href="{{ route('artworks.show', $artwork) }}" class="block py-6 group grid grid-cols-[120px_1fr] sm:grid-cols-[200px_1fr] gap-6">
                                         @if ($artwork->primary_image)
                                             <div class="overflow-hidden bg-gray-100">
-                                                <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
+                                                <img src="{{ signed_image_url($artwork->primary_image) }}"
                                                      alt="{{ $artwork->title }}"
                                                      class="w-full aspect-square object-cover group-hover:opacity-90 transition">
                                             </div>
@@ -315,7 +315,7 @@
                                 <a href="{{ route('artworks.show', $artwork) }}" class="block group">
                                     @if ($artwork->primary_image)
                                         <div class="overflow-hidden bg-gray-50">
-                                            <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
+                                            <img src="{{ signed_image_url($artwork->primary_image) }}"
                                                  alt="{{ $artwork->title }}"
                                                  class="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                         </div>

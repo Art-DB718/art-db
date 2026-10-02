@@ -41,7 +41,7 @@
             <div>
                 @if ($artwork->primary_image)
                     <div class="bg-gray-100 overflow-hidden">
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
+                        <img src="{{ signed_image_url($artwork->primary_image) }}"
                              alt="{{ $artwork->title }}"
                              class="w-full h-auto object-contain">
                     </div>
@@ -54,8 +54,8 @@
                 @if (is_array($artwork->gallery_images) && count($artwork->gallery_images))
                     <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-4">
                         @foreach ($artwork->gallery_images as $image)
-                            <a href="{{ \Illuminate\Support\Facades\Storage::url($image) }}" target="_blank" class="block bg-gray-100 overflow-hidden">
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($image) }}"
+                            <a href="{{ signed_image_url($image) }}" target="_blank" class="block bg-gray-100 overflow-hidden">
+                                <img src="{{ signed_image_url($image) }}"
                                      alt="{{ $artwork->title }}"
                                      class="w-full aspect-square object-cover hover:opacity-90 transition">
                             </a>
@@ -308,7 +308,7 @@
                         <a href="{{ route('artworks.show', $other) }}" class="block group">
                             @if ($other->primary_image)
                                 <div class="overflow-hidden bg-gray-50">
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($other->primary_image) }}"
+                                    <img src="{{ signed_image_url($other->primary_image) }}"
                                          alt="{{ $other->title }}"
                                          class="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>

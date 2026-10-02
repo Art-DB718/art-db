@@ -75,7 +75,7 @@
                     @foreach ($artists as $artist)
                         <a href="{{ route('artists.show', $artist) }}" class="block group text-center">
                             @if ($artist->profile_image)
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($artist->profile_image) }}"
+                                <img src="{{ signed_image_url($artist->profile_image) }}"
                                      alt="{{ $artist->display_name }}"
                                      class="w-full aspect-square object-cover rounded-full group-hover:opacity-90 transition">
                             @else

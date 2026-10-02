@@ -21,7 +21,7 @@
     @if ($artist->cover_image)
         <section class="bg-gray-100">
             <div class="max-w-7xl mx-auto">
-                <img src="{{ \Illuminate\Support\Facades\Storage::url($artist->cover_image) }}"
+                <img src="{{ signed_image_url($artist->cover_image) }}"
                      alt="{{ $artist->display_name }}"
                      class="w-full aspect-[3/1] object-cover">
             </div>
@@ -43,7 +43,7 @@
             <div class="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-10 items-start">
                 <div>
                     @if ($artist->profile_image)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url($artist->profile_image) }}"
+                        <img src="{{ signed_image_url($artist->profile_image) }}"
                              alt="{{ $artist->display_name }}"
                              class="w-full aspect-square object-cover rounded-full">
                     @else
@@ -172,7 +172,7 @@
                         <a href="{{ route('artworks.show', $artwork) }}" class="block group">
                             @if ($artwork->primary_image)
                                 <div class="overflow-hidden bg-gray-50">
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
+                                    <img src="{{ signed_image_url($artwork->primary_image) }}"
                                          alt="{{ $artwork->title }}"
                                          class="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>

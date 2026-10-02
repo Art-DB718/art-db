@@ -16,7 +16,7 @@
                     @foreach ($galleries as $gallery)
                         <a href="{{ route('galleries.show', $gallery) }}" class="bg-white p-6 hover:bg-gray-50 transition block">
                             @if ($gallery->logo)
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($gallery->logo) }}" alt="{{ $gallery->name }}" class="w-16 h-16 object-contain mb-4">
+                                <img src="{{ signed_image_url($gallery->logo) }}" alt="{{ $gallery->name }}" class="w-16 h-16 object-contain mb-4">
                             @endif
                             <p class="font-serif text-xl leading-tight mb-1">{{ $gallery->name }}</p>
                             @if ($gallery->city)

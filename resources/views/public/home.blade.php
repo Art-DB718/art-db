@@ -50,7 +50,7 @@
                         <a href="{{ route('artworks.show', $artwork) }}" class="block group">
                             @if ($artwork->primary_image)
                                 <div class="overflow-hidden bg-gray-50">
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
+                                    <img src="{{ signed_image_url($artwork->primary_image) }}"
                                          alt="{{ $artwork->title }}"
                                          class="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>
@@ -88,7 +88,7 @@
                         <a href="{{ route('exhibitions.show', $exhibition) }}" class="block group">
                             @if ($exhibition->poster_image)
                                 <div class="overflow-hidden bg-gray-200">
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($exhibition->poster_image) }}"
+                                    <img src="{{ signed_image_url($exhibition->poster_image) }}"
                                          alt="{{ $exhibition->title }}"
                                          class="w-full aspect-[4/3] object-cover group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>
@@ -131,7 +131,7 @@
                     @foreach ($featuredArtists as $artist)
                         <a href="{{ route('artists.show', $artist) }}" class="block group text-center">
                             @if ($artist->profile_image)
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($artist->profile_image) }}"
+                                <img src="{{ signed_image_url($artist->profile_image) }}"
                                      alt="{{ $artist->display_name }}"
                                      class="w-full aspect-square object-cover rounded-full group-hover:opacity-90 transition">
                             @else

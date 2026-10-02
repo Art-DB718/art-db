@@ -4,7 +4,7 @@
     @if ($collection->cover_image)
         <section class="bg-gray-100">
             <div class="max-w-7xl mx-auto">
-                <img src="{{ \Illuminate\Support\Facades\Storage::url($collection->cover_image) }}"
+                <img src="{{ signed_image_url($collection->cover_image) }}"
                      alt="{{ $collection->title }}"
                      class="w-full aspect-[3/1] object-cover">
             </div>
@@ -44,7 +44,7 @@
                         <a href="{{ route('collections.show', $child) }}" class="block group">
                             @if ($child->cover_image)
                                 <div class="overflow-hidden bg-gray-100">
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($child->cover_image) }}"
+                                    <img src="{{ signed_image_url($child->cover_image) }}"
                                          alt="{{ $child->title }}"
                                          class="w-full aspect-square object-cover group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>
@@ -73,7 +73,7 @@
                         <a href="{{ route('artworks.show', $artwork) }}" class="block group">
                             @if ($artwork->primary_image)
                                 <div class="overflow-hidden bg-gray-50">
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
+                                    <img src="{{ signed_image_url($artwork->primary_image) }}"
                                          alt="{{ $artwork->title }}"
                                          class="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>

@@ -1,10 +1,82 @@
+# Public search engines welcome — we still want to be findable.
 User-agent: *
+Allow: /
 Disallow: /admin
-Disallow: /dashboard
-Disallow: /my/
+Disallow: /i/
 Disallow: /private-room/
-Disallow: /checkout/
-Disallow: /prints/
-Disallow: /api/
+Disallow: /newsletter/
+Disallow: /email-pixel/
 
 Sitemap: https://art-db.org/sitemap.xml
+
+# ============================================================
+# AI / LLM scrapers — disallowed. The artworks and artist bios
+# on this site belong to their creators and galleries; we do not
+# consent to their use for training commercial language models.
+# ============================================================
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: OAI-SearchBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: GoogleOther
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Perplexity-User
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: meta-externalagent
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: PanguBot
+Disallow: /
+
+User-agent: Timpibot
+Disallow: /
+
+User-agent: YouBot
+Disallow: /

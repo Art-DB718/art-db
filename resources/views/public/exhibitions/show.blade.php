@@ -30,7 +30,7 @@
     @if ($exhibition->poster_image)
         <section class="bg-gray-100">
             <div class="max-w-7xl mx-auto">
-                <img src="{{ \Illuminate\Support\Facades\Storage::url($exhibition->poster_image) }}"
+                <img src="{{ signed_image_url($exhibition->poster_image) }}"
                      alt="{{ $exhibition->title }}"
                      class="w-full aspect-[3/1] object-cover">
             </div>
@@ -126,7 +126,7 @@
          Click any thumbnail to open a lightbox with prev/next arrows
          (keyboard ← → and Esc also work). --}}
     @if (is_array($exhibition->gallery_images) && count($exhibition->gallery_images))
-        @php $imageUrls = collect($exhibition->gallery_images)->map(fn ($p) => \Illuminate\Support\Facades\Storage::url($p))->values(); @endphp
+        @php $imageUrls = collect($exhibition->gallery_images)->map(fn ($p) => signed_image_url($p))->values(); @endphp
         <section class="py-16 border-t border-gray-200"
                  x-data="{
                      open: false,
@@ -211,7 +211,7 @@
                         <a href="{{ route('artworks.show', $artwork) }}" class="block group">
                             @if ($artwork->primary_image)
                                 <div class="overflow-hidden bg-white">
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($artwork->primary_image) }}"
+                                    <img src="{{ signed_image_url($artwork->primary_image) }}"
                                          alt="{{ $artwork->title }}"
                                          class="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>
