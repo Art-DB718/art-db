@@ -164,17 +164,16 @@
                  class="fixed inset-0 z-50 bg-black/90"
                  x-on:click.self="open = false">
 
-                {{-- centered scrollable container --}}
+                {{-- centered image, scaled down to viewport while
+                     preserving the original aspect ratio. object-contain
+                     + max dimensions means a 4000×3000 photo shrinks
+                     uniformly to fit, a 400×300 one stays 400×300. --}}
                 <div class="w-full h-full flex items-center justify-center p-4"
                      x-on:click.self="open = false">
-                    <div class="overflow-auto"
-                         style="max-width: 95vw; max-height: 90vh;"
-                         x-on:click.self="open = false">
-                        <img x-bind:src="images[index]"
-                             x-bind:alt="'Installation view ' + (index + 1)"
-                             class="block select-none"
-                             style="max-width: none; max-height: none; width: auto; height: auto;">
-                    </div>
+                    <img x-bind:src="images[index]"
+                         x-bind:alt="'Installation view ' + (index + 1)"
+                         class="block select-none"
+                         style="max-width: 90vw; max-height: 90vh; width: auto; height: auto; object-fit: contain;">
                 </div>
 
                 {{-- close × top-right --}}
