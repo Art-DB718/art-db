@@ -49,6 +49,7 @@ Route::get('/admin/force-logout', function () {
 Route::get('/', HomeController::class)->name('home');
 
 Route::view('/terms', 'public.terms')->name('terms');
+Route::view('/cookies', 'public.cookies')->name('cookies');
 
 // One-click subscribe/unsubscribe from email footers. Signed URL — signature
 // is generated per-contact when the email is composed; tampered links 403.

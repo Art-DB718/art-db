@@ -224,6 +224,8 @@
                 All artwork images and texts remain the property of their respective artists &amp; galleries.<br>
                 <a href="{{ route('terms') }}" class="underline hover:text-gray-800">Terms of Use</a>
                 &middot;
+                <a href="{{ route('cookies') }}" class="underline hover:text-gray-800">Cookies</a>
+                &middot;
                 <a href="/robots.txt" class="underline hover:text-gray-800">robots.txt</a>
             </div>
         </div>
