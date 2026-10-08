@@ -18,10 +18,20 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class SecureImageController extends Controller
 {
-    public function __invoke(Request $request, string $path): Response
+    public function __invoke(Request $request): Response
     {
         if (! $request->hasValidSignature()) {
             throw new HttpException(403, 'Expired or invalid image link');
+        }
+
+        $path = (string) $request->query('path', '');
+
+        // Belt-and-braces path safety: strictly reject any traversal
+        // attempt. The signature already covers this (an attacker can't
+        // forge it) but we double-check in case the signing secret ever
+        // leaks.
+        if ($path === '' || str_contains($path, '..') || str_starts_with($path, '/')) {
+            throw new HttpException(400, 'Bad image path');
         }
 
         if (! Storage::disk('public')->exists($path)) {

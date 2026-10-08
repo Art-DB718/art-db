@@ -65,10 +65,10 @@ Route::get('/email-pixel/room/{room}/contact/{contact}', [EmailTrackingControlle
 
 // Signed image serving — every public-facing <img> on the site routes
 // through this with a 15-min signature so bulk scrapers can't walk
-// the storage tree. Direct /storage/... still works for admin UI.
-Route::get('/i/{path}', SecureImageController::class)
-    ->where('path', '.*')
-    ->name('image.serve');
+// the storage tree. Path is a query parameter (not a route segment)
+// because signed URLs + wildcard route segments with "/" in them
+// don't survive URL encoding reliably.
+Route::get('/i', SecureImageController::class)->name('image.serve');
 
 Route::get('/artworks', [ArtworkController::class, 'index'])->name('artworks.index');
 Route::get('/artworks/{artwork:slug}', [ArtworkController::class, 'show'])->name('artworks.show');
