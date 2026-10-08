@@ -108,7 +108,20 @@ class GalleryResource extends Resource
                 ]),
 
                 Forms\Components\Tabs\Tab::make('Publishing')->schema([
-                    Forms\Components\Toggle::make('is_published')->label('Published in public archive'),
+                    // Only admins can toggle a gallery's public visibility.
+                    // Everyone else sees a read-only badge saying whether
+                    // the gallery is awaiting approval or already live.
+                    // Prevents spam registrations from self-publishing.
+                    Forms\Components\Toggle::make('is_published')
+                        ->label('Published in public archive')
+                        ->visible(fn () => auth()->user()?->isAdmin() ?? false)
+                        ->helperText('Admins only.'),
+                    Forms\Components\Placeholder::make('publishing_status')
+                        ->label('Visibility')
+                        ->visible(fn () => ! (auth()->user()?->isAdmin() ?? false))
+                        ->content(fn ($record) => $record?->is_published
+                            ? 'Live in the public archive.'
+                            : 'Awaiting admin approval — your profile is saved but not yet publicly visible.'),
                 ]),
 
             ])->columnSpanFull(),

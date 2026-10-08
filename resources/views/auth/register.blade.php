@@ -2,6 +2,14 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
+        {{-- Honeypot — hidden off-screen for sighted users, auto-filled
+             by naive registration bots. If it comes back non-empty we
+             silently reject the request. --}}
+        <div style="position:absolute;left:-9999px;height:0;width:0;overflow:hidden;" aria-hidden="true">
+            <label for="website">Leave this field empty</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" value="">
+        </div>
+
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')" />
