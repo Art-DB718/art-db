@@ -87,4 +87,6 @@ class MediumResource extends Resource
             'edit'   => Pages\EditMedium::route('/{record}/edit'),
         ];
     }
+
+    use \App\Filament\Concerns\OwnerScoped;
 }

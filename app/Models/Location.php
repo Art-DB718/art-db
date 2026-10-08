@@ -19,9 +19,15 @@ class Location extends Model
 
     protected static function booted(): void
     {
-        static::creating(fn ($m) => $m->uuid ??= (string) Str::uuid());
+        static::creating(function ($m) {
+            $m->uuid ??= (string) Str::uuid();
+            if (empty($m->owner_user_id) && ($u = auth()->user()) && ! $u->isAdmin()) {
+                $m->owner_user_id = $u->id;
+            }
+        });
     }
 
+    public function owner()     { return $this->belongsTo(\App\Models\User::class, 'owner_user_id'); }
     public function country()   { return $this->belongsTo(Country::class); }
     public function artworks()  { return $this->hasMany(Artwork::class); }
     public function exhibitions() { return $this->hasMany(Exhibition::class); }

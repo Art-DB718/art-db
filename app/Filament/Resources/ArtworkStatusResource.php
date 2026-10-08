@@ -53,7 +53,16 @@ class ArtworkStatusResource extends Resource
                 Tables\Columns\ColorColumn::make('color'),
                 Tables\Columns\IconColumn::make('is_public')->boolean()->label('Public'),
                 Tables\Columns\IconColumn::make('counts_as_available')->boolean()->label('Available'),
-                Tables\Columns\TextColumn::make('artworks_count')->counts('artworks')->label('Artworks'),
+                // Count only the current viewer's artworks per status, so a
+                // gallery sees how many of THEIR works are "For sale" / "Sold"
+                // / etc., not the whole system total. Admin keeps the global
+                // count.
+                Tables\Columns\TextColumn::make('artworks_count')
+                    ->counts(['artworks' => function ($q) {
+                        $user = auth()->user();
+                        return (! $user || $user->isAdmin()) ? $q : $q->where('owner_user_id', $user->id);
+                    }])
+                    ->label('Artworks'),
                 Tables\Columns\TextColumn::make('position')->sortable(),
             ])
             ->defaultSort('position')

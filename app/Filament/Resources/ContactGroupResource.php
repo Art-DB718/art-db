@@ -77,4 +77,6 @@ class ContactGroupResource extends Resource
             'edit'   => Pages\EditContactGroup::route('/{record}/edit'),
         ];
     }
+
+    use \App\Filament\Concerns\OwnerScoped;
 }

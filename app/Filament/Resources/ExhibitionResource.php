@@ -348,9 +348,5 @@ class ExhibitionResource extends Resource
         ];
     }
 
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([SoftDeletingScope::class]);
-    }
+    use \App\Filament\Concerns\OwnerScoped;
 }

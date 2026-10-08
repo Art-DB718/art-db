@@ -71,4 +71,6 @@ class GenreResource extends Resource
             'edit'   => Pages\EditGenre::route('/{record}/edit'),
         ];
     }
+
+    use \App\Filament\Concerns\OwnerScoped;
 }
