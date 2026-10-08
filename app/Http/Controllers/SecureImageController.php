@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class SecureImageController extends Controller
 {
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request): StreamedResponse
     {
         if (! $request->hasValidSignature()) {
             throw new HttpException(403, 'Expired or invalid image link');
