@@ -39,7 +39,10 @@ class Artist extends Model
                 // Uniqueness safeguard — two artists can share a name (jr / sr,
                 // homonyms, misspellings). Append a random suffix only on
                 // collision so the first artist keeps the clean SEO slug.
-                $m->slug = static::query()->where('slug', $base)->exists()
+                // withTrashed() so soft-deleted rows are considered: the
+                // DB-level unique constraint doesn't skip them, so the check
+                // must not either (otherwise insert hits a 500).
+                $m->slug = static::query()->withTrashed()->where('slug', $base)->exists()
                     ? $base.'-'.Str::lower(Str::random(4))
                     : $base;
             }
