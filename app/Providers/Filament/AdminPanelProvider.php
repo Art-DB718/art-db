@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
+use Filament\Pages\Auth\EmailVerification\EmailVerificationPrompt;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
@@ -30,6 +31,8 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->profile(\App\Filament\Pages\Auth\EditProfile::class)
             ->registration(\App\Filament\Pages\Auth\Register::class)
+            ->emailVerification(EmailVerificationPrompt::class)
+            ->requiresEmailVerification()
             ->favicon(asset('favicon.ico'))
             ->colors([
                 'primary' => Color::Slate,
