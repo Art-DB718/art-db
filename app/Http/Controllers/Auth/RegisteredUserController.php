@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Rules\UniversityEmail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -55,16 +54,9 @@ class RegisteredUserController extends Controller
 
         $publicRoles = array_map(fn ($r) => $r->value, UserRole::publicRegisterChoices());
 
-        $emailRules = ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class];
-        // Artist accounts require an academic email — applied conditionally
-        // before validate() so the rule fires before the unique check.
-        if ($request->input('role') === UserRole::Artist->value) {
-            $emailRules[] = new UniversityEmail();
-        }
-
         $request->validate([
             'name'     => ['required', 'string', 'max:255'],
-            'email'    => $emailRules,
+            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role'     => ['required', Rule::in($publicRoles)],
         ]);

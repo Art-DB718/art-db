@@ -21,9 +21,6 @@
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <p class="mt-1 text-xs text-gray-500">
-                Artist accounts require a university email (e.g. <code>.edu</code>, <code>.ac.uk</code>, <code>vsvu.sk</code>, <code>vsmu.sk</code>).
-            </p>
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
