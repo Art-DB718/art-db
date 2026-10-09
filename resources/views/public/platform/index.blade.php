@@ -160,22 +160,19 @@
         </div>
     </section>
 
-    {{-- OPERATED BY --}}
-    @if ($settings->company_name || $settings->email)
-        <section class="py-24">
-            <div class="max-w-2xl mx-auto px-6 text-center">
-                <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-6">Operated by</p>
-                <h3 class="font-serif text-2xl mb-4">{{ $settings->company_name }}</h3>
-                @if ($settings->city || $settings->country)
-                    <p class="text-sm text-gray-600">{{ trim(($settings->city ?? '').($settings->country ? ', '.$settings->country : '')) }}</p>
-                @endif
-                @if ($settings->email)
-                    <p class="mt-8">
-                        <a href="mailto:{{ $settings->email }}" class="text-xs uppercase tracking-[0.18em] hover:text-gray-500 underline underline-offset-8">{{ $settings->email }}</a>
-                    </p>
-                @endif
-            </div>
-        </section>
-    @endif
+    {{-- OPERATED BY — hardcoded to Art-DB, not pulled from a gallery's
+         InvoiceSetting. Previous version showed RFG's details and
+         confused users (WJB emailed info@rfg.sk with a platform
+         question because that's what this block told him to do). --}}
+    <section class="py-24">
+        <div class="max-w-2xl mx-auto px-6 text-center">
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-6">Operated by</p>
+            <h3 class="font-serif text-2xl mb-4">Art-DB</h3>
+            <p class="text-sm text-gray-600">A platform for galleries, artists &amp; collectors</p>
+            <p class="mt-8">
+                <a href="mailto:info@art-db.org" class="text-xs uppercase tracking-[0.18em] hover:text-gray-500 underline underline-offset-8">info@art-db.org</a>
+            </p>
+        </div>
+    </section>
 
 </x-layouts.public>
