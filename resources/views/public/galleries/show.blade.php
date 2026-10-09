@@ -47,7 +47,7 @@
                 {{-- Contact block --}}
                 @if ($gallery->website || $gallery->email || $gallery->phone)
                     <div class="text-sm md:text-right space-y-2 md:min-w-[200px]">
-                        <p class="text-xs uppercase tracking-[0.18em] text-gray-500">Contact</p>
+                        <p class="text-xs uppercase tracking-[0.18em] text-gray-500">Gallery contact</p>
                         @if ($gallery->website)
                             <p><a href="{{ $gallery->website }}" target="_blank" rel="noopener" class="text-gray-900 underline hover:no-underline">{{ parse_url($gallery->website, PHP_URL_HOST) ?: $gallery->website }}</a></p>
                         @endif
@@ -57,6 +57,10 @@
                         @if ($gallery->phone)
                             <p><a href="tel:{{ preg_replace('/[^+0-9]/', '', $gallery->phone) }}" class="text-gray-900 hover:underline">{{ $gallery->phone }}</a></p>
                         @endif
+                        <p class="text-xs text-gray-400 pt-2">
+                            For platform / account support write to
+                            <a href="mailto:info@art-db.org" class="underline hover:text-gray-600">info@art-db.org</a>.
+                        </p>
                     </div>
                 @endif
             </header>
