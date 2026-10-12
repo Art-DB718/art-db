@@ -298,7 +298,9 @@
                     </div>
                 @endif
 
-                @if ($artwork->provenance)
+                {{-- Provenance is private by default — only shown when
+                     the owner explicitly flags it as public. --}}
+                @if ($artwork->provenance && $artwork->provenance_is_public)
                     <div class="mt-8">
                         <h3 class="text-xs uppercase tracking-[0.18em] text-gray-500 mb-2">Provenance</h3>
                         <p class="text-sm text-gray-700 leading-relaxed">{!! nl2br(e($artwork->provenance)) !!}</p>

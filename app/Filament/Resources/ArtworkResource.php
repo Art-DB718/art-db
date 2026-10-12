@@ -182,6 +182,11 @@ class ArtworkResource extends Resource
                 Forms\Components\Tabs\Tab::make('History')->schema([
                     Forms\Components\Textarea::make('provenance')->rows(3)->columnSpanFull()
                         ->visible(fn (): bool => ! auth()->user()?->isArtist()),
+                    Forms\Components\Toggle::make('provenance_is_public')
+                        ->label('Show provenance on the public web')
+                        ->helperText('Off by default. Turn on only when you want visitors to see the ownership history.')
+                        ->default(false)
+                        ->visible(fn (): bool => ! auth()->user()?->isArtist()),
                     Forms\Components\Textarea::make('exhibition_history')->rows(3)->columnSpanFull(),
                     Forms\Components\Textarea::make('literature')->rows(3)->columnSpanFull(),
                     Forms\Components\Textarea::make('condition_notes')->rows(3)->columnSpanFull(),
