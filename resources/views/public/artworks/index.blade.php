@@ -56,7 +56,7 @@
                         <select name="medium_id" id="medium_id" class="w-full px-3 py-2 border border-gray-300 text-sm bg-white focus:outline-none focus:border-gray-900">
                             <option value="">All mediums</option>
                             @foreach ($mediums as $medium)
-                                <option value="{{ $medium->id }}" @selected((int) request('medium_id') === $medium->id)>{{ $medium->name }}</option>
+                                <option value="{{ $medium->id }}" @selected((int) request('medium_id') === $medium->id)>{{ art_term_en($medium->name, $medium->name_en ?? null) }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -66,7 +66,7 @@
                         <select name="genre_id" id="genre_id" class="w-full px-3 py-2 border border-gray-300 text-sm bg-white focus:outline-none focus:border-gray-900">
                             <option value="">All genres</option>
                             @foreach ($genres as $genre)
-                                <option value="{{ $genre->id }}" @selected((int) request('genre_id') === $genre->id)>{{ $genre->name }}</option>
+                                <option value="{{ $genre->id }}" @selected((int) request('genre_id') === $genre->id)>{{ art_term_en($genre->name, $genre->name_en ?? null) }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -282,7 +282,7 @@
                                             <p class="font-serif text-lg italic mt-1">{{ $artwork->title }}@if ($artwork->year_created), <span class="not-italic">{{ $artwork->year_created }}</span>@endif</p>
                                             <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
                                                 @if ($artwork->medium)
-                                                    <span>{{ $artwork->medium->name }}</span>
+                                                    <span>{{ art_term_en($artwork->medium->name, $artwork->medium->name_en ?? null) }}</span>
                                                 @endif
                                                 @if ($artwork->height_cm || $artwork->width_cm)
                                                     <span>
@@ -328,7 +328,7 @@
                                         <p class="font-semibold">{{ $artwork->artist?->display_name ?? '—' }}</p>
                                         <p class="text-gray-600 italic">{{ $artwork->title }}@if ($artwork->year_created), {{ $artwork->year_created }}@endif</p>
                                         @if ($artwork->medium)
-                                            <p class="text-sm text-gray-500 mt-1">{{ $artwork->medium->name }}</p>
+                                            <p class="text-sm text-gray-500 mt-1">{{ art_term_en($artwork->medium->name, $artwork->medium->name_en ?? null) }}</p>
                                         @endif
                                         @if ($artwork->price && ! $artwork->price_on_request)
                                             <p class="text-sm text-gray-700 mt-1">{{ number_format((float) $artwork->price, 0, '.', ' ') }} {{ $artwork->currency }}</p>

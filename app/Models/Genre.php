@@ -10,7 +10,7 @@ class Genre extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['uuid', 'name', 'slug', 'description', 'owner_user_id'];
+    protected $fillable = ['uuid', 'name', 'name_en', 'slug', 'description', 'owner_user_id'];
 
     protected static function booted(): void
     {

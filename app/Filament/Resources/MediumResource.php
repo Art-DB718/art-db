@@ -30,6 +30,11 @@ class MediumResource extends Resource
                 ->required()
                 ->maxLength(255)
                 ->columnSpanFull(),
+            Forms\Components\TextInput::make('name_en')
+                ->label('English name (optional)')
+                ->helperText('Shown on the public web for non-SK visitors. Leave empty to let the auto-translator handle it.')
+                ->maxLength(255)
+                ->columnSpanFull(),
             Forms\Components\Select::make('parent_id')
                 ->relationship('parent', 'name')
                 ->searchable()

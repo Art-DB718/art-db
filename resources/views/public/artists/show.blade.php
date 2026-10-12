@@ -182,7 +182,7 @@
                             <div class="mt-5">
                                 <p class="text-gray-600 italic">{{ $artwork->title }}@if ($artwork->year_created), {{ $artwork->year_created }}@endif</p>
                                 @if ($artwork->medium)
-                                    <p class="text-sm text-gray-500 mt-1">{{ $artwork->medium->name }}</p>
+                                    <p class="text-sm text-gray-500 mt-1">{{ art_term_en($artwork->medium->name, $artwork->medium->name_en ?? null) }}</p>
                                 @endif
                                 @if ($artwork->price && ! $artwork->price_on_request)
                                     <p class="text-sm text-gray-700 mt-1">{{ number_format((float) $artwork->price, 0, '.', ' ') }} {{ $artwork->currency }}</p>

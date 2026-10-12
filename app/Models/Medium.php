@@ -13,7 +13,7 @@ class Medium extends Model
     // Laravel pluralizuje "Medium" → "media"; migrácia vytvára "mediums".
     protected $table = 'mediums';
 
-    protected $fillable = ['uuid', 'parent_id', 'name', 'slug', 'description', 'position', 'owner_user_id'];
+    protected $fillable = ['uuid', 'parent_id', 'name', 'name_en', 'slug', 'description', 'position', 'owner_user_id'];
 
     protected static function booted(): void
     {

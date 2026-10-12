@@ -161,21 +161,21 @@
                     @if ($artwork->medium)
                         <div class="grid grid-cols-3 gap-4">
                             <dt class="text-gray-500 uppercase tracking-[0.18em] text-xs">Medium</dt>
-                            <dd class="col-span-2 text-gray-800">{{ $artwork->medium->name }}</dd>
+                            <dd class="col-span-2 text-gray-800">{{ art_term_en($artwork->medium->name, $artwork->medium->name_en ?? null) }}</dd>
                         </div>
                     @endif
 
                     @if ($artwork->genre)
                         <div class="grid grid-cols-3 gap-4">
                             <dt class="text-gray-500 uppercase tracking-[0.18em] text-xs">Genre</dt>
-                            <dd class="col-span-2 text-gray-800">{{ $artwork->genre->name }}</dd>
+                            <dd class="col-span-2 text-gray-800">{{ art_term_en($artwork->genre->name, $artwork->genre->name_en ?? null) }}</dd>
                         </div>
                     @endif
 
                     @if ($artwork->materials)
                         <div class="grid grid-cols-3 gap-4">
                             <dt class="text-gray-500 uppercase tracking-[0.18em] text-xs">Materials</dt>
-                            <dd class="col-span-2 text-gray-800">{{ $artwork->materials }}</dd>
+                            <dd class="col-span-2 text-gray-800">{{ art_term_en($artwork->materials) }}</dd>
                         </div>
                     @endif
 
