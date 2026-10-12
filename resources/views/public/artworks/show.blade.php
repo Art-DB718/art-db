@@ -37,14 +37,35 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
 
-            {{-- IMAGES --}}
-            <div>
+            {{-- IMAGES — same lightbox pattern as Installation views on
+                 the exhibition page: click any thumbnail or the primary
+                 image to open a dim-backdrop viewer with ← → arrows. --}}
+            @php
+                $allImageUrls = collect()
+                    ->when($artwork->primary_image, fn ($c) => $c->push(signed_image_url($artwork->primary_image)))
+                    ->merge(collect($artwork->gallery_images ?? [])->map(fn ($p) => signed_image_url($p)))
+                    ->filter()
+                    ->values();
+            @endphp
+            <div x-data="{
+                     open: false,
+                     index: 0,
+                     images: @js($allImageUrls),
+                     show(i) { this.index = i; this.open = true; },
+                     next() { this.index = (this.index + 1) % this.images.length; },
+                     prev() { this.index = (this.index - 1 + this.images.length) % this.images.length; },
+                 }"
+                 x-on:keydown.escape.window="open = false"
+                 x-on:keydown.arrow-right.window="if (open) next()"
+                 x-on:keydown.arrow-left.window="if (open) prev()">
+
                 @if ($artwork->primary_image)
-                    <div class="bg-gray-100 overflow-hidden">
+                    <button type="button" x-on:click="show(0)"
+                            class="block w-full bg-gray-100 overflow-hidden group focus:outline-none focus:ring-2 focus:ring-gray-900">
                         <img src="{{ signed_image_url($artwork->primary_image) }}"
                              alt="{{ $artwork->title }}"
-                             class="w-full h-auto object-contain">
-                    </div>
+                             class="w-full h-auto object-contain group-hover:opacity-90 transition">
+                    </button>
                 @else
                     <div class="w-full aspect-square bg-gray-100 flex items-center justify-center text-gray-400">
                         no image
@@ -52,16 +73,49 @@
                 @endif
 
                 @if (is_array($artwork->gallery_images) && count($artwork->gallery_images))
+                    @php $galleryOffset = $artwork->primary_image ? 1 : 0; @endphp
                     <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-4">
-                        @foreach ($artwork->gallery_images as $image)
-                            <a href="{{ signed_image_url($image) }}" target="_blank" class="block bg-gray-100 overflow-hidden">
+                        @foreach ($artwork->gallery_images as $i => $image)
+                            <button type="button" x-on:click="show({{ $galleryOffset + $i }})"
+                                    class="block w-full bg-gray-100 overflow-hidden group focus:outline-none focus:ring-2 focus:ring-gray-900">
                                 <img src="{{ signed_image_url($image) }}"
                                      alt="{{ $artwork->title }}"
-                                     class="w-full aspect-square object-cover hover:opacity-90 transition">
-                            </a>
+                                     class="w-full aspect-square object-cover group-hover:opacity-90 transition">
+                            </button>
                         @endforeach
                     </div>
                 @endif
+
+                {{-- LIGHTBOX --}}
+                <div x-show="open" x-cloak x-transition.opacity
+                     class="fixed inset-0 z-50"
+                     style="background: rgba(0, 0, 0, 0.95);"
+                     x-on:click.self="open = false">
+
+                    <div class="w-full h-full flex items-center justify-center p-4"
+                         x-on:click.self="open = false">
+                        <img x-bind:src="images[index]"
+                             x-bind:alt="'{{ $artwork->title }} ' + (index + 1)"
+                             class="block select-none"
+                             style="max-width: 90vw; max-height: 90vh; width: auto; height: auto; object-fit: contain; box-shadow: 0 10px 60px rgba(0, 0, 0, 0.6);">
+                    </div>
+
+                    <button type="button" x-on:click="open = false"
+                            aria-label="Close"
+                            style="position: fixed; top: 1rem; right: 1.25rem; z-index: 60; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.9); font-size: 2.25rem; line-height: 1; background: transparent; border: 0; cursor: pointer;">×</button>
+
+                    <button type="button" x-show="images.length > 1" x-on:click="prev()"
+                            aria-label="Previous"
+                            style="position: fixed; top: 50%; left: 0.5rem; transform: translateY(-50%); z-index: 60; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.85); font-size: 3rem; line-height: 1; background: transparent; border: 0; cursor: pointer; user-select: none;">‹</button>
+
+                    <button type="button" x-show="images.length > 1" x-on:click="next()"
+                            aria-label="Next"
+                            style="position: fixed; top: 50%; right: 0.5rem; transform: translateY(-50%); z-index: 60; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.85); font-size: 3rem; line-height: 1; background: transparent; border: 0; cursor: pointer; user-select: none;">›</button>
+
+                    <div x-show="images.length > 1"
+                         style="position: fixed; bottom: 1rem; left: 0; right: 0; text-align: center; color: rgba(255,255,255,0.7); font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; pointer-events: none; z-index: 60;"
+                         x-text="(index + 1) + ' / ' + images.length"></div>
+                </div>
             </div>
 
             {{-- INFO --}}
