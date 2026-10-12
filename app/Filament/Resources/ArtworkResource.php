@@ -877,6 +877,36 @@ class ArtworkResource extends Resource
                         })
                         ->deselectRecordsAfterCompletion(),
 
+                    // === Price visibility toggles — flip price_on_request on
+                    //     the whole selection. "Price on request" hides the
+                    //     numeric price publicly; "Show price" reveals it
+                    //     (the numeric value in artwork.price itself is left
+                    //     untouched by both actions).
+                    Tables\Actions\BulkAction::make('priceOnRequest')
+                        ->label('Price on request')
+                        ->icon('heroicon-o-eye-slash')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $count = \App\Models\Artwork::whereIn('id', $records->pluck('id'))->update(['price_on_request' => true]);
+                            \Filament\Notifications\Notification::make()
+                                ->title(sprintf('%d artwork(s) set to "Price on request"', $count))
+                                ->success()->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                    Tables\Actions\BulkAction::make('showPrice')
+                        ->label('Show price')
+                        ->icon('heroicon-o-currency-euro')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $count = \App\Models\Artwork::whereIn('id', $records->pluck('id'))->update(['price_on_request' => false]);
+                            \Filament\Notifications\Notification::make()
+                                ->title(sprintf('%d artwork(s) now show their price publicly', $count))
+                                ->success()->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+
                     // === Add selected works to a collection. Existing
                     //     collections + a "+ New collection…" quick-create
                     //     inside the modal.
