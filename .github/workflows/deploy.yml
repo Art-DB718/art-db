@@ -31,21 +31,22 @@ jobs:
       - name: Set up SSH key
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          # Report key fingerprint so we can confirm which key was loaded without exposing it.
           ssh-keygen -lf ~/.ssh/id_ed25519 || (echo "::error::Private key file is not a valid SSH key — DEPLOY_SSH_KEY secret probably lost its newlines on paste." && exit 1)
-          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Deploy
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes forge@"$DEPLOY_HOST" bash -s <<'EOSSH'
+          ssh -i ~/.ssh/id_ed25519 \
+              -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              -o LogLevel=ERROR \
+              forge@"$DEPLOY_HOST" bash -s <<'EOSSH'
           set -euo pipefail
           cd /home/forge/art-db.org
           git pull origin main
