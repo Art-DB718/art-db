@@ -40,8 +40,13 @@ jobs:
 
       - name: Deploy
         env:
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_HOST_RAW: ${{ secrets.DEPLOY_HOST }}
         run: |
+          # Trim whitespace/newlines that may have snuck in during paste
+          # into the GitHub Secret UI — ssh refuses "invalid characters"
+          # otherwise.
+          DEPLOY_HOST="$(printf '%s' "$DEPLOY_HOST_RAW" | tr -d '[:space:]')"
+          echo "Deploying to: [$DEPLOY_HOST]"
           ssh -i ~/.ssh/id_ed25519 \
               -o StrictHostKeyChecking=no \
               -o UserKnownHostsFile=/dev/null \
