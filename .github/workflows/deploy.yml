@@ -1,0 +1,32 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: forge
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: 22
+          command_timeout: 10m
+          script: |
+            set -e
+            cd /home/forge/art-db.org
+            git pull origin main
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+            php artisan migrate --force
+            php artisan optimize:clear
+            php artisan optimize
