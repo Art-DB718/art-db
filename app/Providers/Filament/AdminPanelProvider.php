@@ -7,12 +7,14 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Pages\Auth\EmailVerification\EmailVerificationPrompt;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -40,13 +42,14 @@ class AdminPanelProvider extends PanelProvider
                 'gray'    => Color::Zinc,
             ])
             ->sidebarCollapsibleOnDesktop()
-            ->userMenuItems([
-                MenuItem::make()
-                    ->label('Support')
-                    ->icon('heroicon-o-lifebuoy')
-                    ->url('mailto:info@art-db.org?subject=' . rawurlencode('Art-DB support request'))
-                    ->openUrlInNewTab(),
-            ])
+            // "Support" icon-button in the top bar, just left of the avatar.
+            // GLOBAL_SEARCH_AFTER is the slot that sits between global search
+            // and the notifications/user-menu cluster, so the button lands
+            // right next to the avatar without touching the layout markup.
+            ->renderHook(
+                PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+                fn (): string => Blade::render('<x-filament.topbar.support-button />'),
+            )
             ->navigationGroups([
                 'Catalogue',
                 'Exhibitions & Movements',

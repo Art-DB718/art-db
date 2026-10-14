@@ -223,6 +223,8 @@
                 © {{ now()->year }} {{ config('app.name', 'ArtDB') }}. All rights reserved.<br>
                 All artwork images and texts remain the property of their respective artists &amp; galleries.<br>
                 Platform support: <a href="mailto:info@art-db.org" class="underline hover:text-gray-800">info@art-db.org</a><br>
+                <a href="{{ route('help') }}" class="underline hover:text-gray-800">Help</a>
+                &middot;
                 <a href="{{ route('terms') }}" class="underline hover:text-gray-800">Terms of Use</a>
                 &middot;
                 <a href="{{ route('cookies') }}" class="underline hover:text-gray-800">Cookies</a>
