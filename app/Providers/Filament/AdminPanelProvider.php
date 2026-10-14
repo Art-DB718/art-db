@@ -7,6 +7,7 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Pages\Auth\EmailVerification\EmailVerificationPrompt;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -39,6 +40,13 @@ class AdminPanelProvider extends PanelProvider
                 'gray'    => Color::Zinc,
             ])
             ->sidebarCollapsibleOnDesktop()
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('Support')
+                    ->icon('heroicon-o-lifebuoy')
+                    ->url('mailto:info@art-db.org?subject=' . rawurlencode('Art-DB support request'))
+                    ->openUrlInNewTab(),
+            ])
             ->navigationGroups([
                 'Catalogue',
                 'Exhibitions & Movements',
