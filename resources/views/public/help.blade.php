@@ -5,32 +5,58 @@
     <section class="py-16">
         <div class="max-w-4xl mx-auto px-6">
 
-            <header class="mb-14">
-                <p class="text-xs uppercase tracking-[0.24em] text-gray-500 mb-3">Help centre</p>
-                <h1 class="font-serif text-4xl mb-4">How can we help?</h1>
-                <p class="text-gray-600 max-w-2xl">
-                    Short answers to the questions owners ask most. Can't find what you need?
-                    Write to <a href="mailto:info@art-db.org?subject=Art-DB%20support%20request" class="underline">info@art-db.org</a>
-                    and we usually reply within a working day.
-                </p>
-            </header>
+            <div x-data="{ query: '', open: null }">
 
-            {{-- Category index --}}
-            <nav class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
-                @foreach ([
-                    'getting-started' => ['Getting started', 'Create an account, publish your first artwork.'],
-                    'artworks'        => ['Artworks', 'Images, provenance, pricing, bulk actions.'],
-                    'contacts'        => ['Contacts & groups', 'CRM basics, importing, newsletter.'],
-                    'private-rooms'   => ['Private rooms', 'Share a curated selection with a collector.'],
-                    'exhibitions'     => ['Exhibitions', 'Catalogues, installation views, PDFs.'],
-                    'billing'         => ['Billing & plans', 'Subscriptions, invoices, cancellation.'],
-                ] as $slug => [$title, $tagline])
-                    <a href="#{{ $slug }}" class="block p-5 -m-5 hover:bg-gray-50 transition group">
-                        <h2 class="font-serif text-lg mb-1 group-hover:underline">{{ $title }}</h2>
-                        <p class="text-sm text-gray-500">{{ $tagline }}</p>
-                    </a>
-                @endforeach
-            </nav>
+                <header class="mb-8">
+                    <p class="text-xs uppercase tracking-[0.24em] text-gray-500 mb-3">Help centre</p>
+                    <h1 class="font-serif text-4xl mb-4">How can we help?</h1>
+                    <p class="text-gray-600 max-w-2xl">
+                        Short answers to the questions owners ask most. Can't find what you need?
+                        Write to <a href="mailto:info@art-db.org?subject=Art-DB%20support%20request" class="underline">info@art-db.org</a>
+                        and we usually reply within a working day.
+                    </p>
+                </header>
+
+                {{-- Search --}}
+                <div class="relative mb-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                    <input
+                        x-model.debounce.150ms="query"
+                        type="search"
+                        placeholder="Search help…"
+                        class="w-full border-b border-gray-300 bg-transparent py-3 pl-12 pr-10 text-base placeholder:text-gray-400 focus:outline-none focus:border-gray-900"
+                        aria-label="Search help centre">
+                    <button
+                        type="button"
+                        x-show="query"
+                        x-cloak
+                        @click="query = ''"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-gray-400 hover:text-gray-700"
+                        aria-label="Clear search">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Category index (hidden while searching) --}}
+                <nav x-show="!query" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
+                    @foreach ([
+                        'getting-started' => ['Getting started', 'Create an account, publish your first artwork.'],
+                        'artworks'        => ['Artworks', 'Images, provenance, pricing, bulk actions.'],
+                        'contacts'        => ['Contacts & groups', 'CRM basics, importing, newsletter.'],
+                        'private-rooms'   => ['Private rooms', 'Share a curated selection with a collector.'],
+                        'exhibitions'     => ['Exhibitions', 'Catalogues, installation views, PDFs.'],
+                        'billing'         => ['Billing & plans', 'Subscriptions, invoices, cancellation.'],
+                    ] as $slug => [$title, $tagline])
+                        <a href="#{{ $slug }}" class="block p-5 -m-5 hover:bg-gray-50 transition group">
+                            <h2 class="font-serif text-lg mb-1 group-hover:underline">{{ $title }}</h2>
+                            <p class="text-sm text-gray-500">{{ $tagline }}</p>
+                        </a>
+                    @endforeach
+                </nav>
 
             {{-- FAQ sections --}}
             @php
@@ -93,37 +119,57 @@
                 ];
             @endphp
 
-            <div class="space-y-16" x-data="{ open: null }">
-                @foreach ($sections as $slug => $section)
-                    <section id="{{ $slug }}" class="scroll-mt-24">
-                        <h2 class="font-serif text-2xl mb-6 pb-3 border-b border-gray-200">{{ $section['title'] }}</h2>
+                <div class="space-y-16">
+                    @foreach ($sections as $slug => $section)
+                        <section
+                            id="{{ $slug }}"
+                            class="scroll-mt-24"
+                            x-show="!query || Array.from($el.querySelectorAll('[data-faq]')).some(e => e.dataset.faq.includes(query.toLowerCase()))">
+                            <h2 class="font-serif text-2xl mb-6 pb-3 border-b border-gray-200">{{ $section['title'] }}</h2>
 
-                        <div class="divide-y divide-gray-200">
-                            @foreach ($section['items'] as $i => [$q, $a])
-                                @php $key = $slug . '-' . $i; @endphp
-                                <div class="py-4">
-                                    <button type="button"
-                                            class="w-full flex items-start justify-between text-left gap-6"
-                                            @click="open === '{{ $key }}' ? open = null : open = '{{ $key }}'">
-                                        <span class="font-medium text-gray-900">{{ $q }}</span>
-                                        <span class="text-gray-400 shrink-0" x-text="open === '{{ $key }}' ? '−' : '+'">+</span>
-                                    </button>
-                                    <div x-show="open === '{{ $key }}'" x-cloak class="mt-3 text-gray-600 leading-relaxed">
-                                        {{ $a }}
+                            <div class="divide-y divide-gray-200">
+                                @foreach ($section['items'] as $i => [$q, $a])
+                                    @php $key = $slug . '-' . $i; @endphp
+                                    <div
+                                        class="py-4"
+                                        data-faq="{{ Str::lower($q . ' ' . $a) }}"
+                                        x-show="!query || $el.dataset.faq.includes(query.toLowerCase())">
+                                        <button type="button"
+                                                class="w-full flex items-start justify-between text-left gap-6"
+                                                @click="open === '{{ $key }}' ? open = null : open = '{{ $key }}'">
+                                            <span class="font-medium text-gray-900">{{ $q }}</span>
+                                            <span class="text-gray-400 shrink-0" x-text="(open === '{{ $key }}' || query) ? '−' : '+'">+</span>
+                                        </button>
+                                        <div x-show="open === '{{ $key }}' || query" x-cloak class="mt-3 text-gray-600 leading-relaxed">
+                                            {{ $a }}
+                                        </div>
                                     </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </section>
-                @endforeach
-            </div>
+                                @endforeach
+                            </div>
+                        </section>
+                    @endforeach
 
-            <footer class="mt-20 pt-10 border-t border-gray-200 text-sm text-gray-500">
-                <p>
-                    Still stuck? Write to
-                    <a href="mailto:info@art-db.org?subject=Art-DB%20support%20request" class="underline text-gray-900">info@art-db.org</a>.
-                </p>
-            </footer>
+                    {{-- No-results fallback: shows when a search matches nothing. --}}
+                    <div
+                        x-show="query && !Array.from($root.querySelectorAll('[data-faq]')).some(e => e.dataset.faq.includes(query.toLowerCase()))"
+                        x-cloak
+                        class="py-12 text-center text-gray-500">
+                        <p class="mb-2">No answers match <span class="font-medium text-gray-900" x-text="`“${query}”`"></span>.</p>
+                        <p class="text-sm">
+                            Write to <a href="mailto:info@art-db.org?subject=Art-DB%20support%20request" class="underline text-gray-900">info@art-db.org</a>
+                            and we'll help you directly.
+                        </p>
+                    </div>
+                </div>
+
+                <footer class="mt-20 pt-10 border-t border-gray-200 text-sm text-gray-500">
+                    <p>
+                        Still stuck? Write to
+                        <a href="mailto:info@art-db.org?subject=Art-DB%20support%20request" class="underline text-gray-900">info@art-db.org</a>.
+                    </p>
+                </footer>
+
+            </div>{{-- /x-data root --}}
         </div>
     </section>
 </x-layouts.public>
