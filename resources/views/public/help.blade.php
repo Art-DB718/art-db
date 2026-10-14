@@ -25,8 +25,8 @@
                     'exhibitions'     => ['Exhibitions', 'Catalogues, installation views, PDFs.'],
                     'billing'         => ['Billing & plans', 'Subscriptions, invoices, cancellation.'],
                 ] as $slug => [$title, $tagline])
-                    <a href="#{{ $slug }}" class="block border border-gray-200 p-5 hover:border-gray-900 transition">
-                        <h2 class="font-serif text-lg mb-1">{{ $title }}</h2>
+                    <a href="#{{ $slug }}" class="block p-5 -m-5 hover:bg-gray-50 transition group">
+                        <h2 class="font-serif text-lg mb-1 group-hover:underline">{{ $title }}</h2>
                         <p class="text-sm text-gray-500">{{ $tagline }}</p>
                     </a>
                 @endforeach
