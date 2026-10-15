@@ -56,6 +56,19 @@ jobs:
           cd /home/forge/art-db.org
           git pull origin main
           composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+          # Build frontend assets (Vite). public/build/ is gitignored, so
+          # without this step the SW registration and any other JS/CSS
+          # change never reaches prod — the stale hashed bundle keeps
+          # being served. Source nvm when present (standard Forge
+          # layout); otherwise rely on system node on PATH.
+          if [ -s "$HOME/.nvm/nvm.sh" ]; then
+            export NVM_DIR="$HOME/.nvm"
+            . "$NVM_DIR/nvm.sh"
+          fi
+          npm ci --no-audit --no-fund --prefer-offline
+          npm run build
+
           php artisan migrate --force
           php artisan optimize:clear
           php artisan optimize
