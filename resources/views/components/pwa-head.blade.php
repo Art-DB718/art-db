@@ -11,3 +11,9 @@
 <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('pwa/apple-touch-icon.png') }}">
 <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('pwa/icon-192.png') }}">
 <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('pwa/icon-512.png') }}">
+{{-- VAPID public key for Web Push subscriptions. Safe to expose in HTML:
+     only the server's PRIVATE key signs push messages; this half just lets
+     the browser's pushManager encrypt subscriptions back to our endpoint. --}}
+@if ($vapid = config('webpush.vapid.public_key'))
+    <meta name="vapid-public-key" content="{{ $vapid }}">
+@endif

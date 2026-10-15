@@ -3,7 +3,10 @@
 namespace App\Filament\Pages\Auth;
 
 use Filament\Actions\Action;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\View;
+use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\EditProfile as BaseEditProfile;
 use Illuminate\Support\Facades\Auth;
@@ -11,10 +14,32 @@ use Illuminate\Support\Facades\Hash;
 
 /**
  * Extended profile page: adds a 'Delete my account' danger-zone action
- * next to the default Save / Cancel actions in the header.
+ * next to the default Save / Cancel actions in the header, plus a Push
+ * notifications toggle rendered via a Blade view below the password block.
  */
 class EditProfile extends BaseEditProfile
 {
+    public function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                $this->getNameFormComponent(),
+                $this->getEmailFormComponent(),
+                $this->getPasswordFormComponent(),
+                $this->getPasswordConfirmationFormComponent(),
+                Section::make('Notifikácie')
+                    ->description('Push upozornenia na nové správy a predaje priamo do telefónu.')
+                    ->collapsible()
+                    ->schema([
+                        View::make('filament.forms.push-notifications')
+                            ->viewData([
+                                'subscriptionCount' => Auth::user()?->pushSubscriptions()->count() ?? 0,
+                            ]),
+                    ]),
+            ])
+            ->statePath('data');
+    }
+
     /**
      * Appends our destructive action to the built-in Save / Cancel row.
      * Filament's base page renders these under the form; our button sits

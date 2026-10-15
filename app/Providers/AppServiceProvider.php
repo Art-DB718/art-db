@@ -4,9 +4,11 @@ namespace App\Providers;
 
 use App\Models\Artist;
 use App\Models\Artwork;
+use App\Models\Inquiry;
 use App\Models\User;
 use App\Observers\ArtistObserver;
 use App\Observers\ArtworkObserver;
+use App\Observers\InquiryObserver;
 use App\Support\SearchNormalizer;
 use Filament\Tables\Columns\Column;
 use Illuminate\Support\Facades\Gate;
@@ -30,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
         // owning user has hit their plan's artwork / artist cap.
         Artwork::observe(ArtworkObserver::class);
         Artist::observe(ArtistObserver::class);
+
+        // Web Push notification to the inquiry recipient on first save.
+        Inquiry::observe(InquiryObserver::class);
 
         // Diacritics-insensitive Filament table search:
         // ->searchableAccentless()             — search on this column's name

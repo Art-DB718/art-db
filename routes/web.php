@@ -18,6 +18,7 @@ use App\Http\Controllers\SecureImageController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\PrivateRoomController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
@@ -56,6 +57,15 @@ Route::view('/help', 'public.help')->name('help');
 // serves it when a navigation request fails. Kept outside any auth group so
 // an unauthenticated viewer with no signal still gets a branded page.
 Route::view('/offline', 'offline')->name('offline');
+
+// Web Push subscription CRUD. On web guard (not /api) so CSRF + session
+// auth from Filament's existing login cover it with no extra plumbing.
+Route::middleware('auth')->group(function () {
+    Route::post('/push/subscriptions', [PushSubscriptionController::class, 'store'])
+        ->name('push.subscriptions.store');
+    Route::delete('/push/subscriptions', [PushSubscriptionController::class, 'destroy'])
+        ->name('push.subscriptions.destroy');
+});
 
 // One-click subscribe/unsubscribe from email footers. Signed URL — signature
 // is generated per-contact when the email is composed; tampered links 403.

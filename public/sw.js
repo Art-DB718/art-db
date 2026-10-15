@@ -127,3 +127,60 @@ self.addEventListener('message', (event) => {
         self.skipWaiting();
     }
 });
+
+/*
+ * Web Push: incoming notification from the server. Payload shape is the
+ * JSON produced by App\Notifications\* classes' toWebPush() method:
+ *   { title, body, icon?, badge?, tag?, url?, actions? }
+ * Everything except title is optional; icon defaults to the 192 PWA icon
+ * and url defaults to the home screen entry point.
+ */
+self.addEventListener('push', (event) => {
+    if (!event.data) return;
+
+    let payload;
+    try {
+        payload = event.data.json();
+    } catch (_e) {
+        payload = { title: 'Art-DB', body: event.data.text() };
+    }
+
+    const title = payload.title || 'Art-DB';
+    const options = {
+        body: payload.body || '',
+        icon: payload.icon || '/pwa/icon-192.png',
+        badge: payload.badge || '/pwa/icon-192.png',
+        tag: payload.tag || undefined,
+        data: { url: payload.url || '/admin' },
+        actions: payload.actions || [],
+        renotify: !!payload.tag,
+    };
+
+    event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    const targetUrl = (event.notification.data && event.notification.data.url) || '/admin';
+
+    event.waitUntil(
+        (async () => {
+            const allClients = await self.clients.matchAll({
+                type: 'window',
+                includeUncontrolled: true,
+            });
+            // Reuse an already-open Art-DB window when there is one, so a
+            // click never spawns a second tab next to the installed PWA.
+            for (const client of allClients) {
+                if (client.url.includes(self.location.origin)) {
+                    await client.focus();
+                    if ('navigate' in client) {
+                        try { await client.navigate(targetUrl); } catch (_e) {}
+                    }
+                    return;
+                }
+            }
+            await self.clients.openWindow(targetUrl);
+        })()
+    );
+});

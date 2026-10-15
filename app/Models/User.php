@@ -12,11 +12,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
+use NotificationChannels\WebPush\HasPushSubscriptions;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use Billable, HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use Billable, HasApiTokens, HasFactory, HasPushSubscriptions, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
