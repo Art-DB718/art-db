@@ -10,6 +10,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="robots" content="noindex, nofollow">
     <title>{{ $title ?? 'Private Room' }} — {{ config('app.name', 'ArtDB') }}</title>
+    <x-pwa-head />
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-white text-gray-900 antialiased font-sans">

@@ -52,6 +52,8 @@
         @endforeach
     @endif
 
+    <x-pwa-head />
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     {{-- Alpine.js (CDN) — powers the mobile menu toggle, the Artworks

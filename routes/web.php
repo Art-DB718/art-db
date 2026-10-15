@@ -52,6 +52,11 @@ Route::view('/terms', 'public.terms')->name('terms');
 Route::view('/cookies', 'public.cookies')->name('cookies');
 Route::view('/help', 'public.help')->name('help');
 
+// PWA offline fallback — the service worker caches this on first visit and
+// serves it when a navigation request fails. Kept outside any auth group so
+// an unauthenticated viewer with no signal still gets a branded page.
+Route::view('/offline', 'offline')->name('offline');
+
 // One-click subscribe/unsubscribe from email footers. Signed URL — signature
 // is generated per-contact when the email is composed; tampered links 403.
 Route::get('/newsletter/{action}/{contact}', NewsletterSubscriptionController::class)

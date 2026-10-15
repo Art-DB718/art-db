@@ -50,6 +50,13 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::GLOBAL_SEARCH_AFTER,
                 fn (): string => Blade::render('<x-filament.topbar.support-button />'),
             )
+            // PWA manifest + apple-touch-icon in the Filament <head>, so an
+            // admin installing the app from /admin gets the same install UX
+            // as the public layouts.
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => Blade::render('<x-pwa-head />'),
+            )
             ->navigationGroups([
                 'Catalogue',
                 'Exhibitions & Movements',
