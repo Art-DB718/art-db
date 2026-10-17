@@ -22,7 +22,9 @@ class BillingCheckoutController extends Controller
         $priceId = $plans[$plan]['stripe_price_'.$cycle] ?? null;
         abort_if(blank($priceId), 422, 'Stripe Price ID for this plan is not configured.');
 
-        $checkout = $user->newSubscription('default', $priceId)->checkout([
+        // allowPromotionCodes() shows the "Add promotion code" field on Stripe
+        // Checkout — codes (e.g. BUDAPEST26) are managed in the Stripe dashboard.
+        $checkout = $user->newSubscription('default', $priceId)->allowPromotionCodes()->checkout([
             'success_url' => route('billing.success').'?session_id={CHECKOUT_SESSION_ID}&plan='.$plan,
             'cancel_url'  => route('billing.cancel'),
         ]);
