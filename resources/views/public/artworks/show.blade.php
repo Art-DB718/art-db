@@ -41,16 +41,18 @@
                  the exhibition page: click any thumbnail or the primary
                  image to open a dim-backdrop viewer with ← → arrows. --}}
             @php
-                $allImageUrls = collect()
-                    ->when($artwork->primary_image, fn ($c) => $c->push(signed_image_url($artwork->primary_image)))
-                    ->merge(collect($artwork->gallery_images ?? [])->map(fn ($p) => signed_image_url($p)))
+                // Lightbox gets 'medium' (1200w) copies — enough resolution
+                // for a laptop screen, a fraction of the original's weight.
+                $lightboxUrls = collect()
+                    ->when($artwork->primary_image, fn ($c) => $c->push(signed_image_url($artwork->primary_image, 'medium')))
+                    ->merge(collect($artwork->gallery_images ?? [])->map(fn ($p) => signed_image_url($p, 'medium')))
                     ->filter()
                     ->values();
             @endphp
             <div x-data="{
                      open: false,
                      index: 0,
-                     images: @js($allImageUrls),
+                     images: @js($lightboxUrls),
                      show(i) { this.index = i; this.open = true; },
                      next() { this.index = (this.index + 1) % this.images.length; },
                      prev() { this.index = (this.index - 1 + this.images.length) % this.images.length; },
@@ -62,7 +64,7 @@
                 @if ($artwork->primary_image)
                     <button type="button" x-on:click="show(0)"
                             class="block w-full bg-gray-100 overflow-hidden group focus:outline-none focus:ring-2 focus:ring-gray-900">
-                        <img src="{{ signed_image_url($artwork->primary_image) }}"
+                        <img loading="lazy" src="{{ signed_image_url($artwork->primary_image, 'medium') }}"
                              alt="{{ $artwork->title }}"
                              class="w-full h-auto object-contain group-hover:opacity-90 transition">
                     </button>
@@ -78,8 +80,9 @@
                         @foreach ($artwork->gallery_images as $i => $image)
                             <button type="button" x-on:click="show({{ $galleryOffset + $i }})"
                                     class="block w-full bg-gray-100 overflow-hidden group focus:outline-none focus:ring-2 focus:ring-gray-900">
-                                <img src="{{ signed_image_url($image) }}"
+                                <img loading="lazy" src="{{ signed_image_url($image, 'thumb') }}"
                                      alt="{{ $artwork->title }}"
+                                     loading="lazy"
                                      class="w-full aspect-square object-cover group-hover:opacity-90 transition">
                             </button>
                         @endforeach
@@ -364,7 +367,7 @@
                         <a href="{{ route('artworks.show', $other) }}" class="block group">
                             @if ($other->primary_image)
                                 <div class="overflow-hidden bg-gray-50">
-                                    <img src="{{ signed_image_url($other->primary_image) }}"
+                                    <img loading="lazy" src="{{ signed_image_url($other->primary_image) }}"
                                          alt="{{ $other->title }}"
                                          class="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-300">
                                 </div>
