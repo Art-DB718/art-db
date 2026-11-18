@@ -94,9 +94,15 @@ class ExhibitionResource extends Resource
                         ->image()
                         ->multiple()
                         ->reorderable()
+                        // Keeps UI order == DB order == public-site order.
+                        // Without this, Filament/FilePond prepends new files
+                        // at the top of the UI and *reverses* the drag order
+                        // before persisting, so what Kat sees top-to-bottom
+                        // in the admin lands bottom-to-top on the web.
+                        ->appendFiles()
                         ->disk('public')
                         ->directory('exhibitions/gallery')
-                        ->helperText('Installation views appear in a 3-column grid, each cropped to a 4:3 thumbnail; clicking opens the full image in a new tab. Upload landscape format ≥ 1600 × 1200 px for the cleanest crop; portraits and squares get centre-cropped.'),
+                        ->helperText('Installation views appear in a 3-column grid, each cropped to a 4:3 thumbnail; clicking opens the full image in a new tab. Upload landscape format ≥ 1600 × 1200 px for the cleanest crop; portraits and squares get centre-cropped. Drag the tiles to set the order you want on the public page.'),
                 ]),
 
                 Forms\Components\Tabs\Tab::make('Publishing')->schema([

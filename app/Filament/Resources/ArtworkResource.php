@@ -236,7 +236,17 @@ class ArtworkResource extends Resource
                         ])
                         ->createOptionModalHeading('Add a new location'),
                     Forms\Components\FileUpload::make('primary_image')->image()->disk('public')->directory('artworks'),
-                    Forms\Components\FileUpload::make('gallery_images')->image()->multiple()->reorderable()->disk('public')->directory('artworks/gallery'),
+                    Forms\Components\FileUpload::make('gallery_images')
+                        ->image()
+                        ->multiple()
+                        ->reorderable()
+                        // Keep admin drag order == DB order == public gallery order.
+                        // Without appendFiles(), Filament/FilePond prepends new
+                        // uploads at the top and reverses drag order before save,
+                        // so the admin view is upside-down from the public page.
+                        ->appendFiles()
+                        ->disk('public')
+                        ->directory('artworks/gallery'),
                 ]),
 
                 Forms\Components\Tabs\Tab::make('Maintenance')
@@ -306,6 +316,7 @@ class ArtworkResource extends Resource
                                     ->helperText('Reports, invoices, certificates — PDF / DOC / images.')
                                     ->multiple()
                                     ->reorderable()
+                                    ->appendFiles()
                                     ->downloadable()
                                     ->openable()
                                     ->disk('public')
@@ -325,6 +336,7 @@ class ArtworkResource extends Resource
                                     ->image()
                                     ->multiple()
                                     ->reorderable()
+                                    ->appendFiles()
                                     ->openable()
                                     ->disk('public')
                                     ->directory('artworks/restoration/photos')
