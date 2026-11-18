@@ -350,7 +350,31 @@ class ArtworkResource extends Resource
             // opens Edit on demand.
             ->recordUrl(null)
             ->columns([
-                Tables\Columns\ImageColumn::make('primary_image')->disk('public')->square()->size(50),
+                Tables\Columns\ImageColumn::make('primary_image')
+                    ->disk('public')
+                    ->square()
+                    ->size(50)
+                    // Click the thumbnail -> opens the full-size image
+                    // in a modal lightbox. Serves the original (admin
+                    // bypasses the signed-URL route — it's behind auth).
+                    ->action(
+                        Tables\Actions\Action::make('viewImage')
+                            ->modalHeading(fn (Artwork $record) => $record->title)
+                            ->modalSubmitAction(false)
+                            ->modalCancelActionLabel('Close')
+                            ->modalWidth('5xl')
+                            ->modalContent(fn (Artwork $record) => \Illuminate\Support\Facades\Blade::render(
+                                '<div class="flex justify-center bg-black/95 -mx-6 -my-4 py-6">
+                                    <img src="{{ $url }}" alt="{{ $alt }}"
+                                         style="max-width: 100%; max-height: 80vh; width: auto; height: auto; object-fit: contain;">
+                                </div>',
+                                [
+                                    'url' => \Illuminate\Support\Facades\Storage::disk('public')->url($record->primary_image),
+                                    'alt' => $record->title,
+                                ],
+                            ))
+                            ->visible(fn (Artwork $record) => (bool) $record->primary_image),
+                    ),
                 Tables\Columns\TextColumn::make('inventory_id')->searchableAccentless()->sortable()->copyable()->fontFamily('mono')->size('xs'),
                 Tables\Columns\TextColumn::make('artist.last_name')
                     ->label('Artist')
