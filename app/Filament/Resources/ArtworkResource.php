@@ -357,7 +357,15 @@ class ArtworkResource extends Resource
                     ->formatStateUsing(fn ($record): string => $record->artist?->display_name ?? '—')
                     ->searchableAccentless(['artist.first_name', 'artist.last_name'])
                     ->sortable(),
-                Tables\Columns\TextColumn::make('title')->searchableAccentless()->sortable()->limit(40),
+                Tables\Columns\TextColumn::make('title')
+                    ->searchableAccentless()
+                    ->sortable()
+                    ->limit(40)
+                    // Title doubles as the "open Edit" link — the rest
+                    // of the row stays inert so searching / scanning
+                    // doesn't accidentally navigate.
+                    ->url(fn (Artwork $record) => Pages\EditArtwork::getUrl(['record' => $record]))
+                    ->color('primary'),
                 Tables\Columns\TextColumn::make('year_created')->sortable(),
                 Tables\Columns\TextColumn::make('medium.name')->badge()->color('gray'),
                 Tables\Columns\TextColumn::make('status.name')
