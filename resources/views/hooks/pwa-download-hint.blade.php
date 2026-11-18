@@ -10,6 +10,16 @@
      Safari are untouched — they still get the inline PDF viewer. --}}
 <script>
     (function () {
+        // Fire only on an iOS/iPadOS home-screen PWA. macOS Safari's
+        // "Add to Dock" also sets navigator.standalone === true, so the
+        // extra isIOS check keeps Mac desktop + Dock web-apps on the
+        // inline-stream path.
+        var ua = navigator.userAgent || '';
+        var isIOS = /iPhone|iPad|iPod/.test(ua)
+            // iPadOS 13+ pretends to be a Mac; detect it via touch support.
+            || (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1);
+
+        if (!isIOS) return;
         if (!('standalone' in window.navigator)) return;
         if (window.navigator.standalone !== true) return;
 
