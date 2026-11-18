@@ -20,9 +20,13 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper($this->cardPaperSize());
 
-        // Open inline (browser PDF viewer) instead of forcing download —
-        // 'Print artwork card' opens a preview the user can print or save.
-        return $pdf->stream($this->fileName('card', $artwork));
+        // Force download (Content-Disposition: attachment). On iOS — and
+        // especially inside the installed PWA — a streamed PDF opens in a
+        // stripped webview with no Print/Share button; a downloaded one
+        // triggers the native share sheet (Save to Files, Print, Mail).
+        // Desktop browsers still open it in their default PDF viewer from
+        // the download bar.
+        return $pdf->download($this->fileName('card', $artwork));
     }
 
     public function artworkCertificate(Artwork $artwork): Response
@@ -34,7 +38,7 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper('a4');
 
-        return $pdf->stream($this->fileName('certificate', $artwork));
+        return $pdf->download($this->fileName('certificate', $artwork));
     }
 
     public function artworkLabel(Artwork $artwork): Response
@@ -49,7 +53,7 @@ class PrintController extends Controller
             'settings' => $settings,
         ])->setPaper($paper, 'landscape');
 
-        return $pdf->stream($this->fileName('label', $artwork));
+        return $pdf->download($this->fileName('label', $artwork));
     }
 
     public function artworkMaintenance(Artwork $artwork): Response
@@ -61,7 +65,7 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper('a4');
 
-        return $pdf->stream($this->fileName('maintenance', $artwork));
+        return $pdf->download($this->fileName('maintenance', $artwork));
     }
 
     public function saleInvoice(Sale $sale): Response
