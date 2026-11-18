@@ -58,6 +58,14 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::HEAD_END,
                 fn (): string => view('filament.pwa-head')->render(),
             )
+            // iOS PWA detection — when the admin is opened from the
+            // home-screen, click handlers rewrite print links to
+            // ?download=1 so the native share sheet shows up instead
+            // of a stripped PDF webview. Browsers on desktop stay inline.
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => view('hooks.pwa-download-hint')->render(),
+            )
             ->navigationGroups([
                 'Catalogue',
                 'Exhibitions & Movements',

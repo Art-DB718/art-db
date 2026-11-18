@@ -6,12 +6,35 @@ use App\Models\Artwork;
 use App\Models\InvoiceSetting;
 use App\Models\Sale;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class PrintController extends Controller
 {
-    public function artworkCard(Artwork $artwork): Response
+    /**
+     * Pick inline-stream vs attachment-download for a PDF response.
+     *
+     * Default = stream (Content-Disposition: inline). Browser's PDF
+     * viewer opens the file in a new tab with its Print / Save
+     * controls — the "normal" desktop web experience.
+     *
+     * When the request carries ?download=1 the file is forced as an
+     * attachment, which on an iOS home-screen PWA triggers the native
+     * share sheet (Save to Files / Print / Mail). The admin layout
+     * appends that query param only when window.navigator.standalone
+     * is true, so desktop admin + public web stay inline while the
+     * iOS PWA gets the share sheet. See resources/views/hooks/
+     * pwa-download-hint.blade.php.
+     */
+    protected function deliver(Request $request, $pdf, string $filename): Response
+    {
+        return $request->boolean('download')
+            ? $pdf->download($filename)
+            : $pdf->stream($filename);
+    }
+
+    public function artworkCard(Artwork $artwork, Request $request): Response
     {
         $artwork->load(['artist', 'medium', 'genre']);
 
@@ -20,14 +43,10 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper($this->cardPaperSize());
 
-        // Stream inline (Content-Disposition: inline) — browser's PDF
-        // viewer opens the file in a new tab with its own Print / Save
-        // controls, matching the original workflow. On iOS the viewer
-        // is a bit stripped but users can still share from there.
-        return $pdf->stream($this->fileName('card', $artwork));
+        return $this->deliver($request, $pdf, $this->fileName('card', $artwork));
     }
 
-    public function artworkCertificate(Artwork $artwork): Response
+    public function artworkCertificate(Artwork $artwork, Request $request): Response
     {
         $artwork->load(['artist', 'medium']);
 
@@ -36,10 +55,10 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper('a4');
 
-        return $pdf->stream($this->fileName('certificate', $artwork));
+        return $this->deliver($request, $pdf, $this->fileName('certificate', $artwork));
     }
 
-    public function artworkLabel(Artwork $artwork): Response
+    public function artworkLabel(Artwork $artwork, Request $request): Response
     {
         $artwork->load(['artist', 'medium']);
 
@@ -51,10 +70,10 @@ class PrintController extends Controller
             'settings' => $settings,
         ])->setPaper($paper, 'landscape');
 
-        return $pdf->stream($this->fileName('label', $artwork));
+        return $this->deliver($request, $pdf, $this->fileName('label', $artwork));
     }
 
-    public function artworkMaintenance(Artwork $artwork): Response
+    public function artworkMaintenance(Artwork $artwork, Request $request): Response
     {
         $artwork->load(['artist', 'medium', 'maintenances']);
 
@@ -63,10 +82,10 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper('a4');
 
-        return $pdf->stream($this->fileName('maintenance', $artwork));
+        return $this->deliver($request, $pdf, $this->fileName('maintenance', $artwork));
     }
 
-    public function saleInvoice(Sale $sale): Response
+    public function saleInvoice(Sale $sale, Request $request): Response
     {
         $sale->load(['buyer', 'lineItems.artwork.artist']);
 
@@ -76,7 +95,7 @@ class PrintController extends Controller
         ])->setPaper('a4');
 
         $name = 'invoice-'.($sale->invoice_number ?? $sale->id).'-'.optional($sale->sale_date)->format('Ymd').'.pdf';
-        return $pdf->stream($name);
+        return $this->deliver($request, $pdf, $name);
     }
 
     protected function cardPaperSize(): string
