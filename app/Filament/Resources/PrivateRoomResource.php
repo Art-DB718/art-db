@@ -640,6 +640,7 @@ class PrivateRoomResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(null)
             ->columns([
                 Tables\Columns\ImageColumn::make('cover_image')->disk('public')->square()->size(50),
                 Tables\Columns\TextColumn::make('title')->searchableAccentless()->sortable()->limit(40),

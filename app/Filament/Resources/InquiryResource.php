@@ -97,6 +97,7 @@ class InquiryResource extends Resource
         $user = auth()->user();
 
         return $table
+            ->recordUrl(null)
             ->columns([
                 Tables\Columns\TextColumn::make('direction')
                     ->label('')

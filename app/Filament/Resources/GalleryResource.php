@@ -131,6 +131,7 @@ class GalleryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(null)
             ->columns([
                 Tables\Columns\ImageColumn::make('logo')->disk('public')->circular()->size(40),
                 Tables\Columns\TextColumn::make('name')->searchableAccentless()->sortable(),

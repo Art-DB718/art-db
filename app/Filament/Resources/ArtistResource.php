@@ -228,6 +228,7 @@ class ArtistResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(null)
             ->columns([
                 Tables\Columns\ImageColumn::make('profile_image')->disk('public')->circular()->size(40),
                 Tables\Columns\TextColumn::make('display_name')->label('Name')->searchableAccentless(['first_name', 'last_name'])->sortable(),

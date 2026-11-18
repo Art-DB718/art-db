@@ -344,6 +344,11 @@ class ArtworkResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Clicking a row no longer jumps straight into Edit — users
+            // want to scan / search the list without accidentally opening
+            // records. The pencil icon in the row's action menu still
+            // opens Edit on demand.
+            ->recordUrl(null)
             ->columns([
                 Tables\Columns\ImageColumn::make('primary_image')->disk('public')->square()->size(50),
                 Tables\Columns\TextColumn::make('inventory_id')->searchableAccentless()->sortable()->copyable()->fontFamily('mono')->size('xs'),

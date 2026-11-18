@@ -44,6 +44,7 @@ class GenreResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(null)
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('artworks_count')->counts('artworks')->label('Artworks'),

@@ -215,6 +215,7 @@ class SaleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(null)
             ->columns([
                 Tables\Columns\TextColumn::make('invoice_number')->searchableAccentless()->sortable()
                     ->fontFamily('mono')->size('xs'),
