@@ -59,9 +59,12 @@
            left edge lines up with the photo's own left edge. Column is
            80% of the page's content width; photo scales inside it and
            meta lines up at column-left. */
-        .stage      { width: 80%; margin: 0 auto; }
+        /* Image scaled down ~15% (80% → 68% width, 560pt → 476pt height)
+           so the meta block below has breathing room and doesn't get
+           pushed off the page on taller photos. */
+        .stage      { width: 68%; margin: 0 auto; }
         .photo-wrap { width: 100%; text-align: left; margin-bottom: 22pt; }
-        .photo      { max-width: 100%; max-height: 560pt; }
+        .photo      { max-width: 100%; max-height: 476pt; }
 
         /* Metadata block — sits inside .stage so its left edge lines up
            with the photo's left edge. */
