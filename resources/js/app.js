@@ -61,9 +61,28 @@ window.ArtDbShare = async function(url, filename) {
 // actions attach that attribute so the URL becomes a Web Share instead of
 // a naive navigation. Capture phase so Filament's own click handling does
 // not win the race.
+//
+// IMPORTANT: this intercept is only useful inside an iOS home-screen PWA
+// (where a plain <a href=".pdf"> opens a chrome-less viewer). Everywhere
+// else — desktop Safari, Chrome, Firefox, Android, macOS "Add to Dock"
+// web-apps — the normal <a target="_blank"> gives a better experience
+// (inline PDF viewer in a new tab). Without this guard, navigator.share()
+// on macOS pops the system share sheet which is *not* what people expect
+// when they hit "Print artwork card" from a desktop admin.
+function isIOSHomeScreenPWA() {
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPhone|iPad|iPod/.test(ua)
+        // iPadOS 13+ reports as a Mac; detect via touch support.
+        || (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1);
+    return isIOS
+        && 'standalone' in window.navigator
+        && window.navigator.standalone === true;
+}
+
 document.addEventListener('click', (event) => {
     const el = event.target.closest('[data-pdf-share]');
     if (!el) return;
+    if (!isIOSHomeScreenPWA()) return; // let the browser handle it normally
     event.preventDefault();
     event.stopPropagation();
     const url = el.getAttribute('data-pdf-share');
