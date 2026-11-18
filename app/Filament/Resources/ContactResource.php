@@ -96,7 +96,11 @@ class ContactResource extends Resource
         return $table
             ->recordUrl(null)
             ->columns([
-                Tables\Columns\TextColumn::make('last_name')->searchableAccentless()->sortable(),
+                Tables\Columns\TextColumn::make('last_name')
+                    ->searchableAccentless()
+                    ->sortable()
+                    ->url(fn ($record) => Pages\EditContact::getUrl(['record' => $record]))
+                    ->color('primary'),
                 Tables\Columns\TextColumn::make('first_name')->searchableAccentless()->sortable(),
                 Tables\Columns\TextColumn::make('organization')->searchableAccentless()->toggleable(),
                 Tables\Columns\TextColumn::make('email')->searchableAccentless()->copyable()->icon('heroicon-m-envelope'),

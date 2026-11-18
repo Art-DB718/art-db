@@ -363,16 +363,17 @@ class ArtworkResource extends Resource
                             ->modalSubmitAction(false)
                             ->modalCancelActionLabel('Close')
                             ->modalWidth('5xl')
-                            ->modalContent(fn (Artwork $record) => \Illuminate\Support\Facades\Blade::render(
-                                '<div class="flex justify-center bg-black/95 -mx-6 -my-4 py-6">
-                                    <img src="{{ $url }}" alt="{{ $alt }}"
-                                         style="max-width: 100%; max-height: 80vh; width: auto; height: auto; object-fit: contain;">
-                                </div>',
-                                [
-                                    'url' => \Illuminate\Support\Facades\Storage::disk('public')->url($record->primary_image),
-                                    'alt' => $record->title,
-                                ],
-                            ))
+                            ->modalContent(function (Artwork $record) {
+                                $url = \Illuminate\Support\Facades\Storage::disk('public')->url($record->primary_image);
+                                $alt = e($record->title);
+                                $src = e($url);
+                                return new \Illuminate\Support\HtmlString(
+                                    '<div class="flex justify-center bg-black/95 -mx-6 -my-4 py-6">
+                                        <img src="'.$src.'" alt="'.$alt.'"
+                                             style="max-width: 100%; max-height: 80vh; width: auto; height: auto; object-fit: contain;">
+                                    </div>'
+                                );
+                            })
                             ->visible(fn (Artwork $record) => (bool) $record->primary_image),
                     ),
                 Tables\Columns\TextColumn::make('inventory_id')->searchableAccentless()->sortable()->copyable()->fontFamily('mono')->size('xs'),
