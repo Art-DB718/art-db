@@ -20,13 +20,11 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper($this->cardPaperSize());
 
-        // Force download (Content-Disposition: attachment). On iOS — and
-        // especially inside the installed PWA — a streamed PDF opens in a
-        // stripped webview with no Print/Share button; a downloaded one
-        // triggers the native share sheet (Save to Files, Print, Mail).
-        // Desktop browsers still open it in their default PDF viewer from
-        // the download bar.
-        return $pdf->download($this->fileName('card', $artwork));
+        // Stream inline (Content-Disposition: inline) — browser's PDF
+        // viewer opens the file in a new tab with its own Print / Save
+        // controls, matching the original workflow. On iOS the viewer
+        // is a bit stripped but users can still share from there.
+        return $pdf->stream($this->fileName('card', $artwork));
     }
 
     public function artworkCertificate(Artwork $artwork): Response
@@ -38,7 +36,7 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper('a4');
 
-        return $pdf->download($this->fileName('certificate', $artwork));
+        return $pdf->stream($this->fileName('certificate', $artwork));
     }
 
     public function artworkLabel(Artwork $artwork): Response
@@ -53,7 +51,7 @@ class PrintController extends Controller
             'settings' => $settings,
         ])->setPaper($paper, 'landscape');
 
-        return $pdf->download($this->fileName('label', $artwork));
+        return $pdf->stream($this->fileName('label', $artwork));
     }
 
     public function artworkMaintenance(Artwork $artwork): Response
@@ -65,7 +63,7 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper('a4');
 
-        return $pdf->download($this->fileName('maintenance', $artwork));
+        return $pdf->stream($this->fileName('maintenance', $artwork));
     }
 
     public function saleInvoice(Sale $sale): Response
@@ -78,7 +76,7 @@ class PrintController extends Controller
         ])->setPaper('a4');
 
         $name = 'invoice-'.($sale->invoice_number ?? $sale->id).'-'.optional($sale->sale_date)->format('Ymd').'.pdf';
-        return $pdf->download($name);
+        return $pdf->stream($name);
     }
 
     protected function cardPaperSize(): string
