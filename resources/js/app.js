@@ -18,6 +18,60 @@ if ('serviceWorker' in navigator) {
 }
 
 /*
+ * window.ArtDbShare(url, filename) — fetches the URL as a Blob and hands it
+ * to the native share sheet via the Web Share API. On iOS inside the
+ * installed PWA, a plain <a> to a PDF opens a chrome-less viewer with no
+ * Print or Save button; routing the file through navigator.share surfaces
+ * the real iOS share sheet (Save to Files, Print, AirDrop, Mail, …).
+ * Falls back to a programmatic download (desktop browsers, Firefox Android)
+ * and finally to location navigation if both paths are unavailable.
+ */
+window.ArtDbShare = async function(url, filename) {
+    filename = filename || 'document.pdf';
+    try {
+        const resp = await fetch(url, { credentials: 'same-origin' });
+        if (!resp.ok) throw new Error('fetch ' + resp.status);
+        const blob = await resp.blob();
+        const file = new File([blob], filename, { type: blob.type || 'application/pdf' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({ files: [file], title: filename });
+                return;
+            } catch (e) {
+                if (e && e.name === 'AbortError') return;
+            }
+        }
+
+        const dlUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = dlUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(dlUrl), 1000);
+    } catch (e) {
+        console.warn('ArtDbShare failed, opening URL directly:', e);
+        window.location.href = url;
+    }
+};
+
+// Delegated handler for anything with data-pdf-share — Filament's print
+// actions attach that attribute so the URL becomes a Web Share instead of
+// a naive navigation. Capture phase so Filament's own click handling does
+// not win the race.
+document.addEventListener('click', (event) => {
+    const el = event.target.closest('[data-pdf-share]');
+    if (!el) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const url = el.getAttribute('data-pdf-share');
+    const filename = el.getAttribute('data-pdf-filename') || 'document.pdf';
+    window.ArtDbShare(url, filename);
+}, true);
+
+/*
  * Window-global that the Filament push-notifications form field calls when
  * the user toggles the switch. Kept outside Alpine so it is callable from
  * both Blade and Livewire contexts.

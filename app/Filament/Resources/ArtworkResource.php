@@ -616,24 +616,28 @@ class ArtworkResource extends Resource
                     ->label('Print artwork card')
                     ->icon('heroicon-m-printer')
                     ->url(fn (Artwork $record): string => route('artworks.pdf.card', $record))
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->extraAttributes(fn (Artwork $record): array => self::pdfShareAttrs('card', 'artworks.pdf.card', $record)),
                 Tables\Actions\Action::make('printCertificate')
                     ->label('Print certificate')
                     ->icon('heroicon-m-shield-check')
                     ->visible(fn (): bool => ! auth()->user()?->isCollector())
                     ->url(fn (Artwork $record): string => route('artworks.pdf.certificate', $record))
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->extraAttributes(fn (Artwork $record): array => self::pdfShareAttrs('certificate', 'artworks.pdf.certificate', $record)),
                 Tables\Actions\Action::make('printLabel')
                     ->label('Print label')
                     ->icon('heroicon-m-tag')
                     ->url(fn (Artwork $record): string => route('artworks.pdf.label', $record))
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->extraAttributes(fn (Artwork $record): array => self::pdfShareAttrs('label', 'artworks.pdf.label', $record)),
                 Tables\Actions\Action::make('printMaintenance')
                     ->label('Print maintenance report')
                     ->icon('heroicon-m-wrench-screwdriver')
                     ->visible(fn (): bool => ! auth()->user()?->isArtist())
                     ->url(fn (Artwork $record): string => route('artworks.pdf.maintenance', $record))
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->extraAttributes(fn (Artwork $record): array => self::pdfShareAttrs('maintenance', 'artworks.pdf.maintenance', $record)),
                 // The 'Download (PDF)' variants were removed from this menu
                 // — the browser print view already surfaces a Save-as-PDF
                 // button and auto-fires window.print(), so keeping four
@@ -1031,6 +1035,25 @@ class ArtworkResource extends Resource
             'index'  => Pages\ListArtworks::route('/'),
             'create' => Pages\CreateArtwork::route('/create'),
             'edit'   => Pages\EditArtwork::route('/{record}/edit'),
+        ];
+    }
+
+    /**
+     * HTML attributes that hook a print-action button into window.ArtDbShare
+     * (resources/js/app.js). On iOS inside the installed PWA a plain PDF
+     * link opens a chrome-less viewer with no Print/Save button, so the
+     * delegated click handler intercepts, fetches the PDF as a Blob, and
+     * hands it to navigator.share so the native share sheet shows up.
+     *
+     * @return array<string, string>
+     */
+    public static function pdfShareAttrs(string $kind, string $routeName, Artwork $record): array
+    {
+        $slug = \Illuminate\Support\Str::slug(($record->artist?->last_name ?? 'artwork').'-'.$record->title);
+
+        return [
+            'data-pdf-share'    => route($routeName, $record),
+            'data-pdf-filename' => $kind.'-'.$slug.'.pdf',
         ];
     }
 }
