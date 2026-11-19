@@ -39,7 +39,7 @@ class UserResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make('Account')->schema([
-                Forms\Components\Grid::make(2)->schema([
+                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                     Forms\Components\TextInput::make('name')
                         ->required()->maxLength(255),
                     Forms\Components\TextInput::make('email')
@@ -62,7 +62,7 @@ class UserResource extends Resource
             ]),
 
             Forms\Components\Section::make('Institution (optional)')->schema([
-                Forms\Components\Grid::make(2)->schema([
+                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                     Forms\Components\TextInput::make('institution_name')->maxLength(255),
                     Forms\Components\TextInput::make('institution_website')->url()->maxLength(255),
                     Forms\Components\TextInput::make('institution_city')->maxLength(255),

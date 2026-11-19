@@ -31,7 +31,7 @@ class ArtworkResource extends Resource
                 ->tabs([
 
                 Forms\Components\Tabs\Tab::make('Basic')->schema([
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('title')->required()->maxLength(255)->columnSpan(2),
                         Forms\Components\Select::make('artist_id')
                             ->relationship('artist', 'last_name')
@@ -41,7 +41,7 @@ class ArtworkResource extends Resource
                             ->required()
                             ->visible(fn (): bool => ! auth()->user()?->isArtist())
                             ->createOptionForm([
-                                Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                                     Forms\Components\TextInput::make('first_name')->required(),
                                     Forms\Components\TextInput::make('last_name')->required(),
                                     Forms\Components\TextInput::make('birth_year')->numeric()
@@ -211,7 +211,7 @@ class ArtworkResource extends Resource
                                 ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
                                 ->openable()
                                 ->downloadable(),
-                        ])->columns(2),
+                        ])->columns(['default' => 1, 'md' => 2]),
                 ]),
 
                 Forms\Components\Tabs\Tab::make('Location & Images')->schema([
@@ -220,7 +220,7 @@ class ArtworkResource extends Resource
                         ->searchable()
                         ->preload()
                         ->createOptionForm([
-                            Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                                 Forms\Components\TextInput::make('name')
                                     ->required()->maxLength(255)->columnSpan(2),
                                 Forms\Components\Select::make('type')
@@ -293,7 +293,7 @@ class ArtworkResource extends Resource
                                             ->rows(3)
                                             ->columnSpanFull()
                                             ->placeholder('What was restored, scope of work, materials used, observations…'),
-                                    ])->columns(2),
+                                    ])->columns(['default' => 1, 'md' => 2]),
 
                                 Forms\Components\Fieldset::make('Restorer contact')
                                     ->schema([
@@ -309,7 +309,7 @@ class ArtworkResource extends Resource
                                             ->label('Phone')
                                             ->tel()
                                             ->maxLength(255),
-                                    ])->columns(2),
+                                    ])->columns(['default' => 1, 'md' => 2]),
 
                                 Forms\Components\FileUpload::make('documents')
                                     ->label('Documents')
@@ -387,7 +387,7 @@ class ArtworkResource extends Resource
                             self::crT($get, 'form.metadata.section')
                         )
                             ->schema([
-                                Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                                     Forms\Components\Select::make('condition_report.stage')
                                         ->label(fn (Forms\Get $get): string => self::crT($get, 'form.metadata.stage'))
                                         ->helperText(fn (Forms\Get $get): string => self::crT($get, 'form.metadata.stage_help'))
@@ -427,7 +427,7 @@ class ArtworkResource extends Resource
                                 self::crT($get, 'form.exhibition.section_desc')
                             )
                             ->schema([
-                                Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                                     Forms\Components\Select::make('condition_report.exhibition_id')
                                         ->label(fn (Forms\Get $get): string => self::crT($get, 'form.exhibition.pick'))
                                         ->options(fn ($record) => $record?->exhibitions()->pluck('title', 'exhibitions.id')->toArray() ?? [])
@@ -476,7 +476,7 @@ class ArtworkResource extends Resource
                             self::crT($get, 'form.install_transport.section')
                         )
                             ->schema([
-                                Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                                     Forms\Components\Toggle::make('condition_report.installation_per_agreement')
                                         ->label(fn (Forms\Get $get): string => self::crT($get, 'form.install_transport.install_toggle')),
                                     Forms\Components\Toggle::make('condition_report.transport_per_agreement')
@@ -506,7 +506,7 @@ class ArtworkResource extends Resource
                                         'body',
                                         self::crLang($get),
                                     ))
-                                    ->columns(2)
+                                    ->columns(['default' => 1, 'md' => 2])
                                     ->bulkToggleable(),
                                 Forms\Components\Textarea::make('condition_report.body_notes')
                                     ->label(fn (Forms\Get $get): string => self::crT($get, 'form.body_frame.body_notes'))
@@ -525,7 +525,7 @@ class ArtworkResource extends Resource
                                         'frame',
                                         self::crLang($get),
                                     ))
-                                    ->columns(2)
+                                    ->columns(['default' => 1, 'md' => 2])
                                     ->bulkToggleable(),
                                 Forms\Components\Textarea::make('condition_report.frame_notes')
                                     ->label(fn (Forms\Get $get): string => self::crT($get, 'form.body_frame.frame_notes'))
@@ -554,7 +554,7 @@ class ArtworkResource extends Resource
                             self::crT($get, 'form.handover.section')
                         )
                             ->schema([
-                                Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                                     Forms\Components\TextInput::make('condition_report.checked_by')
                                         ->label(fn (Forms\Get $get): string => self::crT($get, 'form.handover.checked_by'))
                                         ->maxLength(255),
@@ -977,7 +977,7 @@ class ArtworkResource extends Resource
                             ->live(),
                         Forms\Components\Fieldset::make('New buyer')
                             ->visible(fn (Forms\Get $get): bool => (bool) $get('create_new_buyer'))
-                            ->columns(2)
+                            ->columns(['default' => 1, 'md' => 2])
                             ->schema([
                                 Forms\Components\TextInput::make('new_first_name')
                                     ->label('First name')->maxLength(255),
@@ -1072,7 +1072,7 @@ class ArtworkResource extends Resource
                         ->modalDescription('Pick which sections show on each artwork page + how the selected works are ordered.')
                         ->modalSubmitActionLabel('Create PDF')
                         ->form([
-                            Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                                 Forms\Components\Select::make('per_page')
                                     ->label('Artworks per page')
                                     ->options([
@@ -1099,7 +1099,7 @@ class ArtworkResource extends Resource
                                     ->default('artist')
                                     ->required(),
                             ]),
-                            Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                                 Forms\Components\Toggle::make('show_price')
                                     ->label('Show price')
                                     ->default(true),

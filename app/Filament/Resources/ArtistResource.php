@@ -52,7 +52,7 @@ class ArtistResource extends Resource
             Forms\Components\Tabs::make()->tabs([
 
                 Forms\Components\Tabs\Tab::make('Basic')->schema([
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('first_name')->required(),
                         Forms\Components\TextInput::make('last_name')->required(),
                         Forms\Components\TextInput::make('birth_year')
@@ -142,7 +142,7 @@ class ArtistResource extends Resource
                                 ->placeholder('e.g. 2015')
                                 ->helperText('Leave empty if still studying.'),
                         ])
-                        ->columns(2)
+                        ->columns(['default' => 1, 'md' => 2])
                         ->columnSpanFull(),
 
                     Forms\Components\Repeater::make('previous_exhibitions')
@@ -192,7 +192,7 @@ class ArtistResource extends Resource
                                 ->maxLength(255)
                                 ->columnSpan(2),
                         ])
-                        ->columns(2)
+                        ->columns(['default' => 1, 'md' => 2])
                         ->columnSpanFull(),
                 ]),
 

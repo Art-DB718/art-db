@@ -47,7 +47,7 @@ class ExhibitionResource extends Resource
             Forms\Components\Tabs::make('Exhibition')->tabs([
 
                 Forms\Components\Tabs\Tab::make('Details')->schema([
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('title')->required()->maxLength(255)->columnSpan(2),
                         Forms\Components\Select::make('type')->options(self::TYPES)->default('group')->required(),
                         Forms\Components\Select::make('status')->options(self::STATUSES)->default('upcoming')->required(),

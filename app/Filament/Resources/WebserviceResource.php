@@ -38,7 +38,7 @@ class WebserviceResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make()->schema([
-                Forms\Components\Grid::make(2)->schema([
+                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                     Forms\Components\TextInput::make('name')->required()->maxLength(255),
                     Forms\Components\Select::make('type')->options(self::TYPES)->required(),
                 ]),
@@ -64,7 +64,7 @@ class WebserviceResource extends Resource
                         ->content(fn (?Webservice $record) => $record?->last_sync_message ?? '—')
                         ->columnSpanFull(),
                 ])
-                ->columns(2)
+                ->columns(['default' => 1, 'md' => 2])
                 ->collapsed()
                 ->hiddenOn('create'),
         ]);

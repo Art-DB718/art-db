@@ -53,7 +53,7 @@ class LocationResource extends Resource
                     ->relationship('country', 'name')
                     ->searchable()
                     ->preload(),
-            ])->columns(2),
+            ])->columns(['default' => 1, 'md' => 2]),
             Forms\Components\Textarea::make('notes')
                 ->rows(3)
                 ->columnSpanFull(),

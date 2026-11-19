@@ -45,7 +45,7 @@ class SavedReportResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make()->schema([
-                Forms\Components\Grid::make(2)->schema([
+                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                     Forms\Components\TextInput::make('name')->required()->maxLength(255),
                     Forms\Components\Select::make('type')->options(self::TYPES)->required(),
                     Forms\Components\Select::make('output_format')
@@ -78,7 +78,7 @@ class SavedReportResource extends Resource
                     ->content(fn (?SavedReport $record) => $record?->last_run_at?->format('d.m.Y H:i') ?? '—'),
                 Forms\Components\Placeholder::make('last_run_status')
                     ->content(fn (?SavedReport $record) => $record?->last_run_status ?? '—'),
-            ])->columns(2)->collapsed()->hiddenOn('create'),
+            ])->columns(['default' => 1, 'md' => 2])->collapsed()->hiddenOn('create'),
         ]);
     }
 

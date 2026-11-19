@@ -59,7 +59,7 @@ class InquiryResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make()->columns(2)->schema([
+            Forms\Components\Section::make()->columns(['default' => 1, 'md' => 2])->schema([
                 Forms\Components\Placeholder::make('artwork_display')
                     ->label('About artwork')
                     ->content(fn (?Inquiry $record): string => $record?->artwork

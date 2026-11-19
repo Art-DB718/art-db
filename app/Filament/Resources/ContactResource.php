@@ -25,7 +25,7 @@ class ContactResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make('Identity')->schema([
-                Forms\Components\Grid::make(2)->schema([
+                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                     Forms\Components\TextInput::make('first_name')->maxLength(255),
                     Forms\Components\TextInput::make('last_name')->maxLength(255),
                     Forms\Components\TextInput::make('organization')->maxLength(255)->columnSpan(2),
@@ -60,7 +60,7 @@ class ContactResource extends Resource
             ]),
 
             Forms\Components\Section::make('Address')->schema([
-                Forms\Components\Grid::make(2)->schema([
+                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                     Forms\Components\TextInput::make('address_line1')->label('Address line 1')->columnSpan(2),
                     Forms\Components\TextInput::make('address_line2')->label('Address line 2')->columnSpan(2),
                     Forms\Components\TextInput::make('city'),

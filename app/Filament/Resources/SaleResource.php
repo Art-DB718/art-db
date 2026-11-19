@@ -42,7 +42,7 @@ class SaleResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make('Invoice')->schema([
-                Forms\Components\Grid::make(2)->schema([
+                Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                     Forms\Components\TextInput::make('invoice_number')
                         ->disabled()
                         ->dehydrated(false)
@@ -122,7 +122,7 @@ class SaleResource extends Resource
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::recomputeSaleTotals($get, $set, '../../')),
                         ])
-                        ->columns(2)
+                        ->columns(['default' => 1, 'md' => 2])
                         ->defaultItems(1)
                         ->orderColumn('position')
                         ->itemLabel(fn (array $state): ?string => $state['description'] ?? null)

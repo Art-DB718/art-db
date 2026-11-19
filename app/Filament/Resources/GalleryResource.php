@@ -83,11 +83,11 @@ class GalleryResource extends Resource
                     Forms\Components\Fieldset::make('Branding')->schema([
                         Forms\Components\FileUpload::make('logo')->image()->disk('public')->directory('galleries/logos'),
                         Forms\Components\FileUpload::make('cover_image')->image()->disk('public')->directory('galleries/covers'),
-                    ])->columns(2),
+                    ])->columns(['default' => 1, 'md' => 2]),
                 ]),
 
                 Forms\Components\Tabs\Tab::make('Contact')->schema([
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('email')->email()->maxLength(255),
                         Forms\Components\TextInput::make('phone')->tel()->maxLength(255),
                         Forms\Components\TextInput::make('website')->url()->prefix('https://')->maxLength(255)->columnSpan(2),
@@ -98,7 +98,7 @@ class GalleryResource extends Resource
                         Forms\Components\TextInput::make('city')->maxLength(120),
                         Forms\Components\TextInput::make('postal_code')->maxLength(20),
                         Forms\Components\Select::make('country_id')->relationship('country', 'name')->searchable()->preload(),
-                    ])->columns(2),
+                    ])->columns(['default' => 1, 'md' => 2]),
                 ]),
 
                 Forms\Components\Tabs\Tab::make('Represented artists')->schema([
