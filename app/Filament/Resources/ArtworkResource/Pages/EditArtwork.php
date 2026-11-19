@@ -52,26 +52,34 @@ class EditArtwork extends EditRecord
                     ->url(route('artworks.pdf.maintenance', $record))
                     ->openUrlInNewTab()
                     ->extraAttributes($shareAttrs('maintenance', 'artworks.pdf.maintenance')),
-                // Condition report is Kat's most-sent-out document, so it
-                // gets its own language picker right in the Print menu.
-                // Each language is a separate action so the iOS PWA
-                // share-sheet override also works per language.
-                Actions\ActionGroup::make(
-                    collect(config('prints.languages', []))
-                        ->map(fn ($name, $code) => Actions\Action::make('printConditionReport_'.$code)
-                            ->label($name)
-                            ->url(route('artworks.pdf.condition-report', ['artwork' => $record, 'lang' => $code]))
-                            ->openUrlInNewTab()
-                            ->extraAttributes([
-                                'data-pdf-share'    => route('artworks.pdf.condition-report', ['artwork' => $record, 'lang' => $code]),
-                                'data-pdf-filename' => 'condition-report-'.$code.'-'.$slug.'.pdf',
-                            ]))
-                        ->values()
-                        ->all()
-                )
+                // Condition report follows the language the user picked
+                // at the top of the Condition Report tab (stored under
+                // condition_report.language on the model). If no language
+                // has been picked yet, fall back to the global default.
+                Actions\Action::make('printConditionReport')
                     ->label('Print condition report')
                     ->icon('heroicon-m-clipboard-document-check')
-                    ->visible(! auth()->user()?->isArtist()),
+                    ->visible(! auth()->user()?->isArtist())
+                    ->url(function () use ($record) {
+                        $lang = data_get($record->condition_report, 'language')
+                            ?: config('prints.default_language', 'en');
+                        return route('artworks.pdf.condition-report', [
+                            'artwork' => $record,
+                            'lang'    => $lang,
+                        ]);
+                    })
+                    ->openUrlInNewTab()
+                    ->extraAttributes(function () use ($record, $slug) {
+                        $lang = data_get($record->condition_report, 'language')
+                            ?: config('prints.default_language', 'en');
+                        return [
+                            'data-pdf-share' => route('artworks.pdf.condition-report', [
+                                'artwork' => $record,
+                                'lang'    => $lang,
+                            ]),
+                            'data-pdf-filename' => 'condition-report-'.$lang.'-'.$slug.'.pdf',
+                        ];
+                    }),
             ])
                 ->label('Print / Save as PDF')
                 ->icon('heroicon-m-printer')

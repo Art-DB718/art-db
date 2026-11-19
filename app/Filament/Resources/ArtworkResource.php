@@ -354,6 +354,24 @@ class ArtworkResource extends Resource
                     ->icon('heroicon-o-clipboard-document-check')
                     ->visible(fn (): bool => ! auth()->user()?->isArtist())
                     ->schema([
+                        // Language picker FIRST — chosen before the form is
+                        // filled in so the damage checklist, section titles
+                        // and PDF all speak the same language. Stored in
+                        // condition_report.language; defaults to the global
+                        // print-default. ->live() so swapping the language
+                        // reactively relabels the checklist below.
+                        Forms\Components\Section::make('Language')
+                            ->description('Pick the language first — the damage checklist, its section titles, and the generated PDF all follow this choice.')
+                            ->schema([
+                                Forms\Components\Select::make('condition_report.language')
+                                    ->label('Report language')
+                                    ->options(config('prints.languages'))
+                                    ->default(config('prints.default_language', 'en'))
+                                    ->native(false)
+                                    ->live()
+                                    ->required(),
+                            ]),
+
                         // Registrar-style metadata inspired by the Artlogic
                         // condition-report best-practice note: a report is
                         // never just a checklist — it has a stage (incoming,
@@ -472,12 +490,20 @@ class ArtworkResource extends Resource
                             ->collapsible()
                             ->collapsed(),
 
-                        Forms\Components\Section::make('Condition of work')
-                            ->description('Check all that apply. Both SK and EN labels appear on the PDF.')
+                        Forms\Components\Section::make(fn (Forms\Get $get): string =>
+                            __('condition_report.section_body', [], $get('condition_report.language') ?: config('prints.default_language', 'en'))
+                        )
+                            ->description('Check all that apply. The PDF uses this same language.')
                             ->schema([
                                 Forms\Components\CheckboxList::make('condition_report.body_damages')
-                                    ->label('Condition of work')
-                                    ->options(\App\Support\ConditionReport::options(\App\Support\ConditionReport::bodyDamages()))
+                                    ->label(fn (Forms\Get $get): string =>
+                                        __('condition_report.section_body', [], $get('condition_report.language') ?: config('prints.default_language', 'en'))
+                                    )
+                                    ->options(fn (Forms\Get $get): array => self::translatedDamageOptions(
+                                        \App\Support\ConditionReport::bodyDamages(),
+                                        'body',
+                                        $get('condition_report.language') ?: config('prints.default_language', 'en'),
+                                    ))
                                     ->columns(2)
                                     ->bulkToggleable(),
                                 Forms\Components\Textarea::make('condition_report.body_notes')
@@ -486,11 +512,19 @@ class ArtworkResource extends Resource
                             ])
                             ->collapsible(),
 
-                        Forms\Components\Section::make('Condition of frame')
+                        Forms\Components\Section::make(fn (Forms\Get $get): string =>
+                            __('condition_report.section_frame', [], $get('condition_report.language') ?: config('prints.default_language', 'en'))
+                        )
                             ->schema([
                                 Forms\Components\CheckboxList::make('condition_report.frame_damages')
-                                    ->label('Condition of frame')
-                                    ->options(\App\Support\ConditionReport::options(\App\Support\ConditionReport::frameDamages()))
+                                    ->label(fn (Forms\Get $get): string =>
+                                        __('condition_report.section_frame', [], $get('condition_report.language') ?: config('prints.default_language', 'en'))
+                                    )
+                                    ->options(fn (Forms\Get $get): array => self::translatedDamageOptions(
+                                        \App\Support\ConditionReport::frameDamages(),
+                                        'frame',
+                                        $get('condition_report.language') ?: config('prints.default_language', 'en'),
+                                    ))
                                     ->columns(2)
                                     ->bulkToggleable(),
                                 Forms\Components\Textarea::make('condition_report.frame_notes')
@@ -556,6 +590,27 @@ class ArtworkResource extends Resource
 
                 ])->columnSpanFull(),
         ]);
+    }
+
+    /**
+     * Map a damage-vocabulary list to Filament CheckboxList options,
+     * labelled in the given locale. Falls back to the English label
+     * baked into ConditionReport.php when a translation is missing,
+     * so an added vocabulary key never prints a raw "condition_report.
+     * body.x" string.
+     *
+     * @param  array<string, array{sk: string, en: string}>  $list
+     * @return array<string, string>
+     */
+    protected static function translatedDamageOptions(array $list, string $group, string $locale): array
+    {
+        $out = [];
+        foreach ($list as $key => $labels) {
+            $full = 'condition_report.'.$group.'.'.$key;
+            $translated = __($full, [], $locale);
+            $out[$key] = ($translated === $full) ? $labels['en'] : $translated;
+        }
+        return $out;
     }
 
     public static function table(Table $table): Table
