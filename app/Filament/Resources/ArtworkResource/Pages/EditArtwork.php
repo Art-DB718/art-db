@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ArtworkResource\Pages;
 use App\Filament\Resources\ArtworkResource;
 use App\Models\Artwork;
 use Filament\Actions;
+use Filament\Forms;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Str;
 
@@ -19,43 +20,79 @@ class EditArtwork extends EditRecord
 
         $slug = Str::slug(($record->artist?->last_name ?? 'artwork').'-'.$record->title);
 
-        $shareAttrs = fn (string $kind, string $route) => [
-            'data-pdf-share'    => route($route, $record),
-            'data-pdf-filename' => $kind.'-'.$slug.'.pdf',
-        ];
+        // Build a print Action that opens a small modal with a language
+        // Select, then dispatches window.open() with ?lang=xx so the PDF
+        // renders in that language and loads in a new tab. Every
+        // non-condition-report print uses this: the artwork itself has no
+        // stored language, so the user picks per click.
+        $printWithLanguage = function (
+            string $name,
+            string $label,
+            string $icon,
+            string $routeName,
+            string $kind,
+        ) use ($record, $slug): Actions\Action {
+            return Actions\Action::make($name)
+                ->label($label)
+                ->icon($icon)
+                ->modalHeading($label)
+                ->modalDescription('Choose the language the PDF should be issued in.')
+                ->modalWidth('sm')
+                ->modalSubmitActionLabel('Open PDF')
+                ->form([
+                    Forms\Components\Select::make('lang')
+                        ->label('Language')
+                        ->options(config('prints.languages'))
+                        ->default(config('prints.default_language', 'en'))
+                        ->required()
+                        ->native(false),
+                ])
+                ->action(function (array $data) use ($record, $routeName) {
+                    $url = route($routeName, [
+                        'artwork' => $record,
+                        'lang'    => $data['lang'],
+                    ]);
+                    // window.open counts as a user gesture because it fires
+                    // from a Livewire action the user just submitted — no
+                    // popup blocker on current Chrome / Safari / Firefox.
+                    $this->js('window.open('.json_encode($url).", '_blank')");
+                });
+        };
 
         return [
             Actions\ActionGroup::make([
-                Actions\Action::make('printCard')
-                    ->label('Print artwork card')
-                    ->icon('heroicon-m-printer')
-                    ->url(route('artworks.pdf.card', $record))
-                    ->openUrlInNewTab()
-                    ->extraAttributes($shareAttrs('card', 'artworks.pdf.card')),
-                Actions\Action::make('printCertificate')
-                    ->label('Print certificate')
-                    ->icon('heroicon-m-shield-check')
-                    ->visible(! auth()->user()?->isCollector())
-                    ->url(route('artworks.pdf.certificate', $record))
-                    ->openUrlInNewTab()
-                    ->extraAttributes($shareAttrs('certificate', 'artworks.pdf.certificate')),
-                Actions\Action::make('printLabel')
-                    ->label('Print label')
-                    ->icon('heroicon-m-tag')
-                    ->url(route('artworks.pdf.label', $record))
-                    ->openUrlInNewTab()
-                    ->extraAttributes($shareAttrs('label', 'artworks.pdf.label')),
-                Actions\Action::make('printMaintenance')
-                    ->label('Print maintenance report')
-                    ->icon('heroicon-m-wrench-screwdriver')
-                    ->visible(! auth()->user()?->isArtist())
-                    ->url(route('artworks.pdf.maintenance', $record))
-                    ->openUrlInNewTab()
-                    ->extraAttributes($shareAttrs('maintenance', 'artworks.pdf.maintenance')),
+                $printWithLanguage(
+                    'printCard',
+                    'Print artwork card',
+                    'heroicon-m-printer',
+                    'artworks.pdf.card',
+                    'card',
+                ),
+                $printWithLanguage(
+                    'printCertificate',
+                    'Print certificate',
+                    'heroicon-m-shield-check',
+                    'artworks.pdf.certificate',
+                    'certificate',
+                )->visible(! auth()->user()?->isCollector()),
+                $printWithLanguage(
+                    'printLabel',
+                    'Print label',
+                    'heroicon-m-tag',
+                    'artworks.pdf.label',
+                    'label',
+                ),
+                $printWithLanguage(
+                    'printMaintenance',
+                    'Print maintenance report',
+                    'heroicon-m-wrench-screwdriver',
+                    'artworks.pdf.maintenance',
+                    'maintenance',
+                )->visible(! auth()->user()?->isArtist()),
                 // Condition report follows the language the user picked
                 // at the top of the Condition Report tab (stored under
-                // condition_report.language on the model). If no language
-                // has been picked yet, fall back to the global default.
+                // condition_report.language on the model). No modal — the
+                // choice already lives on the record.
                 Actions\Action::make('printConditionReport')
                     ->label('Print condition report')
                     ->icon('heroicon-m-clipboard-document-check')

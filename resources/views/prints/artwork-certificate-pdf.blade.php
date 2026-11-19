@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <title>Certificate — {{ $artwork->title }}</title>
@@ -126,13 +126,13 @@
         @endif
     </div>
 
-    <div class="title">Certificate of Authenticity</div>
+    <div class="title">{{ __('prints.certificate.heading') }}</div>
 
     <div class="intro">
         @if ($settings->cert_intro)
             {!! \App\Support\PrintHtml::render($settings->cert_intro) !!}
         @else
-            <p>{{ $settings->company_name ?? config('app.name') }} confirms the authenticity of the artwork described below.</p>
+            <p>{{ __('prints.certificate.default_intro', ['company' => $settings->company_name ?? config('app.name')]) }}</p>
         @endif
     </div>
 
@@ -145,19 +145,19 @@
             </td>
             <td class="specs-col">
                 <table class="specs">
-                    <tr><td class="label">Artist</td><td class="val">{{ $artwork->artist?->display_name ?? '—' }}</td></tr>
-                    <tr><td class="label">Title</td><td class="val">{{ $artwork->title }}</td></tr>
+                    <tr><td class="label">{{ __('prints.common.artist') }}</td><td class="val">{{ $artwork->artist?->display_name ?? '—' }}</td></tr>
+                    <tr><td class="label">{{ __('prints.common.title') }}</td><td class="val">{{ $artwork->title }}</td></tr>
                     @if ($dims)
-                        <tr><td class="label">Dimensions</td><td class="val">{{ $dims }} cm</td></tr>
+                        <tr><td class="label">{{ __('prints.common.dimensions') }}</td><td class="val">{{ $dims }} cm</td></tr>
                     @endif
                     @if ($artwork->medium?->name || $artwork->materials)
-                        <tr><td class="label">Medium</td><td class="val">{{ $artwork->materials ?: $artwork->medium?->name }}</td></tr>
+                        <tr><td class="label">{{ __('prints.common.medium') }}</td><td class="val">{{ $artwork->materials ?: $artwork->medium?->name }}</td></tr>
                     @endif
                     @if ($year)
-                        <tr><td class="label">Year</td><td class="val">{{ $year }}</td></tr>
+                        <tr><td class="label">{{ __('prints.common.year') }}</td><td class="val">{{ $year }}</td></tr>
                     @endif
                     @if ($artwork->edition_number && $artwork->edition_total)
-                        <tr><td class="label">Edition</td><td class="val">{{ $artwork->edition_number }} / {{ $artwork->edition_total }}</td></tr>
+                        <tr><td class="label">{{ __('prints.common.edition') }}</td><td class="val">{{ $artwork->edition_number }} / {{ $artwork->edition_total }}</td></tr>
                     @endif
                 </table>
             </td>

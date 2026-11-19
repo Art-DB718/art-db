@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <title>{{ $artwork->title }}</title>
@@ -148,18 +148,18 @@
             @if ($artwork->price && ! $artwork->price_on_request)
                 <div class="line price">{{ $artwork->currency }} {{ number_format((float) $artwork->price, 0, '.', ' ') }}</div>
             @elseif ($artwork->price_on_request)
-                <div class="line price">Price on request</div>
+                <div class="line price">{{ __('prints.common.price_on_req') }}</div>
             @endif
         @endif
         @if ($artwork->is_signed && $artwork->signature_description)
-            <div class="line">Signed — {{ $artwork->signature_description }}</div>
+            <div class="line">{{ __('prints.card.signed_prefix', ['desc' => $artwork->signature_description]) }}</div>
         @endif
     </div>
 
     {{-- Optional secondary blocks — kept small so they don't compete with the image. --}}
     @if ($artwork->description)
         <div class="aux">
-            <div class="aux-label">About</div>
+            <div class="aux-label">{{ __('prints.card.about') }}</div>
             {{ $artwork->description }}
         </div>
     @endif

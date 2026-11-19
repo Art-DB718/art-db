@@ -50,6 +50,7 @@ class PrintController extends Controller
 
     public function artworkCard(Artwork $artwork, Request $request): Response
     {
+        $this->applyLang($request);
         $artwork->load(['artist', 'medium', 'genre']);
 
         $pdf = Pdf::loadView('prints.artwork-card-pdf', [
@@ -57,11 +58,12 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper($this->cardPaperSize());
 
-        return $this->deliver($request, $pdf, $this->fileName('card', $artwork));
+        return $this->deliver($request, $pdf, $this->fileName('card-'.app()->getLocale(), $artwork));
     }
 
     public function artworkCertificate(Artwork $artwork, Request $request): Response
     {
+        $this->applyLang($request);
         $artwork->load(['artist', 'medium']);
 
         $pdf = Pdf::loadView('prints.artwork-certificate-pdf', [
@@ -69,11 +71,12 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper('a4');
 
-        return $this->deliver($request, $pdf, $this->fileName('certificate', $artwork));
+        return $this->deliver($request, $pdf, $this->fileName('certificate-'.app()->getLocale(), $artwork));
     }
 
     public function artworkLabel(Artwork $artwork, Request $request): Response
     {
+        $this->applyLang($request);
         $artwork->load(['artist', 'medium']);
 
         $settings = InvoiceSetting::current();
@@ -84,11 +87,12 @@ class PrintController extends Controller
             'settings' => $settings,
         ])->setPaper($paper, 'landscape');
 
-        return $this->deliver($request, $pdf, $this->fileName('label', $artwork));
+        return $this->deliver($request, $pdf, $this->fileName('label-'.app()->getLocale(), $artwork));
     }
 
     public function artworkMaintenance(Artwork $artwork, Request $request): Response
     {
+        $this->applyLang($request);
         $artwork->load(['artist', 'medium', 'maintenances']);
 
         $pdf = Pdf::loadView('prints.artwork-maintenance-pdf', [
@@ -96,7 +100,7 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper('a4');
 
-        return $this->deliver($request, $pdf, $this->fileName('maintenance', $artwork));
+        return $this->deliver($request, $pdf, $this->fileName('maintenance-'.app()->getLocale(), $artwork));
     }
 
     public function artworkConditionReport(Artwork $artwork, Request $request): Response
@@ -114,6 +118,7 @@ class PrintController extends Controller
 
     public function saleInvoice(Sale $sale, Request $request): Response
     {
+        $this->applyLang($request);
         $sale->load(['buyer', 'lineItems.artwork.artist']);
 
         $pdf = Pdf::loadView('prints.invoice-pdf', [
@@ -121,7 +126,7 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper('a4');
 
-        $name = 'invoice-'.($sale->invoice_number ?? $sale->id).'-'.optional($sale->sale_date)->format('Ymd').'.pdf';
+        $name = 'invoice-'.app()->getLocale().'-'.($sale->invoice_number ?? $sale->id).'-'.optional($sale->sale_date)->format('Ymd').'.pdf';
         return $this->deliver($request, $pdf, $name);
     }
 

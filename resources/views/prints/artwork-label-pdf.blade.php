@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <title>Label — {{ $artwork->title }}</title>
@@ -38,7 +38,7 @@
         @if ($artwork->price && ! $artwork->price_on_request)
             <div class="price">{{ number_format((float) $artwork->price, 0, '.', ' ') }} {{ $artwork->currency }}</div>
         @elseif ($artwork->price_on_request)
-            <div class="price" style="font-size:7pt;color:#6b7280;font-weight:normal;">Price on request</div>
+            <div class="price" style="font-size:7pt;color:#6b7280;font-weight:normal;">{{ __('prints.common.price_on_req') }}</div>
         @endif
     @endif
 

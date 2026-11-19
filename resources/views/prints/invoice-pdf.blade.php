@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
-    <title>Invoice {{ $sale->invoice_number }}</title>
+    <title>{{ __('prints.invoice.heading') }} {{ $sale->invoice_number }}</title>
     <style>
         @page { margin: 1.5cm; }
         body { font-family: DejaVu Sans, sans-serif; color: #1f2937; margin: 0; font-size: 10pt; line-height: 1.45; }
@@ -40,13 +40,13 @@
         <table>
             <tr>
                 <td style="width:60%;">
-                    <h1>INVOICE</h1>
+                    <h1>{{ __('prints.invoice.heading') }}</h1>
                     <div style="margin-top:4pt;font-size:9pt;color:#6b7280;">{{ $settings->company_name ?? config('app.name') }}</div>
                 </td>
                 <td class="meta">
                     <div class="invoice-no">{{ $sale->invoice_number }}</div>
-                    @if ($sale->sale_date)<div>Issued: {{ $sale->sale_date->format('d.m.Y') }}</div>@endif
-                    @if ($sale->due_date)<div>Due: {{ $sale->due_date->format('d.m.Y') }}</div>@endif
+                    @if ($sale->sale_date)<div>{{ __('prints.invoice.issued') }}: {{ $sale->sale_date->format('d.m.Y') }}</div>@endif
+                    @if ($sale->due_date)<div>{{ __('prints.invoice.due') }}: {{ $sale->due_date->format('d.m.Y') }}</div>@endif
                 </td>
             </tr>
         </table>
@@ -55,7 +55,7 @@
     <table class="parties">
         <tr>
             <td>
-                <div class="label">From</div>
+                <div class="label">{{ __('prints.invoice.from') }}</div>
                 <strong>{{ $settings->company_name }}</strong><br>
                 @if ($settings->address_line1){{ $settings->address_line1 }}<br>@endif
                 @if ($settings->address_line2){{ $settings->address_line2 }}<br>@endif
@@ -68,7 +68,7 @@
                 @if ($settings->email)<br>{{ $settings->email }}@endif
             </td>
             <td>
-                <div class="label">Bill to</div>
+                <div class="label">{{ __('prints.invoice.bill_to') }}</div>
                 @if ($sale->buyer)
                     <strong>{{ $sale->buyer->display_name }}</strong><br>
                     @if ($sale->buyer->organization){{ $sale->buyer->organization }}<br>@endif
@@ -77,7 +77,7 @@
                     @if ($sale->buyer->country){{ $sale->buyer->country->name ?? $sale->buyer->country }}<br>@endif
                     @if ($sale->buyer->email)<br>{{ $sale->buyer->email }}@endif
                 @else
-                    <em style="color:#9ca3af;">No buyer recorded</em>
+                    <em style="color:#9ca3af;">{{ __('prints.invoice.no_buyer') }}</em>
                 @endif
             </td>
         </tr>
@@ -86,10 +86,10 @@
     <table class="items">
         <thead>
             <tr>
-                <th>Description</th>
-                <th class="num">Qty</th>
-                <th class="num">Unit price</th>
-                <th class="num">Line total</th>
+                <th>{{ __('prints.invoice.description') }}</th>
+                <th class="num">{{ __('prints.invoice.qty') }}</th>
+                <th class="num">{{ __('prints.invoice.unit_price') }}</th>
+                <th class="num">{{ __('prints.invoice.line_total') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -123,32 +123,32 @@
 
     <table class="totals">
         <tr>
-            <td class="label">Subtotal</td>
+            <td class="label">{{ __('prints.invoice.subtotal') }}</td>
             <td class="value">{{ number_format((float) $sale->subtotal, 2, '.', ' ') }} {{ $sale->currency ?? 'EUR' }}</td>
         </tr>
         @if ((float) $sale->discount_amount > 0)
         <tr>
-            <td class="label">Discount</td>
+            <td class="label">{{ __('prints.invoice.discount') }}</td>
             <td class="value">−{{ number_format((float) $sale->discount_amount, 2, '.', ' ') }} {{ $sale->currency ?? 'EUR' }}</td>
         </tr>
         @endif
         @if ((float) $sale->tax_rate > 0)
         <tr>
-            <td class="label">VAT ({{ rtrim(rtrim(number_format((float) $sale->tax_rate, 2, '.', ''), '0'), '.') }} %)</td>
+            <td class="label">{{ __('prints.invoice.vat') }} ({{ rtrim(rtrim(number_format((float) $sale->tax_rate, 2, '.', ''), '0'), '.') }} %)</td>
             <td class="value">{{ number_format((float) $sale->tax_amount, 2, '.', ' ') }} {{ $sale->currency ?? 'EUR' }}</td>
         </tr>
         @endif
         <tr class="grand">
-            <td class="label">Total</td>
+            <td class="label">{{ __('prints.invoice.total') }}</td>
             <td class="value">{{ number_format((float) $sale->total, 2, '.', ' ') }} {{ $sale->currency ?? 'EUR' }}</td>
         </tr>
     </table>
 
     @if ($settings->bank_account)
         <div class="bank-info">
-            <span>Bank:</span> {{ $settings->bank_name }} ·
-            <span>IBAN:</span> <span style="font-family:DejaVu Sans Mono,monospace;">{{ $settings->bank_account }}</span> ·
-            <span>Variable symbol:</span> {{ preg_replace('/\D/', '', $sale->invoice_number) ?: $sale->id }}
+            <span>{{ __('prints.invoice.bank') }}:</span> {{ $settings->bank_name }} ·
+            <span>{{ __('prints.invoice.iban') }}:</span> <span style="font-family:DejaVu Sans Mono,monospace;">{{ $settings->bank_account }}</span> ·
+            <span>{{ __('prints.invoice.variable_symbol') }}:</span> {{ preg_replace('/\D/', '', $sale->invoice_number) ?: $sale->id }}
         </div>
     @endif
 

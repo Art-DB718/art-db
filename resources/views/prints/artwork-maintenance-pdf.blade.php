@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
-    <title>Maintenance report — {{ $artwork->title }}</title>
+    <title>{{ __('prints.maintenance.heading') }} — {{ $artwork->title }}</title>
     <style>
         /*
          * Maintenance report — matches the card/certificate layout:
@@ -74,9 +74,9 @@
         $openCount = $maintenances->whereNull('restoration_returned_at')->count();
         $overallStatus = $maintenances->isEmpty() ? 'none' : ($openCount > 0 ? 'in_progress' : 'returned');
         $statusLabel = match ($overallStatus) {
-            'in_progress' => 'In restoration — '.$openCount.' open record'.($openCount > 1 ? 's' : ''),
-            'returned'    => 'All records returned ('.$maintenances->count().')',
-            default       => 'No maintenance records',
+            'in_progress' => __('prints.maintenance.status_in_restoration', ['count' => $openCount]),
+            'returned'    => __('prints.maintenance.status_all_returned', ['count' => $maintenances->count()]),
+            default       => __('prints.maintenance.status_none'),
         };
         $statusClass = 'status-'.str_replace('_', '-', $overallStatus);
 
@@ -100,7 +100,7 @@
         @endif
     </div>
 
-    <div class="report-label">Maintenance report</div>
+    <div class="report-label">{{ __('prints.maintenance.heading') }}</div>
 
     <div class="stage">
         @if ($artwork->primary_image && file_exists(public_path('storage/'.$artwork->primary_image)))
@@ -114,27 +114,27 @@
         @if ($artwork->inventory_id)<div class="inv">{{ $artwork->inventory_id }}</div>@endif
 
         <table class="specs">
-            @if ($artwork->medium?->name)<tr><td class="label">Medium</td><td>{{ $artwork->medium->name }}</td></tr>@endif
-            @if ($artwork->materials)<tr><td class="label">Materials</td><td>{{ $artwork->materials }}</td></tr>@endif
-            @if ($dims)<tr><td class="label">Dimensions</td><td>{{ $dims }} cm</td></tr>@endif
+            @if ($artwork->medium?->name)<tr><td class="label">{{ __('prints.common.medium') }}</td><td>{{ $artwork->medium->name }}</td></tr>@endif
+            @if ($artwork->materials)<tr><td class="label">{{ __('prints.common.materials') }}</td><td>{{ $artwork->materials }}</td></tr>@endif
+            @if ($dims)<tr><td class="label">{{ __('prints.common.dimensions') }}</td><td>{{ $dims }} cm</td></tr>@endif
         </table>
 
         <div class="summary">
-            <div class="label">Overall status</div>
+            <div class="label">{{ __('prints.maintenance.overall_status') }}</div>
             <div style="margin-top:3pt;"><span class="badge {{ $statusClass }}">{{ $statusLabel }}</span></div>
             @if ($total > 0)
-                <div class="label" style="margin-top:8pt;">Total cost</div>
+                <div class="label" style="margin-top:8pt;">{{ __('prints.maintenance.total_cost') }}</div>
                 <div class="total">{{ number_format($total, 2, '.', ' ') }} {{ $artwork->currency ?? 'EUR' }}</div>
             @endif
         </div>
 
         @if ($maintenances->isEmpty())
-            <div class="notes empty">No maintenance records yet for this artwork.</div>
+            <div class="notes empty">{{ __('prints.maintenance.no_records') }}</div>
         @else
             @foreach ($maintenances as $idx => $m)
                 @php
                     $mStatus = $m->restoration_returned_at ? 'returned' : 'in_progress';
-                    $mStatusLabel = $m->restoration_returned_at ? 'Returned' : 'In restoration';
+                    $mStatusLabel = $m->restoration_returned_at ? __('prints.maintenance.returned') : __('prints.maintenance.in_restoration');
                     $sent     = $m->restoration_date?->format('d. m. Y');
                     $returned = $m->restoration_returned_at?->format('d. m. Y');
                     $hasContact = filled($m->restorer_name) || filled($m->restorer_email) || filled($m->restorer_phone);
@@ -143,38 +143,38 @@
                 @endphp
                 <div class="record">
                     <div class="record-header">
-                        <span class="rec-no">Record #{{ $idx + 1 }}{{ $sent ? ' · '.$sent : '' }}</span>
+                        <span class="rec-no">{{ __('prints.maintenance.record_no', ['n' => $idx + 1]) }}{{ $sent ? ' · '.$sent : '' }}</span>
                         <span class="badge status-{{ str_replace('_', '-', $mStatus) }}" style="float:right;">{{ $mStatusLabel }}</span>
                     </div>
 
                     <table class="specs">
-                        @if ($sent)<tr><td class="label">Sent</td><td>{{ $sent }}</td></tr>@endif
+                        @if ($sent)<tr><td class="label">{{ __('prints.maintenance.sent') }}</td><td>{{ $sent }}</td></tr>@endif
                         @if ($returned)
-                            <tr><td class="label">Returned</td><td>{{ $returned }}</td></tr>
+                            <tr><td class="label">{{ __('prints.maintenance.returned') }}</td><td>{{ $returned }}</td></tr>
                         @elseif ($sent)
-                            <tr><td class="label">Returned</td><td class="empty">— still in restoration</td></tr>
+                            <tr><td class="label">{{ __('prints.maintenance.returned') }}</td><td class="empty">{{ __('prints.maintenance.still_in_restoration') }}</td></tr>
                         @endif
                         @if ($m->restoration_price)
-                            <tr><td class="label">Cost</td><td class="cost">{{ number_format((float) $m->restoration_price, 2, '.', ' ') }} {{ $artwork->currency ?? 'EUR' }}</td></tr>
+                            <tr><td class="label">{{ __('prints.maintenance.cost') }}</td><td class="cost">{{ number_format((float) $m->restoration_price, 2, '.', ' ') }} {{ $artwork->currency ?? 'EUR' }}</td></tr>
                         @endif
                     </table>
 
                     @if ($hasContact)
-                        <span class="section-label">Restorer</span>
+                        <span class="section-label">{{ __('prints.maintenance.restorer') }}</span>
                         <table class="specs">
-                            @if ($m->restorer_name)<tr><td class="label">Name / studio</td><td>{{ $m->restorer_name }}</td></tr>@endif
-                            @if ($m->restorer_email)<tr><td class="label">Email</td><td>{{ $m->restorer_email }}</td></tr>@endif
-                            @if ($m->restorer_phone)<tr><td class="label">Phone</td><td>{{ $m->restorer_phone }}</td></tr>@endif
+                            @if ($m->restorer_name)<tr><td class="label">{{ __('prints.maintenance.name_studio') }}</td><td>{{ $m->restorer_name }}</td></tr>@endif
+                            @if ($m->restorer_email)<tr><td class="label">{{ __('prints.common.email') }}</td><td>{{ $m->restorer_email }}</td></tr>@endif
+                            @if ($m->restorer_phone)<tr><td class="label">{{ __('prints.common.phone') }}</td><td>{{ $m->restorer_phone }}</td></tr>@endif
                         </table>
                     @endif
 
                     @if (filled($m->restoration_notes))
-                        <span class="section-label">Notes</span>
+                        <span class="section-label">{{ __('prints.common.notes') }}</span>
                         <div class="notes">{{ $m->restoration_notes }}</div>
                     @endif
 
                     @if (! empty($docs))
-                        <span class="section-label">Documents</span>
+                        <span class="section-label">{{ __('prints.common.documents') }}</span>
                         <ul class="doc-list">
                             @foreach ($docs as $doc)
                                 <li>{{ basename($doc) }}</li>
@@ -183,7 +183,7 @@
                     @endif
 
                     @if (! empty($photos))
-                        <span class="section-label">Photos</span>
+                        <span class="section-label">{{ __('prints.common.photos') }}</span>
                         <div class="photo-row">
                             @foreach ($photos as $photo)
                                 @if (file_exists(public_path('storage/'.$photo)))

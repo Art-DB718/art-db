@@ -253,8 +253,22 @@ class SaleResource extends Resource
                     Tables\Actions\Action::make('pdf')
                         ->label('Download invoice (PDF)')
                         ->icon('heroicon-o-document-arrow-down')
-                        ->url(fn (Sale $record): string => route('sales.pdf', $record))
-                        ->openUrlInNewTab(),
+                        ->modalHeading('Download invoice (PDF)')
+                        ->modalDescription('Choose the language the invoice PDF should be issued in.')
+                        ->modalWidth('sm')
+                        ->modalSubmitActionLabel('Open PDF')
+                        ->form([
+                            Forms\Components\Select::make('lang')
+                                ->label('Language')
+                                ->options(config('prints.languages'))
+                                ->default(config('prints.default_language', 'en'))
+                                ->required()
+                                ->native(false),
+                        ])
+                        ->action(function (array $data, Sale $record) {
+                            $url = route('sales.pdf', ['sale' => $record, 'lang' => $data['lang']]);
+                            $this->js('window.open('.json_encode($url).", '_blank')");
+                        }),
                     Tables\Actions\Action::make('sendPrivateRoom')
                         ->label('Send Private Room')
                         ->icon('heroicon-o-paper-airplane')
