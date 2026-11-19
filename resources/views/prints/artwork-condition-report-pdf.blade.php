@@ -40,6 +40,16 @@
 
         /* Two-column checklist. DomPDF renders tables most reliably,
            so we lay the list out as a 2-column table. */
+        /* Report metadata badges: one compact row surfacing stage, rating, date. */
+        .meta-badges { margin: 4pt 0 14pt; }
+        .badge { display: inline-block; padding: 2pt 7pt; margin: 0 4pt 3pt 0; border-radius: 10pt; font-size: 9pt; font-weight: bold; background: #f3f4f6; color: #374151; }
+        .badge-stage       { background: #e0e7ff; color: #3730a3; }
+        .rating-excellent  { background: #d1fae5; color: #065f46; }
+        .rating-good       { background: #d1fae5; color: #065f46; }
+        .rating-fair       { background: #fef3c7; color: #92400e; }
+        .rating-poor       { background: #fee2e2; color: #991b1b; }
+        .badge-warn        { background: #fef3c7; color: #92400e; }
+
         .check-table { width: 100%; border-collapse: collapse; }
         .check-table td { vertical-align: top; padding: 2pt 4pt; width: 50%; font-size: 9.5pt; }
         .check { display: inline-block; width: 10pt; height: 10pt; border: 1pt solid #374151; margin-right: 6pt; vertical-align: middle; text-align: center; font-size: 10pt; line-height: 9pt; }
@@ -118,6 +128,54 @@
 
     <h1 class="title">Protokol o stave zbierkového predmetu</h1>
     <div class="sub">CONDITION REPORT</div>
+
+    {{-- Report metadata badge-row (stage + overall rating + conservator flag). --}}
+    @php
+        $stageLabels = [
+            'incoming'      => 'Incoming',
+            'pre_shipment'  => 'Pre-shipment',
+            'installation'  => 'Installation',
+            'post_shipment' => 'Post-shipment',
+            'return'        => 'Return',
+            'baseline'      => 'Baseline',
+            'incident'      => 'Incident',
+        ];
+        $ratingLabels = [
+            'excellent' => 'Excellent',
+            'good'      => 'Good',
+            'fair'      => 'Fair',
+            'poor'      => 'Poor',
+        ];
+        $ratingClass = [
+            'excellent' => 'rating-excellent',
+            'good'      => 'rating-good',
+            'fair'      => 'rating-fair',
+            'poor'      => 'rating-poor',
+        ];
+    @endphp
+    @if (!empty($r['stage']) || !empty($r['overall_rating']) || !empty($r['report_date']) || !empty($r['needs_conservator_review']))
+        <div class="meta-badges">
+            @if (!empty($r['stage']))
+                <span class="badge badge-stage">Stage: {{ $stageLabels[$r['stage']] ?? $r['stage'] }}</span>
+            @endif
+            @if (!empty($r['overall_rating']))
+                <span class="badge {{ $ratingClass[$r['overall_rating']] ?? '' }}">Overall: {{ $ratingLabels[$r['overall_rating']] ?? $r['overall_rating'] }}</span>
+            @endif
+            @if (!empty($r['report_date']))
+                <span class="badge">Report date: {{ \Carbon\Carbon::parse($r['report_date'])->format('d.m.Y') }}</span>
+            @endif
+            @if (!empty($r['needs_conservator_review']))
+                <span class="badge badge-warn">⚠ Needs conservator review</span>
+            @endif
+        </div>
+    @endif
+
+    @if (!empty($r['reason']))
+        <div class="meta-row"><span class="lbl">Reason:</span> {{ $r['reason'] }}</div>
+    @endif
+    @if (!empty($r['examination_limitations']))
+        <div class="meta-row"><span class="lbl">Examination limitations:</span> {{ $r['examination_limitations'] }}</div>
+    @endif
 
     {{-- Exhibition / Loan context --}}
     @if (!empty($r['exhibition_title'])) <div class="meta-row"><span class="lbl">Názov výstavy / Exhibition Title:</span> <span class="val">{{ $r['exhibition_title'] }}</span></div> @endif
@@ -199,13 +257,25 @@
     @endif
 
     {{-- Signatures --}}
+    @php
+        $roleLabels = [
+            'registrar'          => 'Registrar',
+            'curator'            => 'Curator',
+            'conservator'        => 'Conservator',
+            'collection_manager' => 'Collection manager',
+            'gallery_owner'      => 'Gallery owner',
+            'artist'             => 'Artist',
+            'other'              => '',
+        ];
+        $roleOnLine = !empty($r['checked_by_role']) ? ($roleLabels[$r['checked_by_role']] ?? '') : '';
+    @endphp
     <div class="signatures">
         <div class="caption">Odovzdanie / Handing-over</div>
         <table>
             <tr>
                 <td>
                     <div class="line">
-                        {{ $r['checked_by'] ?? '' }}
+                        {{ $r['checked_by'] ?? '' }}@if ($roleOnLine) <span style="color:#6b7280; font-weight:normal;">({{ $roleOnLine }})</span>@endif
                         &nbsp;
                     </div>
                     <div class="lbl">Skontroloval / Checked by — meno / name</div>

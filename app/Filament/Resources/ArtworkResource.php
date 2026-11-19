@@ -354,6 +354,56 @@ class ArtworkResource extends Resource
                     ->icon('heroicon-o-clipboard-document-check')
                     ->visible(fn (): bool => ! auth()->user()?->isArtist())
                     ->schema([
+                        // Registrar-style metadata inspired by the Artlogic
+                        // condition-report best-practice note: a report is
+                        // never just a checklist — it has a stage (incoming,
+                        // pre-shipment, …), an overall rating, and tells
+                        // whoever opens it later whether a conservator
+                        // still needs to look at the piece.
+                        Forms\Components\Section::make('Report metadata')
+                            ->schema([
+                                Forms\Components\Grid::make(2)->schema([
+                                    Forms\Components\Select::make('condition_report.stage')
+                                        ->label('Report stage')
+                                        ->helperText('When in the artwork\'s lifecycle this report is being written.')
+                                        ->options([
+                                            'incoming'       => 'Incoming — received into our care',
+                                            'pre_shipment'   => 'Pre-shipment — before leaving us',
+                                            'installation'   => 'Installation — at the venue',
+                                            'post_shipment'  => 'Post-shipment — arrival at destination',
+                                            'return'         => 'Return — back from loan',
+                                            'baseline'       => 'Baseline — periodic / in-storage review',
+                                            'incident'       => 'Incident — damage discovered',
+                                        ]),
+                                    Forms\Components\Select::make('condition_report.overall_rating')
+                                        ->label('Overall condition')
+                                        ->options([
+                                            'excellent' => 'Excellent',
+                                            'good'      => 'Good',
+                                            'fair'      => 'Fair',
+                                            'poor'      => 'Poor',
+                                        ]),
+                                    Forms\Components\DatePicker::make('condition_report.report_date')
+                                        ->label('Report date')
+                                        ->native(false)
+                                        ->displayFormat('d.m.Y')
+                                        ->closeOnDateSelection(),
+                                    Forms\Components\Toggle::make('condition_report.needs_conservator_review')
+                                        ->label('Needs conservator review')
+                                        ->helperText('Flag for follow-up by a professional conservator.'),
+                                    Forms\Components\Textarea::make('condition_report.reason')
+                                        ->label('Reason for the report')
+                                        ->rows(2)
+                                        ->columnSpan(2),
+                                    Forms\Components\Textarea::make('condition_report.examination_limitations')
+                                        ->label('Examination limitations')
+                                        ->helperText('What couldn\'t be inspected — e.g. reverse not accessible, glazed, in crate.')
+                                        ->rows(2)
+                                        ->columnSpan(2),
+                                ]),
+                            ])
+                            ->collapsible(),
+
                         Forms\Components\Section::make('Exhibition / Loan context')
                             ->description('What the report is written for. Pick one of the artwork’s exhibitions to prefill, or type the values manually.')
                             ->schema([
@@ -470,17 +520,29 @@ class ArtworkResource extends Resource
                                     Forms\Components\TextInput::make('condition_report.checked_by')
                                         ->label('Checked by (name)')
                                         ->maxLength(255),
+                                    Forms\Components\Select::make('condition_report.checked_by_role')
+                                        ->label('Role')
+                                        ->options([
+                                            'registrar'          => 'Registrar',
+                                            'curator'            => 'Curator',
+                                            'conservator'        => 'Conservator',
+                                            'collection_manager' => 'Collection manager',
+                                            'gallery_owner'      => 'Gallery owner',
+                                            'artist'             => 'Artist',
+                                            'other'              => 'Other',
+                                        ]),
                                     Forms\Components\TextInput::make('condition_report.checked_place')
                                         ->label('Place')
                                         ->maxLength(255),
                                     Forms\Components\DatePicker::make('condition_report.checked_date')
-                                        ->label('Date')
+                                        ->label('Signed on')
                                         ->native(false)
                                         ->displayFormat('d.m.Y')
                                         ->closeOnDateSelection(),
                                     Forms\Components\TextInput::make('condition_report.borrower_recipient')
                                         ->label('Take over on behalf of borrower (name)')
-                                        ->maxLength(255),
+                                        ->maxLength(255)
+                                        ->columnSpan(2),
                                 ]),
                             ])
                             ->collapsible()
