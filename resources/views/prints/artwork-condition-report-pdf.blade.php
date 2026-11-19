@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="sk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Protokol o stave zbierkového predmetu — {{ $artwork->title }}</title>
+    <title>Condition Report — {{ $artwork->title }}</title>
     <style>
         /*
          * SNG-style Condition Report — bilingual SK/EN. Layout echoes the
@@ -92,7 +92,7 @@
                 $on = in_array($key, $checked, true) ? 'on' : '';
                 $tick = $on === 'on' ? '✓' : '';
                 $items[] = '<span class="check '.$on.'">'.$tick.'</span>'
-                    . e($labels['sk']) . ' / <em>' . e($labels['en']) . '</em>';
+                    . e($labels['en']);
             }
             $half = (int) ceil(count($items) / 2);
             $left = array_slice($items, 0, $half);
@@ -126,8 +126,7 @@
         @endif
     </div>
 
-    <h1 class="title">Protokol o stave zbierkového predmetu</h1>
-    <div class="sub">CONDITION REPORT</div>
+    <h1 class="title">Condition Report</h1>
 
     {{-- Report metadata badge-row (stage + overall rating + conservator flag). --}}
     @php
@@ -178,38 +177,38 @@
     @endif
 
     {{-- Exhibition / Loan context --}}
-    @if (!empty($r['exhibition_title'])) <div class="meta-row"><span class="lbl">Názov výstavy / Exhibition Title:</span> <span class="val">{{ $r['exhibition_title'] }}</span></div> @endif
-    @if (!empty($r['institution'])) <div class="meta-row"><span class="lbl">Organizátor výstavy, vypožičiavateľ / Institution, Borrower:</span> <span class="val">{{ $r['institution'] }}</span></div> @endif
+    @if (!empty($r['exhibition_title'])) <div class="meta-row"><span class="lbl">Exhibition title:</span> <span class="val">{{ $r['exhibition_title'] }}</span></div> @endif
+    @if (!empty($r['institution'])) <div class="meta-row"><span class="lbl">Institution / Borrower:</span> <span class="val">{{ $r['institution'] }}</span></div> @endif
     <div class="meta-row">
-        @if (!empty($r['place'])) <span class="lbl">Miesto konania / Place of exhibition:</span> <span class="val">{{ $r['place'] }}</span> @endif
-        @if (!empty($r['duration'])) &nbsp;&nbsp; <span class="lbl">Trvanie / Duration:</span> <span class="val">{{ $r['duration'] }}</span> @endif
+        @if (!empty($r['place'])) <span class="lbl">Place of exhibition:</span> <span class="val">{{ $r['place'] }}</span> @endif
+        @if (!empty($r['duration'])) &nbsp;&nbsp; <span class="lbl">Duration:</span> <span class="val">{{ $r['duration'] }}</span> @endif
     </div>
-    @if (!empty($r['contact_person'])) <div class="meta-row"><span class="lbl">Kontaktná osoba / Contact person:</span> <span class="val">{{ $r['contact_person'] }}</span></div> @endif
-    @if (!empty($r['curator'])) <div class="meta-row"><span class="lbl">Kurátor / Curator:</span> <span class="val">{{ $r['curator'] }}</span></div> @endif
+    @if (!empty($r['contact_person'])) <div class="meta-row"><span class="lbl">Contact person:</span> <span class="val">{{ $r['contact_person'] }}</span></div> @endif
+    @if (!empty($r['curator'])) <div class="meta-row"><span class="lbl">Curator:</span> <span class="val">{{ $r['curator'] }}</span></div> @endif
 
     {{-- Installation / Transport --}}
     @if (!empty($r['installation_per_agreement']) || !empty($r['installation_notes']) || !empty($r['transport_per_agreement']) || !empty($r['transport_notes']))
         <div style="margin-top: 14pt;">
             @if (!empty($r['installation_per_agreement']) || !empty($r['installation_notes']))
                 <div class="meta-row">
-                    <strong>Podmienky inštalácie / Installation Conditions</strong>
+                    <strong>Installation conditions</strong>
                     @if (!empty($r['installation_per_agreement']))
-                        &nbsp;&nbsp;<span class="check on">✓</span> podľa zmluvy / According to a loan agreement
+                        &nbsp;&nbsp;<span class="check on">✓</span> According to loan agreement
                     @endif
                 </div>
                 @if (!empty($r['installation_notes']))
-                    <div class="meta-row"><span class="lbl">Poznámky / Notes:</span> {{ $r['installation_notes'] }}</div>
+                    <div class="meta-row"><span class="lbl">Notes:</span> {{ $r['installation_notes'] }}</div>
                 @endif
             @endif
             @if (!empty($r['transport_per_agreement']) || !empty($r['transport_notes']))
                 <div class="meta-row" style="margin-top:6pt;">
-                    <strong>Podmienky prepravy / Transport Conditions</strong>
+                    <strong>Transport conditions</strong>
                     @if (!empty($r['transport_per_agreement']))
-                        &nbsp;&nbsp;<span class="check on">✓</span> podľa zmluvy / According to a loan agreement
+                        &nbsp;&nbsp;<span class="check on">✓</span> According to loan agreement
                     @endif
                 </div>
                 @if (!empty($r['transport_notes']))
-                    <div class="meta-row"><span class="lbl">Poznámky / Notes:</span> {{ $r['transport_notes'] }}</div>
+                    <div class="meta-row"><span class="lbl">Notes:</span> {{ $r['transport_notes'] }}</div>
                 @endif
             @endif
         </div>
@@ -231,14 +230,14 @@
     </div>
 
     {{-- Body damages --}}
-    <h2 class="sec">Stav diela <small>/ Condition of Work</small></h2>
+    <h2 class="sec">Condition of work</h2>
     {!! $renderCheck($bodyDamages, is_array($checkedBody) ? $checkedBody : []) !!}
     @if (!empty($r['body_notes']))
         <div class="notes-block">{{ $r['body_notes'] }}</div>
     @endif
 
     {{-- Frame damages --}}
-    <h2 class="sec">Stav rámu <small>/ Condition of Frame</small></h2>
+    <h2 class="sec">Condition of frame</h2>
     {!! $renderCheck($frameDamages, is_array($checkedFrame) ? $checkedFrame : []) !!}
     @if (!empty($r['frame_notes']))
         <div class="notes-block">{{ $r['frame_notes'] }}</div>
@@ -246,7 +245,7 @@
 
     {{-- Annotated images --}}
     @if (!empty($annotated))
-        <h2 class="sec">Zobrazenie <small>/ Condition of the Collection Object (see pictures below)</small></h2>
+        <h2 class="sec">Condition of the collection object (see pictures below)</h2>
         <div class="annotated">
             @foreach ($annotated as $path)
                 @if (file_exists(public_path('storage/'.$path)))
@@ -270,7 +269,7 @@
         $roleOnLine = !empty($r['checked_by_role']) ? ($roleLabels[$r['checked_by_role']] ?? '') : '';
     @endphp
     <div class="signatures">
-        <div class="caption">Odovzdanie / Handing-over</div>
+        <div class="caption">Handing-over</div>
         <table>
             <tr>
                 <td>
@@ -278,11 +277,11 @@
                         {{ $r['checked_by'] ?? '' }}@if ($roleOnLine) <span style="color:#6b7280; font-weight:normal;">({{ $roleOnLine }})</span>@endif
                         &nbsp;
                     </div>
-                    <div class="lbl">Skontroloval / Checked by — meno / name</div>
+                    <div class="lbl">Checked by — name</div>
                 </td>
                 <td>
                     <div class="line">&nbsp;</div>
-                    <div class="lbl">podpis / signature</div>
+                    <div class="lbl">Signature</div>
                 </td>
             </tr>
             <tr>
@@ -291,7 +290,7 @@
                         {{ $r['checked_place'] ?? '' }}
                         &nbsp;
                     </div>
-                    <div class="lbl">Miesto / Place</div>
+                    <div class="lbl">Place</div>
                 </td>
                 <td>
                     <div class="line">
@@ -300,7 +299,7 @@
                         @endif
                         &nbsp;
                     </div>
-                    <div class="lbl">Dňa / Date</div>
+                    <div class="lbl">Date</div>
                 </td>
             </tr>
             <tr>
@@ -309,7 +308,7 @@
                         {{ $r['borrower_recipient'] ?? '' }}
                         &nbsp;
                     </div>
-                    <div class="lbl">Prevzal za vypožičiavateľa / Take over on behalf of the borrower (meno / name)</div>
+                    <div class="lbl">Taken over on behalf of the borrower — name</div>
                 </td>
             </tr>
         </table>

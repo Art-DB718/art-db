@@ -67,7 +67,7 @@ class ConditionReport
     }
 
     /**
-     * Options for Filament CheckboxList: key => "SK / EN".
+     * Options for Filament CheckboxList: key => English label.
      *
      * @param  array<string, array{sk: string, en: string}>  $list
      * @return array<string, string>
@@ -76,7 +76,7 @@ class ConditionReport
     {
         $out = [];
         foreach ($list as $key => $labels) {
-            $out[$key] = $labels['sk'].' / '.$labels['en'];
+            $out[$key] = $labels['en'];
         }
         return $out;
     }

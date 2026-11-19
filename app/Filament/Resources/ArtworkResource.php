@@ -476,7 +476,7 @@ class ArtworkResource extends Resource
                             ->description('Check all that apply. Both SK and EN labels appear on the PDF.')
                             ->schema([
                                 Forms\Components\CheckboxList::make('condition_report.body_damages')
-                                    ->label('Stav diela / Condition of work')
+                                    ->label('Condition of work')
                                     ->options(\App\Support\ConditionReport::options(\App\Support\ConditionReport::bodyDamages()))
                                     ->columns(2)
                                     ->bulkToggleable(),
@@ -489,7 +489,7 @@ class ArtworkResource extends Resource
                         Forms\Components\Section::make('Condition of frame')
                             ->schema([
                                 Forms\Components\CheckboxList::make('condition_report.frame_damages')
-                                    ->label('Stav rámu / Condition of frame')
+                                    ->label('Condition of frame')
                                     ->options(\App\Support\ConditionReport::options(\App\Support\ConditionReport::frameDamages()))
                                     ->columns(2)
                                     ->bulkToggleable(),
