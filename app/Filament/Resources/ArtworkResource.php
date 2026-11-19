@@ -350,21 +350,32 @@ class ArtworkResource extends Resource
                 // lives in the `condition_report` JSON column so adding fields
                 // later doesn't need a migration. PDF is generated from the
                 // same data via /prints/artwork/{artwork}/condition-report.pdf.
+                // SNG-style Condition Report — a fillable loan-protocol with
+                // 26 damage checkboxes for the body + 6 for the frame, plus
+                // exhibition/borrower context and signatures. The entire blob
+                // lives in the `condition_report` JSON column so adding fields
+                // later doesn't need a migration. All labels, section titles
+                // and option values are reactively translated from
+                // lang/{locale}/condition_report.php so the form reads in
+                // the language the user picks at the top.
                 Forms\Components\Tabs\Tab::make('Condition Report')
                     ->icon('heroicon-o-clipboard-document-check')
                     ->visible(fn (): bool => ! auth()->user()?->isArtist())
                     ->schema([
-                        // Language picker FIRST — chosen before the form is
-                        // filled in so the damage checklist, section titles
-                        // and PDF all speak the same language. Stored in
-                        // condition_report.language; defaults to the global
-                        // print-default. ->live() so swapping the language
-                        // reactively relabels the checklist below.
-                        Forms\Components\Section::make('Language')
-                            ->description('Pick the language first — the damage checklist, its section titles, and the generated PDF all follow this choice.')
+                        // Language picker FIRST. Stored in condition_report.
+                        // language; ->live() so the rest of the tab relabels
+                        // the moment it changes.
+                        Forms\Components\Section::make(fn (Forms\Get $get): string =>
+                            self::crT($get, 'form.language.section')
+                        )
+                            ->description(fn (Forms\Get $get): string =>
+                                self::crT($get, 'form.language.section_desc')
+                            )
                             ->schema([
                                 Forms\Components\Select::make('condition_report.language')
-                                    ->label('Report language')
+                                    ->label(fn (Forms\Get $get): string =>
+                                        self::crT($get, 'form.language.field')
+                                    )
                                     ->options(config('prints.languages'))
                                     ->default(config('prints.default_language', 'en'))
                                     ->native(false)
@@ -372,62 +383,53 @@ class ArtworkResource extends Resource
                                     ->required(),
                             ]),
 
-                        // Registrar-style metadata inspired by the Artlogic
-                        // condition-report best-practice note: a report is
-                        // never just a checklist — it has a stage (incoming,
-                        // pre-shipment, …), an overall rating, and tells
-                        // whoever opens it later whether a conservator
-                        // still needs to look at the piece.
-                        Forms\Components\Section::make('Report metadata')
+                        Forms\Components\Section::make(fn (Forms\Get $get): string =>
+                            self::crT($get, 'form.metadata.section')
+                        )
                             ->schema([
                                 Forms\Components\Grid::make(2)->schema([
                                     Forms\Components\Select::make('condition_report.stage')
-                                        ->label('Report stage')
-                                        ->helperText('When in the artwork\'s lifecycle this report is being written.')
-                                        ->options([
-                                            'incoming'       => 'Incoming — received into our care',
-                                            'pre_shipment'   => 'Pre-shipment — before leaving us',
-                                            'installation'   => 'Installation — at the venue',
-                                            'post_shipment'  => 'Post-shipment — arrival at destination',
-                                            'return'         => 'Return — back from loan',
-                                            'baseline'       => 'Baseline — periodic / in-storage review',
-                                            'incident'       => 'Incident — damage discovered',
-                                        ]),
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.metadata.stage'))
+                                        ->helperText(fn (Forms\Get $get): string => self::crT($get, 'form.metadata.stage_help'))
+                                        ->options(fn (Forms\Get $get): array =>
+                                            self::translatedList(['incoming','pre_shipment','installation','post_shipment','return','baseline','incident'], 'stages', self::crLang($get))
+                                        ),
                                     Forms\Components\Select::make('condition_report.overall_rating')
-                                        ->label('Overall condition')
-                                        ->options([
-                                            'excellent' => 'Excellent',
-                                            'good'      => 'Good',
-                                            'fair'      => 'Fair',
-                                            'poor'      => 'Poor',
-                                        ]),
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.metadata.overall'))
+                                        ->options(fn (Forms\Get $get): array =>
+                                            self::translatedList(['excellent','good','fair','poor'], 'ratings', self::crLang($get))
+                                        ),
                                     Forms\Components\DatePicker::make('condition_report.report_date')
-                                        ->label('Report date')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.metadata.report_date'))
                                         ->native(false)
                                         ->displayFormat('d.m.Y')
                                         ->closeOnDateSelection(),
                                     Forms\Components\Toggle::make('condition_report.needs_conservator_review')
-                                        ->label('Needs conservator review')
-                                        ->helperText('Flag for follow-up by a professional conservator.'),
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.metadata.needs_conservator'))
+                                        ->helperText(fn (Forms\Get $get): string => self::crT($get, 'form.metadata.needs_conservator_help')),
                                     Forms\Components\Textarea::make('condition_report.reason')
-                                        ->label('Reason for the report')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.metadata.reason'))
                                         ->rows(2)
                                         ->columnSpan(2),
                                     Forms\Components\Textarea::make('condition_report.examination_limitations')
-                                        ->label('Examination limitations')
-                                        ->helperText('What couldn\'t be inspected — e.g. reverse not accessible, glazed, in crate.')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.metadata.limitations'))
+                                        ->helperText(fn (Forms\Get $get): string => self::crT($get, 'form.metadata.limitations_help'))
                                         ->rows(2)
                                         ->columnSpan(2),
                                 ]),
                             ])
                             ->collapsible(),
 
-                        Forms\Components\Section::make('Exhibition / Loan context')
-                            ->description('What the report is written for. Pick one of the artwork’s exhibitions to prefill, or type the values manually.')
+                        Forms\Components\Section::make(fn (Forms\Get $get): string =>
+                            self::crT($get, 'form.exhibition.section')
+                        )
+                            ->description(fn (Forms\Get $get): string =>
+                                self::crT($get, 'form.exhibition.section_desc')
+                            )
                             ->schema([
                                 Forms\Components\Grid::make(2)->schema([
                                     Forms\Components\Select::make('condition_report.exhibition_id')
-                                        ->label('Exhibition')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.exhibition.pick'))
                                         ->options(fn ($record) => $record?->exhibitions()->pluck('title', 'exhibitions.id')->toArray() ?? [])
                                         ->searchable()
                                         ->live()
@@ -446,43 +448,45 @@ class ArtworkResource extends Resource
                                         })
                                         ->columnSpan(2),
                                     Forms\Components\TextInput::make('condition_report.exhibition_title')
-                                        ->label('Exhibition title')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.exhibition.title'))
                                         ->maxLength(255)
                                         ->columnSpan(2),
                                     Forms\Components\TextInput::make('condition_report.institution')
-                                        ->label('Institution / Borrower')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.exhibition.institution'))
                                         ->maxLength(255)
                                         ->columnSpan(2),
                                     Forms\Components\TextInput::make('condition_report.place')
-                                        ->label('Place of exhibition')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.exhibition.place'))
                                         ->maxLength(255),
                                     Forms\Components\TextInput::make('condition_report.duration')
-                                        ->label('Duration')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.exhibition.duration'))
                                         ->placeholder('22.10.2026-7.2.2027')
                                         ->maxLength(255),
                                     Forms\Components\TextInput::make('condition_report.contact_person')
-                                        ->label('Contact person')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.exhibition.contact'))
                                         ->maxLength(255),
                                     Forms\Components\TextInput::make('condition_report.curator')
-                                        ->label('Curator')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.exhibition.curator'))
                                         ->maxLength(255),
                                 ]),
                             ])
                             ->collapsible(),
 
-                        Forms\Components\Section::make('Installation & Transport conditions')
+                        Forms\Components\Section::make(fn (Forms\Get $get): string =>
+                            self::crT($get, 'form.install_transport.section')
+                        )
                             ->schema([
                                 Forms\Components\Grid::make(2)->schema([
                                     Forms\Components\Toggle::make('condition_report.installation_per_agreement')
-                                        ->label('Installation: according to loan agreement'),
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.install_transport.install_toggle')),
                                     Forms\Components\Toggle::make('condition_report.transport_per_agreement')
-                                        ->label('Transport: according to loan agreement'),
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.install_transport.transport_toggle')),
                                     Forms\Components\Textarea::make('condition_report.installation_notes')
-                                        ->label('Installation — notes')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.install_transport.install_notes'))
                                         ->rows(2)
                                         ->columnSpan(2),
                                     Forms\Components\Textarea::make('condition_report.transport_notes')
-                                        ->label('Transport — notes')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.install_transport.transport_notes'))
                                         ->rows(2)
                                         ->columnSpan(2),
                                 ]),
@@ -491,51 +495,49 @@ class ArtworkResource extends Resource
                             ->collapsed(),
 
                         Forms\Components\Section::make(fn (Forms\Get $get): string =>
-                            __('condition_report.section_body', [], $get('condition_report.language') ?: config('prints.default_language', 'en'))
+                            self::crT($get, 'section_body')
                         )
-                            ->description('Check all that apply. The PDF uses this same language.')
+                            ->description(fn (Forms\Get $get): string => self::crT($get, 'form.body_frame.body_desc'))
                             ->schema([
                                 Forms\Components\CheckboxList::make('condition_report.body_damages')
-                                    ->label(fn (Forms\Get $get): string =>
-                                        __('condition_report.section_body', [], $get('condition_report.language') ?: config('prints.default_language', 'en'))
-                                    )
+                                    ->label(fn (Forms\Get $get): string => self::crT($get, 'section_body'))
                                     ->options(fn (Forms\Get $get): array => self::translatedDamageOptions(
                                         \App\Support\ConditionReport::bodyDamages(),
                                         'body',
-                                        $get('condition_report.language') ?: config('prints.default_language', 'en'),
+                                        self::crLang($get),
                                     ))
                                     ->columns(2)
                                     ->bulkToggleable(),
                                 Forms\Components\Textarea::make('condition_report.body_notes')
-                                    ->label('Description of condition (free text)')
+                                    ->label(fn (Forms\Get $get): string => self::crT($get, 'form.body_frame.body_notes'))
                                     ->rows(3),
                             ])
                             ->collapsible(),
 
                         Forms\Components\Section::make(fn (Forms\Get $get): string =>
-                            __('condition_report.section_frame', [], $get('condition_report.language') ?: config('prints.default_language', 'en'))
+                            self::crT($get, 'section_frame')
                         )
                             ->schema([
                                 Forms\Components\CheckboxList::make('condition_report.frame_damages')
-                                    ->label(fn (Forms\Get $get): string =>
-                                        __('condition_report.section_frame', [], $get('condition_report.language') ?: config('prints.default_language', 'en'))
-                                    )
+                                    ->label(fn (Forms\Get $get): string => self::crT($get, 'section_frame'))
                                     ->options(fn (Forms\Get $get): array => self::translatedDamageOptions(
                                         \App\Support\ConditionReport::frameDamages(),
                                         'frame',
-                                        $get('condition_report.language') ?: config('prints.default_language', 'en'),
+                                        self::crLang($get),
                                     ))
                                     ->columns(2)
                                     ->bulkToggleable(),
                                 Forms\Components\Textarea::make('condition_report.frame_notes')
-                                    ->label('Description (free text)')
+                                    ->label(fn (Forms\Get $get): string => self::crT($get, 'form.body_frame.frame_notes'))
                                     ->rows(2),
                             ])
                             ->collapsible()
                             ->collapsed(),
 
-                        Forms\Components\Section::make('Annotated photos (optional)')
-                            ->description('Photos marked up to point out specific damages — printed after the checklist on the PDF.')
+                        Forms\Components\Section::make(fn (Forms\Get $get): string =>
+                            self::crT($get, 'form.annotated.section')
+                        )
+                            ->description(fn (Forms\Get $get): string => self::crT($get, 'form.annotated.section_desc'))
                             ->schema([
                                 Forms\Components\FileUpload::make('condition_report.annotated_images')
                                     ->image()
@@ -548,33 +550,29 @@ class ArtworkResource extends Resource
                             ->collapsible()
                             ->collapsed(),
 
-                        Forms\Components\Section::make('Handing-over / Signatures')
+                        Forms\Components\Section::make(fn (Forms\Get $get): string =>
+                            self::crT($get, 'form.handover.section')
+                        )
                             ->schema([
                                 Forms\Components\Grid::make(2)->schema([
                                     Forms\Components\TextInput::make('condition_report.checked_by')
-                                        ->label('Checked by (name)')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.handover.checked_by'))
                                         ->maxLength(255),
                                     Forms\Components\Select::make('condition_report.checked_by_role')
-                                        ->label('Role')
-                                        ->options([
-                                            'registrar'          => 'Registrar',
-                                            'curator'            => 'Curator',
-                                            'conservator'        => 'Conservator',
-                                            'collection_manager' => 'Collection manager',
-                                            'gallery_owner'      => 'Gallery owner',
-                                            'artist'             => 'Artist',
-                                            'other'              => 'Other',
-                                        ]),
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.handover.role'))
+                                        ->options(fn (Forms\Get $get): array =>
+                                            self::translatedList(['registrar','curator','conservator','collection_manager','gallery_owner','artist','other'], 'roles', self::crLang($get))
+                                        ),
                                     Forms\Components\TextInput::make('condition_report.checked_place')
-                                        ->label('Place')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.handover.place'))
                                         ->maxLength(255),
                                     Forms\Components\DatePicker::make('condition_report.checked_date')
-                                        ->label('Signed on')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.handover.signed_on'))
                                         ->native(false)
                                         ->displayFormat('d.m.Y')
                                         ->closeOnDateSelection(),
                                     Forms\Components\TextInput::make('condition_report.borrower_recipient')
-                                        ->label('Take over on behalf of borrower (name)')
+                                        ->label(fn (Forms\Get $get): string => self::crT($get, 'form.handover.borrower'))
                                         ->maxLength(255)
                                         ->columnSpan(2),
                                 ]),
@@ -609,6 +607,45 @@ class ArtworkResource extends Resource
             $full = 'condition_report.'.$group.'.'.$key;
             $translated = __($full, [], $locale);
             $out[$key] = ($translated === $full) ? $labels['en'] : $translated;
+        }
+        return $out;
+    }
+
+    /** Resolve the Condition Report form's active language from state. */
+    protected static function crLang(Forms\Get $get): string
+    {
+        return $get('condition_report.language')
+            ?: config('prints.default_language', 'en');
+    }
+
+    /**
+     * Translate a condition_report.* key in the Condition Report form's
+     * active language. Returns the key itself (as plain text) when no
+     * translation exists, so a missing string is visible in the UI
+     * instead of silently blank.
+     */
+    protected static function crT(Forms\Get $get, string $key): string
+    {
+        $full = 'condition_report.'.$key;
+        $translated = __($full, [], self::crLang($get));
+        return is_string($translated) ? $translated : $full;
+    }
+
+    /**
+     * Build an options array for a Filament Select by translating a set
+     * of stable string keys against a subkey of condition_report (e.g.
+     * stages, ratings, roles) in the active locale.
+     *
+     * @param  array<int, string>  $keys
+     * @return array<string, string>
+     */
+    protected static function translatedList(array $keys, string $group, string $locale): array
+    {
+        $out = [];
+        foreach ($keys as $k) {
+            $full = 'condition_report.'.$group.'.'.$k;
+            $t = __($full, [], $locale);
+            $out[$k] = is_string($t) && $t !== $full && $t !== '' ? $t : $k;
         }
         return $out;
     }

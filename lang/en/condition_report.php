@@ -99,4 +99,62 @@ return [
         'frame_fallen_fragment'    => 'Fallen fragment',
         'frame_previous_treatment' => 'Previous treatment',
     ],
+
+    // Admin-form-only strings: section headings, field labels and helper
+    // texts for the Filament Condition Report tab. The PDF template
+    // itself uses the keys above (title / stages / body.* / frame.* etc.).
+    'form' => [
+        'language' => [
+            'section'      => 'Language',
+            'section_desc' => 'Pick the language first — the damage checklist, its section titles and the generated PDF all follow this choice.',
+            'field'        => 'Report language',
+        ],
+        'metadata' => [
+            'section'                => 'Report metadata',
+            'stage'                  => 'Report stage',
+            'stage_help'             => 'When in the artwork\'s lifecycle this report is being written.',
+            'overall'                => 'Overall condition',
+            'report_date'            => 'Report date',
+            'needs_conservator'      => 'Needs conservator review',
+            'needs_conservator_help' => 'Flag for follow-up by a professional conservator.',
+            'reason'                 => 'Reason for the report',
+            'limitations'            => 'Examination limitations',
+            'limitations_help'       => 'What couldn\'t be inspected — e.g. reverse not accessible, glazed, in crate.',
+        ],
+        'exhibition' => [
+            'section'      => 'Exhibition / Loan context',
+            'section_desc' => 'What the report is written for. Pick one of the artwork\'s exhibitions to prefill, or type the values manually.',
+            'pick'         => 'Exhibition',
+            'title'        => 'Exhibition title',
+            'institution'  => 'Institution / Borrower',
+            'place'        => 'Place of exhibition',
+            'duration'     => 'Duration',
+            'contact'      => 'Contact person',
+            'curator'      => 'Curator',
+        ],
+        'install_transport' => [
+            'section'          => 'Installation & Transport conditions',
+            'install_toggle'   => 'Installation: according to loan agreement',
+            'transport_toggle' => 'Transport: according to loan agreement',
+            'install_notes'    => 'Installation — notes',
+            'transport_notes'  => 'Transport — notes',
+        ],
+        'body_frame' => [
+            'body_notes'  => 'Description of condition (free text)',
+            'body_desc'   => 'Check all that apply. The PDF uses this same language.',
+            'frame_notes' => 'Description (free text)',
+        ],
+        'annotated' => [
+            'section'      => 'Annotated photos (optional)',
+            'section_desc' => 'Photos marked up to point out specific damages — printed after the checklist on the PDF.',
+        ],
+        'handover' => [
+            'section'    => 'Handing-over / Signatures',
+            'checked_by' => 'Checked by (name)',
+            'role'       => 'Role',
+            'place'      => 'Place',
+            'signed_on'  => 'Signed on',
+            'borrower'   => 'Take over on behalf of borrower (name)',
+        ],
+    ],
 ];
