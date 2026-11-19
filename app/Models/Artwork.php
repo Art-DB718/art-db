@@ -23,7 +23,7 @@ class Artwork extends Model
         'is_signed', 'is_dated', 'is_framed', 'signature_description',
         'price', 'currency', 'price_on_request',
         'purchase_date', 'purchase_price', 'insurance_value',
-        'condition_notes', 'damage_notes', 'provenance', 'provenance_is_public',
+        'condition_notes', 'damage_notes', 'condition_report', 'provenance', 'provenance_is_public',
         'exhibition_history', 'literature',
         'has_certificate_of_authenticity',
         'certificate_of_authenticity_document', 'invoice_document',
@@ -37,6 +37,7 @@ class Artwork extends Model
 
     protected $casts = [
         'gallery_images'                  => 'array',
+        'condition_report'                => 'array',
         'restoration_documents'           => 'array',
         'restoration_photos'              => 'array',
         'restoration_date'                => 'date',

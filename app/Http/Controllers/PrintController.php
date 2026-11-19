@@ -85,6 +85,18 @@ class PrintController extends Controller
         return $this->deliver($request, $pdf, $this->fileName('maintenance', $artwork));
     }
 
+    public function artworkConditionReport(Artwork $artwork, Request $request): Response
+    {
+        $artwork->load(['artist', 'medium']);
+
+        $pdf = Pdf::loadView('prints.artwork-condition-report-pdf', [
+            'artwork'  => $artwork,
+            'settings' => InvoiceSetting::current(),
+        ])->setPaper('a4');
+
+        return $this->deliver($request, $pdf, $this->fileName('condition-report', $artwork));
+    }
+
     public function saleInvoice(Sale $sale, Request $request): Response
     {
         $sale->load(['buyer', 'lineItems.artwork.artist']);

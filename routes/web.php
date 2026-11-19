@@ -205,6 +205,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/prints/artwork/{artwork}/certificate.pdf',[PrintController::class, 'artworkCertificate'])->name('artworks.pdf.certificate');
     Route::get('/prints/artwork/{artwork}/label.pdf',      [PrintController::class, 'artworkLabel'])->name('artworks.pdf.label');
     Route::get('/prints/artwork/{artwork}/maintenance.pdf',[PrintController::class, 'artworkMaintenance'])->name('artworks.pdf.maintenance');
+    Route::get('/prints/artwork/{artwork}/condition-report.pdf', [PrintController::class, 'artworkConditionReport'])->name('artworks.pdf.condition-report');
 });
 
 require __DIR__.'/auth.php';

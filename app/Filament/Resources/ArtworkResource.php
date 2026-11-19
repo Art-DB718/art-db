@@ -344,6 +344,149 @@ class ArtworkResource extends Resource
                             ]),
                     ]),
 
+                // SNG-style Condition Report — a fillable loan-protocol with
+                // 26 damage checkboxes for the body + 6 for the frame, plus
+                // exhibition/borrower context and signatures. The entire blob
+                // lives in the `condition_report` JSON column so adding fields
+                // later doesn't need a migration. PDF is generated from the
+                // same data via /prints/artwork/{artwork}/condition-report.pdf.
+                Forms\Components\Tabs\Tab::make('Condition Report')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->visible(fn (): bool => ! auth()->user()?->isArtist())
+                    ->schema([
+                        Forms\Components\Section::make('Exhibition / Loan context')
+                            ->description('What the report is written for. Pick one of the artwork’s exhibitions to prefill, or type the values manually.')
+                            ->schema([
+                                Forms\Components\Grid::make(2)->schema([
+                                    Forms\Components\Select::make('condition_report.exhibition_id')
+                                        ->label('Exhibition')
+                                        ->options(fn ($record) => $record?->exhibitions()->pluck('title', 'exhibitions.id')->toArray() ?? [])
+                                        ->searchable()
+                                        ->live()
+                                        ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                            if (! $state) return;
+                                            $ex = \App\Models\Exhibition::find($state);
+                                            if (! $ex) return;
+                                            $set('condition_report.exhibition_title', $ex->title);
+                                            $set('condition_report.place', $ex->venue ?: ($ex->location?->name));
+                                            $duration = trim(
+                                                ($ex->start_date?->format('d.m.Y') ?? '')
+                                                . ($ex->end_date ? '-'.$ex->end_date->format('d.m.Y') : '')
+                                            );
+                                            $set('condition_report.duration', $duration);
+                                            $set('condition_report.curator', $ex->curator);
+                                        })
+                                        ->columnSpan(2),
+                                    Forms\Components\TextInput::make('condition_report.exhibition_title')
+                                        ->label('Exhibition title')
+                                        ->maxLength(255)
+                                        ->columnSpan(2),
+                                    Forms\Components\TextInput::make('condition_report.institution')
+                                        ->label('Institution / Borrower')
+                                        ->maxLength(255)
+                                        ->columnSpan(2),
+                                    Forms\Components\TextInput::make('condition_report.place')
+                                        ->label('Place of exhibition')
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('condition_report.duration')
+                                        ->label('Duration')
+                                        ->placeholder('22.10.2026-7.2.2027')
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('condition_report.contact_person')
+                                        ->label('Contact person')
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('condition_report.curator')
+                                        ->label('Curator')
+                                        ->maxLength(255),
+                                ]),
+                            ])
+                            ->collapsible(),
+
+                        Forms\Components\Section::make('Installation & Transport conditions')
+                            ->schema([
+                                Forms\Components\Grid::make(2)->schema([
+                                    Forms\Components\Toggle::make('condition_report.installation_per_agreement')
+                                        ->label('Installation: according to loan agreement'),
+                                    Forms\Components\Toggle::make('condition_report.transport_per_agreement')
+                                        ->label('Transport: according to loan agreement'),
+                                    Forms\Components\Textarea::make('condition_report.installation_notes')
+                                        ->label('Installation — notes')
+                                        ->rows(2)
+                                        ->columnSpan(2),
+                                    Forms\Components\Textarea::make('condition_report.transport_notes')
+                                        ->label('Transport — notes')
+                                        ->rows(2)
+                                        ->columnSpan(2),
+                                ]),
+                            ])
+                            ->collapsible()
+                            ->collapsed(),
+
+                        Forms\Components\Section::make('Condition of work')
+                            ->description('Check all that apply. Both SK and EN labels appear on the PDF.')
+                            ->schema([
+                                Forms\Components\CheckboxList::make('condition_report.body_damages')
+                                    ->label('Stav diela / Condition of work')
+                                    ->options(\App\Support\ConditionReport::options(\App\Support\ConditionReport::bodyDamages()))
+                                    ->columns(2)
+                                    ->bulkToggleable(),
+                                Forms\Components\Textarea::make('condition_report.body_notes')
+                                    ->label('Description of condition (free text)')
+                                    ->rows(3),
+                            ])
+                            ->collapsible(),
+
+                        Forms\Components\Section::make('Condition of frame')
+                            ->schema([
+                                Forms\Components\CheckboxList::make('condition_report.frame_damages')
+                                    ->label('Stav rámu / Condition of frame')
+                                    ->options(\App\Support\ConditionReport::options(\App\Support\ConditionReport::frameDamages()))
+                                    ->columns(2)
+                                    ->bulkToggleable(),
+                                Forms\Components\Textarea::make('condition_report.frame_notes')
+                                    ->label('Description (free text)')
+                                    ->rows(2),
+                            ])
+                            ->collapsible()
+                            ->collapsed(),
+
+                        Forms\Components\Section::make('Annotated photos (optional)')
+                            ->description('Photos marked up to point out specific damages — printed after the checklist on the PDF.')
+                            ->schema([
+                                Forms\Components\FileUpload::make('condition_report.annotated_images')
+                                    ->image()
+                                    ->multiple()
+                                    ->reorderable()
+                                    ->appendFiles()
+                                    ->disk('public')
+                                    ->directory('artworks/condition-report'),
+                            ])
+                            ->collapsible()
+                            ->collapsed(),
+
+                        Forms\Components\Section::make('Handing-over / Signatures')
+                            ->schema([
+                                Forms\Components\Grid::make(2)->schema([
+                                    Forms\Components\TextInput::make('condition_report.checked_by')
+                                        ->label('Checked by (name)')
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('condition_report.checked_place')
+                                        ->label('Place')
+                                        ->maxLength(255),
+                                    Forms\Components\DatePicker::make('condition_report.checked_date')
+                                        ->label('Date')
+                                        ->native(false)
+                                        ->displayFormat('d.m.Y')
+                                        ->closeOnDateSelection(),
+                                    Forms\Components\TextInput::make('condition_report.borrower_recipient')
+                                        ->label('Take over on behalf of borrower (name)')
+                                        ->maxLength(255),
+                                ]),
+                            ])
+                            ->collapsible()
+                            ->collapsed(),
+                    ]),
+
                 Forms\Components\Tabs\Tab::make('Publishing')->schema([
                     Forms\Components\Toggle::make('is_published')->label('Published on public site'),
                     Forms\Components\Toggle::make('is_featured')->label('Featured (show on homepage)'),

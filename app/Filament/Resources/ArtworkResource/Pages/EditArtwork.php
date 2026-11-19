@@ -52,6 +52,13 @@ class EditArtwork extends EditRecord
                     ->url(route('artworks.pdf.maintenance', $record))
                     ->openUrlInNewTab()
                     ->extraAttributes($shareAttrs('maintenance', 'artworks.pdf.maintenance')),
+                Actions\Action::make('printConditionReport')
+                    ->label('Print condition report')
+                    ->icon('heroicon-m-clipboard-document-check')
+                    ->visible(! auth()->user()?->isArtist())
+                    ->url(route('artworks.pdf.condition-report', $record))
+                    ->openUrlInNewTab()
+                    ->extraAttributes($shareAttrs('condition-report', 'artworks.pdf.condition-report')),
             ])
                 ->label('Print / Save as PDF')
                 ->icon('heroicon-m-printer')
