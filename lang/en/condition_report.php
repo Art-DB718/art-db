@@ -1,0 +1,102 @@
+<?php
+
+return [
+    'title'                     => 'Condition Report',
+
+    'exhibition_title'          => 'Exhibition title',
+    'institution'               => 'Institution / Borrower',
+    'place'                     => 'Place of exhibition',
+    'duration'                  => 'Duration',
+    'contact_person'            => 'Contact person',
+    'curator'                   => 'Curator',
+
+    'installation_conditions'   => 'Installation conditions',
+    'transport_conditions'      => 'Transport conditions',
+    'per_agreement'             => 'According to loan agreement',
+    'notes'                     => 'Notes',
+
+    'stage_label'               => 'Stage',
+    'overall_label'             => 'Overall',
+    'report_date_label'         => 'Report date',
+    'needs_conservator_review'  => 'Needs conservator review',
+    'reason'                    => 'Reason',
+    'examination_limitations'   => 'Examination limitations',
+
+    'section_body'              => 'Condition of work',
+    'section_frame'             => 'Condition of frame',
+    'section_annotated'         => 'Condition of the collection object (see pictures below)',
+
+    'handing_over'              => 'Handing-over',
+    'checked_by'                => 'Checked by — name',
+    'signature'                 => 'Signature',
+    'place_short'               => 'Place',
+    'date_short'                => 'Date',
+    'borrower_recipient'        => 'Taken over on behalf of the borrower — name',
+
+    'stages' => [
+        'incoming'      => 'Incoming',
+        'pre_shipment'  => 'Pre-shipment',
+        'installation'  => 'Installation',
+        'post_shipment' => 'Post-shipment',
+        'return'        => 'Return',
+        'baseline'      => 'Baseline',
+        'incident'      => 'Incident',
+    ],
+
+    'ratings' => [
+        'excellent' => 'Excellent',
+        'good'      => 'Good',
+        'fair'      => 'Fair',
+        'poor'      => 'Poor',
+    ],
+
+    'roles' => [
+        'registrar'          => 'Registrar',
+        'curator'            => 'Curator',
+        'conservator'        => 'Conservator',
+        'collection_manager' => 'Collection manager',
+        'gallery_owner'      => 'Gallery owner',
+        'artist'             => 'Artist',
+        'other'              => '',
+    ],
+
+    'body' => [
+        'base_level'                 => 'Differences in base-level',
+        'ground_damage'              => 'Damages of the ground',
+        'ground_perforation'         => 'a) perforation',
+        'ground_cracks'              => 'b) cracks',
+        'fold_of_support'            => 'Fold of support',
+        'break'                      => 'Break',
+        'undulation'                 => 'Undulation',
+        'crease'                     => 'Crease',
+        'bulge'                      => 'Bulge',
+        'diminished_paint_adhesion'  => 'Diminished paint adhesion',
+        'fallen_colour_layer'        => 'Fallen colour-layer',
+        'damaged_colour_layer'       => 'Damaged colour-layer',
+        'cracks_with_loose_paint'    => 'Cracks with diminished paint adhesion',
+        'paint_abrasion'             => 'Paint abrasion',
+        'scrap'                      => 'Scrap',
+        'dusty_surface'              => 'Dusty surface',
+        'bloom'                      => 'Bloom',
+        'discoloration'              => 'Discoloration',
+        'local_stains'               => 'Local stains',
+        'fingerprint'                => 'Finger-print',
+        'fly_specks'                 => 'Fly specks',
+        'foxing'                     => 'Foxing',
+        'previous_treatment'         => 'Previous treatment',
+        'damaged_patina'             => 'Damaged patina',
+        'yellowish_paper'            => 'Yellowish paper',
+        'loose_parts'                => 'Loose parts',
+        'woodworm_damage'            => 'Damage from woodworm',
+        'fillings_and_retouch'       => 'Fillings and retouch',
+    ],
+
+    'frame' => [
+        'frame_abrasion'           => 'Abrasion',
+        'frame_crackle'            => 'Crackle, cleavage',
+        'frame_open_bevel'         => 'Open bevel (across)',
+        'frame_colour_trace'       => 'Colour trace',
+        'frame_fallen_fragment'    => 'Fallen fragment',
+        'frame_previous_treatment' => 'Previous treatment',
+    ],
+];

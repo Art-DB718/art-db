@@ -34,6 +34,20 @@ class PrintController extends Controller
             : $pdf->stream($filename);
     }
 
+    /**
+     * Apply ?lang=xx to the app locale for this render ONLY if the code
+     * is in the printable-languages catalogue. Unknown codes fall through
+     * to the default locale — never trust the raw query string.
+     */
+    protected function applyLang(Request $request): void
+    {
+        $lang = (string) $request->query('lang', '');
+        $known = array_keys(config('prints.languages', []));
+        if ($lang !== '' && in_array($lang, $known, true)) {
+            app()->setLocale($lang);
+        }
+    }
+
     public function artworkCard(Artwork $artwork, Request $request): Response
     {
         $artwork->load(['artist', 'medium', 'genre']);
@@ -87,6 +101,7 @@ class PrintController extends Controller
 
     public function artworkConditionReport(Artwork $artwork, Request $request): Response
     {
+        $this->applyLang($request);
         $artwork->load(['artist', 'medium']);
 
         $pdf = Pdf::loadView('prints.artwork-condition-report-pdf', [
@@ -94,7 +109,7 @@ class PrintController extends Controller
             'settings' => InvoiceSetting::current(),
         ])->setPaper('a4');
 
-        return $this->deliver($request, $pdf, $this->fileName('condition-report', $artwork));
+        return $this->deliver($request, $pdf, $this->fileName('condition-report-'.app()->getLocale(), $artwork));
     }
 
     public function saleInvoice(Sale $sale, Request $request): Response

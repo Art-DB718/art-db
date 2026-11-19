@@ -1,0 +1,102 @@
+<?php
+
+return [
+    'title'                     => 'Conditierapport',
+
+    'exhibition_title'          => 'Titel van de tentoonstelling',
+    'institution'               => 'Instelling / Bruikleennemer',
+    'place'                     => 'Locatie van de tentoonstelling',
+    'duration'                  => 'Duur',
+    'contact_person'            => 'Contactpersoon',
+    'curator'                   => 'Curator',
+
+    'installation_conditions'   => 'Installatievoorwaarden',
+    'transport_conditions'      => 'Transportvoorwaarden',
+    'per_agreement'             => 'Volgens bruikleenovereenkomst',
+    'notes'                     => 'Opmerkingen',
+
+    'stage_label'               => 'Fase',
+    'overall_label'             => 'Totaal',
+    'report_date_label'         => 'Datum rapport',
+    'needs_conservator_review'  => 'Beoordeling door restaurator vereist',
+    'reason'                    => 'Reden',
+    'examination_limitations'   => 'Beperkingen van het onderzoek',
+
+    'section_body'              => 'Toestand van het werk',
+    'section_frame'             => 'Toestand van de lijst',
+    'section_annotated'         => 'Toestand van het collectieobject (zie afbeeldingen hieronder)',
+
+    'handing_over'              => 'Overdracht',
+    'checked_by'                => 'Gecontroleerd door — naam',
+    'signature'                 => 'Handtekening',
+    'place_short'               => 'Plaats',
+    'date_short'                => 'Datum',
+    'borrower_recipient'        => 'In ontvangst genomen namens bruikleennemer — naam',
+
+    'stages' => [
+        'incoming'      => 'Inkomend',
+        'pre_shipment'  => 'Voor transport',
+        'installation'  => 'Installatie',
+        'post_shipment' => 'Na transport',
+        'return'        => 'Terugkeer',
+        'baseline'      => 'Uitgangstoestand',
+        'incident'      => 'Incident',
+    ],
+
+    'ratings' => [
+        'excellent' => 'Uitstekend',
+        'good'      => 'Goed',
+        'fair'      => 'Redelijk',
+        'poor'      => 'Slecht',
+    ],
+
+    'roles' => [
+        'registrar'          => 'Registrator',
+        'curator'            => 'Curator',
+        'conservator'        => 'Restaurator',
+        'collection_manager' => 'Collectiebeheerder',
+        'gallery_owner'      => 'Galerie-eigenaar',
+        'artist'             => 'Kunstenaar',
+        'other'              => '',
+    ],
+
+    'body' => [
+        'base_level'                 => 'Verandering van het dragervlak',
+        'ground_damage'              => 'Beschadiging van de drager',
+        'ground_perforation'         => 'a) perforatie',
+        'ground_cracks'              => 'b) scheuren',
+        'fold_of_support'            => 'Plooi van de drager',
+        'break'                      => 'Breuk',
+        'undulation'                 => 'Golving',
+        'crease'                     => 'Kreukel',
+        'bulge'                      => 'Uitstulping',
+        'diminished_paint_adhesion'  => 'Verminderde verfhechting',
+        'fallen_colour_layer'        => 'Afgevallen verflaag',
+        'damaged_colour_layer'       => 'Beschadigde verflaag',
+        'cracks_with_loose_paint'    => 'Craquelé met losse verf',
+        'paint_abrasion'             => 'Verfafslijting',
+        'scrap'                      => 'Kras',
+        'dusty_surface'              => 'Stoffig oppervlak',
+        'bloom'                      => 'Vernisvertroebeling',
+        'discoloration'              => 'Verkleuring',
+        'local_stains'               => 'Lokale vlekken',
+        'fingerprint'                => 'Vingerafdruk',
+        'fly_specks'                 => 'Vliegenvlekken',
+        'foxing'                     => 'Foxing',
+        'previous_treatment'         => 'Eerdere behandelingen',
+        'damaged_patina'             => 'Beschadigd patina',
+        'yellowish_paper'            => 'Vergeeld papier',
+        'loose_parts'                => 'Losse onderdelen',
+        'woodworm_damage'            => 'Houtwormschade',
+        'fillings_and_retouch'       => 'Vullingen en retouches',
+    ],
+
+    'frame' => [
+        'frame_abrasion'           => 'Afslijting',
+        'frame_crackle'            => 'Craquelé, barst',
+        'frame_open_bevel'         => 'Open verstek',
+        'frame_colour_trace'       => 'Verfsporen',
+        'frame_fallen_fragment'    => 'Afgevallen fragment',
+        'frame_previous_treatment' => 'Eerdere behandelingen',
+    ],
+];

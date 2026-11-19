@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
-    <title>Condition Report — {{ $artwork->title }}</title>
+    <title>{{ __('condition_report.title') }} — {{ $artwork->title }}</title>
     <style>
         /*
-         * SNG-style Condition Report — bilingual SK/EN. Layout echoes the
-         * paper protocol Kat sent in: top header with institution / loan
-         * metadata, two-column checklist of damages, free-text notes,
-         * handover block with signature lines. A4, generous margins so
-         * it reads as an official document.
+         * SNG-style Condition Report — multilingual. Static chrome lives
+         * in lang/{locale}/condition_report.php so the PDF can be issued
+         * in any language the Print menu offers (en/sk/de/cs/hu/pl/uk/sr
+         * /hr/fr/nl). User-entered content (artwork title, notes, people's
+         * names) stays as typed. Layout mirrors the paper protocol Kat
+         * uses with borrowers.
          */
         @page { size: A4; margin: 2cm 2cm 2.5cm 2cm; }
         * { box-sizing: border-box; }
@@ -21,7 +22,6 @@
         .header-brand .wordmark { font-family: DejaVu Serif, serif; font-size: 20pt; letter-spacing: 0.3em; text-transform: uppercase; color: #374151; }
 
         h1.title { font-family: DejaVu Serif, serif; font-size: 18pt; text-align: center; margin: 4pt 0 22pt; font-weight: bold; }
-        .sub { font-size: 9.5pt; color: #6b7280; text-align: center; margin-top: -16pt; margin-bottom: 20pt; letter-spacing: 0.08em; }
 
         .meta-row { margin-bottom: 6pt; }
         .meta-row .lbl { font-size: 9pt; color: #6b7280; }
@@ -36,10 +36,7 @@
         .clearfix::after { content: ""; display: table; clear: both; }
 
         h2.sec { font-family: DejaVu Serif, serif; font-size: 12pt; font-weight: bold; margin: 18pt 0 8pt; padding-bottom: 3pt; border-bottom: 1pt solid #9ca3af; }
-        h2.sec small { font-weight: normal; color: #6b7280; font-size: 9pt; letter-spacing: 0.06em; }
 
-        /* Two-column checklist. DomPDF renders tables most reliably,
-           so we lay the list out as a 2-column table. */
         /* Report metadata badges: one compact row surfacing stage, rating, date. */
         .meta-badges { margin: 4pt 0 14pt; }
         .badge { display: inline-block; padding: 2pt 7pt; margin: 0 4pt 3pt 0; border-radius: 10pt; font-size: 9pt; font-weight: bold; background: #f3f4f6; color: #374151; }
@@ -85,14 +82,26 @@
         $fmt = fn ($v) => $v === null ? null : rtrim(rtrim(number_format((float) $v, 2, '.', ''), '0'), '.');
         $dims = collect([$fmt($artwork->height_cm), $fmt($artwork->width_cm), $fmt($artwork->depth_cm)])->filter()->implode(' × ');
 
-        $renderCheck = function (array $list, array $checked) {
-            $rows = '';
+        // Label lookup: prefer the translation file for the active locale,
+        // fall back to the English label baked into ConditionReport.php so
+        // a missing translation never prints a raw "condition_report.body.x"
+        // string.
+        $translate = function (string $group, string $key, array $fallbackList) {
+            $full = 'condition_report.'.$group.'.'.$key;
+            $translated = __($full);
+            if ($translated === $full) {
+                return $fallbackList[$key]['en'] ?? $key;
+            }
+            return $translated;
+        };
+
+        $renderCheck = function (array $list, array $checked, string $group) use ($translate) {
             $items = [];
             foreach ($list as $key => $labels) {
                 $on = in_array($key, $checked, true) ? 'on' : '';
                 $tick = $on === 'on' ? '✓' : '';
                 $items[] = '<span class="check '.$on.'">'.$tick.'</span>'
-                    . e($labels['en']);
+                    . e($translate($group, $key, $list));
             }
             $half = (int) ceil(count($items) / 2);
             $left = array_slice($items, 0, $half);
@@ -116,6 +125,13 @@
             $settings->website ? 'web: '.$settings->website      : null,
         ]);
         $footerLine = implode(', ', $addressParts);
+
+        $ratingClass = [
+            'excellent' => 'rating-excellent',
+            'good'      => 'rating-good',
+            'fair'      => 'rating-fair',
+            'poor'      => 'rating-poor',
+        ];
     @endphp
 
     <div class="header-brand">
@@ -126,89 +142,66 @@
         @endif
     </div>
 
-    <h1 class="title">Condition Report</h1>
+    <h1 class="title">{{ __('condition_report.title') }}</h1>
 
-    {{-- Report metadata badge-row (stage + overall rating + conservator flag). --}}
-    @php
-        $stageLabels = [
-            'incoming'      => 'Incoming',
-            'pre_shipment'  => 'Pre-shipment',
-            'installation'  => 'Installation',
-            'post_shipment' => 'Post-shipment',
-            'return'        => 'Return',
-            'baseline'      => 'Baseline',
-            'incident'      => 'Incident',
-        ];
-        $ratingLabels = [
-            'excellent' => 'Excellent',
-            'good'      => 'Good',
-            'fair'      => 'Fair',
-            'poor'      => 'Poor',
-        ];
-        $ratingClass = [
-            'excellent' => 'rating-excellent',
-            'good'      => 'rating-good',
-            'fair'      => 'rating-fair',
-            'poor'      => 'rating-poor',
-        ];
-    @endphp
+    {{-- Report metadata badges --}}
     @if (!empty($r['stage']) || !empty($r['overall_rating']) || !empty($r['report_date']) || !empty($r['needs_conservator_review']))
         <div class="meta-badges">
             @if (!empty($r['stage']))
-                <span class="badge badge-stage">Stage: {{ $stageLabels[$r['stage']] ?? $r['stage'] }}</span>
+                <span class="badge badge-stage">{{ __('condition_report.stage_label') }}: {{ __('condition_report.stages.'.$r['stage']) }}</span>
             @endif
             @if (!empty($r['overall_rating']))
-                <span class="badge {{ $ratingClass[$r['overall_rating']] ?? '' }}">Overall: {{ $ratingLabels[$r['overall_rating']] ?? $r['overall_rating'] }}</span>
+                <span class="badge {{ $ratingClass[$r['overall_rating']] ?? '' }}">{{ __('condition_report.overall_label') }}: {{ __('condition_report.ratings.'.$r['overall_rating']) }}</span>
             @endif
             @if (!empty($r['report_date']))
-                <span class="badge">Report date: {{ \Carbon\Carbon::parse($r['report_date'])->format('d.m.Y') }}</span>
+                <span class="badge">{{ __('condition_report.report_date_label') }}: {{ \Carbon\Carbon::parse($r['report_date'])->format('d.m.Y') }}</span>
             @endif
             @if (!empty($r['needs_conservator_review']))
-                <span class="badge badge-warn">⚠ Needs conservator review</span>
+                <span class="badge badge-warn">⚠ {{ __('condition_report.needs_conservator_review') }}</span>
             @endif
         </div>
     @endif
 
     @if (!empty($r['reason']))
-        <div class="meta-row"><span class="lbl">Reason:</span> {{ $r['reason'] }}</div>
+        <div class="meta-row"><span class="lbl">{{ __('condition_report.reason') }}:</span> {{ $r['reason'] }}</div>
     @endif
     @if (!empty($r['examination_limitations']))
-        <div class="meta-row"><span class="lbl">Examination limitations:</span> {{ $r['examination_limitations'] }}</div>
+        <div class="meta-row"><span class="lbl">{{ __('condition_report.examination_limitations') }}:</span> {{ $r['examination_limitations'] }}</div>
     @endif
 
     {{-- Exhibition / Loan context --}}
-    @if (!empty($r['exhibition_title'])) <div class="meta-row"><span class="lbl">Exhibition title:</span> <span class="val">{{ $r['exhibition_title'] }}</span></div> @endif
-    @if (!empty($r['institution'])) <div class="meta-row"><span class="lbl">Institution / Borrower:</span> <span class="val">{{ $r['institution'] }}</span></div> @endif
+    @if (!empty($r['exhibition_title'])) <div class="meta-row"><span class="lbl">{{ __('condition_report.exhibition_title') }}:</span> <span class="val">{{ $r['exhibition_title'] }}</span></div> @endif
+    @if (!empty($r['institution'])) <div class="meta-row"><span class="lbl">{{ __('condition_report.institution') }}:</span> <span class="val">{{ $r['institution'] }}</span></div> @endif
     <div class="meta-row">
-        @if (!empty($r['place'])) <span class="lbl">Place of exhibition:</span> <span class="val">{{ $r['place'] }}</span> @endif
-        @if (!empty($r['duration'])) &nbsp;&nbsp; <span class="lbl">Duration:</span> <span class="val">{{ $r['duration'] }}</span> @endif
+        @if (!empty($r['place'])) <span class="lbl">{{ __('condition_report.place') }}:</span> <span class="val">{{ $r['place'] }}</span> @endif
+        @if (!empty($r['duration'])) &nbsp;&nbsp; <span class="lbl">{{ __('condition_report.duration') }}:</span> <span class="val">{{ $r['duration'] }}</span> @endif
     </div>
-    @if (!empty($r['contact_person'])) <div class="meta-row"><span class="lbl">Contact person:</span> <span class="val">{{ $r['contact_person'] }}</span></div> @endif
-    @if (!empty($r['curator'])) <div class="meta-row"><span class="lbl">Curator:</span> <span class="val">{{ $r['curator'] }}</span></div> @endif
+    @if (!empty($r['contact_person'])) <div class="meta-row"><span class="lbl">{{ __('condition_report.contact_person') }}:</span> <span class="val">{{ $r['contact_person'] }}</span></div> @endif
+    @if (!empty($r['curator'])) <div class="meta-row"><span class="lbl">{{ __('condition_report.curator') }}:</span> <span class="val">{{ $r['curator'] }}</span></div> @endif
 
     {{-- Installation / Transport --}}
     @if (!empty($r['installation_per_agreement']) || !empty($r['installation_notes']) || !empty($r['transport_per_agreement']) || !empty($r['transport_notes']))
         <div style="margin-top: 14pt;">
             @if (!empty($r['installation_per_agreement']) || !empty($r['installation_notes']))
                 <div class="meta-row">
-                    <strong>Installation conditions</strong>
+                    <strong>{{ __('condition_report.installation_conditions') }}</strong>
                     @if (!empty($r['installation_per_agreement']))
-                        &nbsp;&nbsp;<span class="check on">✓</span> According to loan agreement
+                        &nbsp;&nbsp;<span class="check on">✓</span> {{ __('condition_report.per_agreement') }}
                     @endif
                 </div>
                 @if (!empty($r['installation_notes']))
-                    <div class="meta-row"><span class="lbl">Notes:</span> {{ $r['installation_notes'] }}</div>
+                    <div class="meta-row"><span class="lbl">{{ __('condition_report.notes') }}:</span> {{ $r['installation_notes'] }}</div>
                 @endif
             @endif
             @if (!empty($r['transport_per_agreement']) || !empty($r['transport_notes']))
                 <div class="meta-row" style="margin-top:6pt;">
-                    <strong>Transport conditions</strong>
+                    <strong>{{ __('condition_report.transport_conditions') }}</strong>
                     @if (!empty($r['transport_per_agreement']))
-                        &nbsp;&nbsp;<span class="check on">✓</span> According to loan agreement
+                        &nbsp;&nbsp;<span class="check on">✓</span> {{ __('condition_report.per_agreement') }}
                     @endif
                 </div>
                 @if (!empty($r['transport_notes']))
-                    <div class="meta-row"><span class="lbl">Notes:</span> {{ $r['transport_notes'] }}</div>
+                    <div class="meta-row"><span class="lbl">{{ __('condition_report.notes') }}:</span> {{ $r['transport_notes'] }}</div>
                 @endif
             @endif
         </div>
@@ -230,22 +223,22 @@
     </div>
 
     {{-- Body damages --}}
-    <h2 class="sec">Condition of work</h2>
-    {!! $renderCheck($bodyDamages, is_array($checkedBody) ? $checkedBody : []) !!}
+    <h2 class="sec">{{ __('condition_report.section_body') }}</h2>
+    {!! $renderCheck($bodyDamages, is_array($checkedBody) ? $checkedBody : [], 'body') !!}
     @if (!empty($r['body_notes']))
         <div class="notes-block">{{ $r['body_notes'] }}</div>
     @endif
 
     {{-- Frame damages --}}
-    <h2 class="sec">Condition of frame</h2>
-    {!! $renderCheck($frameDamages, is_array($checkedFrame) ? $checkedFrame : []) !!}
+    <h2 class="sec">{{ __('condition_report.section_frame') }}</h2>
+    {!! $renderCheck($frameDamages, is_array($checkedFrame) ? $checkedFrame : [], 'frame') !!}
     @if (!empty($r['frame_notes']))
         <div class="notes-block">{{ $r['frame_notes'] }}</div>
     @endif
 
     {{-- Annotated images --}}
     @if (!empty($annotated))
-        <h2 class="sec">Condition of the collection object (see pictures below)</h2>
+        <h2 class="sec">{{ __('condition_report.section_annotated') }}</h2>
         <div class="annotated">
             @foreach ($annotated as $path)
                 @if (file_exists(public_path('storage/'.$path)))
@@ -257,19 +250,19 @@
 
     {{-- Signatures --}}
     @php
-        $roleLabels = [
-            'registrar'          => 'Registrar',
-            'curator'            => 'Curator',
-            'conservator'        => 'Conservator',
-            'collection_manager' => 'Collection manager',
-            'gallery_owner'      => 'Gallery owner',
-            'artist'             => 'Artist',
-            'other'              => '',
-        ];
-        $roleOnLine = !empty($r['checked_by_role']) ? ($roleLabels[$r['checked_by_role']] ?? '') : '';
+        $roleKey = $r['checked_by_role'] ?? null;
+        $roleOnLine = '';
+        if ($roleKey) {
+            $t = __('condition_report.roles.'.$roleKey);
+            // Fallback when the translation is missing or deliberately empty
+            // (e.g. "other" stays blank in every language).
+            if ($t !== 'condition_report.roles.'.$roleKey && $t !== '') {
+                $roleOnLine = $t;
+            }
+        }
     @endphp
     <div class="signatures">
-        <div class="caption">Handing-over</div>
+        <div class="caption">{{ __('condition_report.handing_over') }}</div>
         <table>
             <tr>
                 <td>
@@ -277,11 +270,11 @@
                         {{ $r['checked_by'] ?? '' }}@if ($roleOnLine) <span style="color:#6b7280; font-weight:normal;">({{ $roleOnLine }})</span>@endif
                         &nbsp;
                     </div>
-                    <div class="lbl">Checked by — name</div>
+                    <div class="lbl">{{ __('condition_report.checked_by') }}</div>
                 </td>
                 <td>
                     <div class="line">&nbsp;</div>
-                    <div class="lbl">Signature</div>
+                    <div class="lbl">{{ __('condition_report.signature') }}</div>
                 </td>
             </tr>
             <tr>
@@ -290,7 +283,7 @@
                         {{ $r['checked_place'] ?? '' }}
                         &nbsp;
                     </div>
-                    <div class="lbl">Place</div>
+                    <div class="lbl">{{ __('condition_report.place_short') }}</div>
                 </td>
                 <td>
                     <div class="line">
@@ -299,7 +292,7 @@
                         @endif
                         &nbsp;
                     </div>
-                    <div class="lbl">Date</div>
+                    <div class="lbl">{{ __('condition_report.date_short') }}</div>
                 </td>
             </tr>
             <tr>
@@ -308,7 +301,7 @@
                         {{ $r['borrower_recipient'] ?? '' }}
                         &nbsp;
                     </div>
-                    <div class="lbl">Taken over on behalf of the borrower — name</div>
+                    <div class="lbl">{{ __('condition_report.borrower_recipient') }}</div>
                 </td>
             </tr>
         </table>

@@ -52,13 +52,26 @@ class EditArtwork extends EditRecord
                     ->url(route('artworks.pdf.maintenance', $record))
                     ->openUrlInNewTab()
                     ->extraAttributes($shareAttrs('maintenance', 'artworks.pdf.maintenance')),
-                Actions\Action::make('printConditionReport')
+                // Condition report is Kat's most-sent-out document, so it
+                // gets its own language picker right in the Print menu.
+                // Each language is a separate action so the iOS PWA
+                // share-sheet override also works per language.
+                Actions\ActionGroup::make(
+                    collect(config('prints.languages', []))
+                        ->map(fn ($name, $code) => Actions\Action::make('printConditionReport_'.$code)
+                            ->label($name)
+                            ->url(route('artworks.pdf.condition-report', ['artwork' => $record, 'lang' => $code]))
+                            ->openUrlInNewTab()
+                            ->extraAttributes([
+                                'data-pdf-share'    => route('artworks.pdf.condition-report', ['artwork' => $record, 'lang' => $code]),
+                                'data-pdf-filename' => 'condition-report-'.$code.'-'.$slug.'.pdf',
+                            ]))
+                        ->values()
+                        ->all()
+                )
                     ->label('Print condition report')
                     ->icon('heroicon-m-clipboard-document-check')
-                    ->visible(! auth()->user()?->isArtist())
-                    ->url(route('artworks.pdf.condition-report', $record))
-                    ->openUrlInNewTab()
-                    ->extraAttributes($shareAttrs('condition-report', 'artworks.pdf.condition-report')),
+                    ->visible(! auth()->user()?->isArtist()),
             ])
                 ->label('Print / Save as PDF')
                 ->icon('heroicon-m-printer')

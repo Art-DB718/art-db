@@ -1,0 +1,102 @@
+<?php
+
+return [
+    'title'                     => 'Constat d\'état',
+
+    'exhibition_title'          => 'Titre de l\'exposition',
+    'institution'               => 'Institution / Emprunteur',
+    'place'                     => 'Lieu de l\'exposition',
+    'duration'                  => 'Durée',
+    'contact_person'            => 'Personne de contact',
+    'curator'                   => 'Commissaire',
+
+    'installation_conditions'   => 'Conditions d\'installation',
+    'transport_conditions'      => 'Conditions de transport',
+    'per_agreement'             => 'Selon contrat de prêt',
+    'notes'                     => 'Remarques',
+
+    'stage_label'               => 'Étape',
+    'overall_label'             => 'État général',
+    'report_date_label'         => 'Date du constat',
+    'needs_conservator_review'  => 'Examen par un restaurateur requis',
+    'reason'                    => 'Motif',
+    'examination_limitations'   => 'Limites de l\'examen',
+
+    'section_body'              => 'État de l\'œuvre',
+    'section_frame'             => 'État du cadre',
+    'section_annotated'         => 'État de l\'objet de collection (voir images ci-dessous)',
+
+    'handing_over'              => 'Remise',
+    'checked_by'                => 'Vérifié par — nom',
+    'signature'                 => 'Signature',
+    'place_short'               => 'Lieu',
+    'date_short'                => 'Date',
+    'borrower_recipient'        => 'Pris en charge pour le compte de l\'emprunteur — nom',
+
+    'stages' => [
+        'incoming'      => 'Arrivée',
+        'pre_shipment'  => 'Avant transport',
+        'installation'  => 'Installation',
+        'post_shipment' => 'Après transport',
+        'return'        => 'Retour',
+        'baseline'      => 'État de référence',
+        'incident'      => 'Incident',
+    ],
+
+    'ratings' => [
+        'excellent' => 'Excellent',
+        'good'      => 'Bon',
+        'fair'      => 'Moyen',
+        'poor'      => 'Mauvais',
+    ],
+
+    'roles' => [
+        'registrar'          => 'Régisseur',
+        'curator'            => 'Commissaire',
+        'conservator'        => 'Restaurateur',
+        'collection_manager' => 'Responsable de collection',
+        'gallery_owner'      => 'Propriétaire de la galerie',
+        'artist'             => 'Artiste',
+        'other'              => '',
+    ],
+
+    'body' => [
+        'base_level'                 => 'Variations du plan du support',
+        'ground_damage'              => 'Dommages du support',
+        'ground_perforation'         => 'a) perforation',
+        'ground_cracks'              => 'b) fissures',
+        'fold_of_support'            => 'Pli du support',
+        'break'                      => 'Cassure',
+        'undulation'                 => 'Ondulation',
+        'crease'                     => 'Pliure',
+        'bulge'                      => 'Renflement',
+        'diminished_paint_adhesion'  => 'Adhérence réduite de la couche picturale',
+        'fallen_colour_layer'        => 'Couche picturale tombée',
+        'damaged_colour_layer'       => 'Couche picturale endommagée',
+        'cracks_with_loose_paint'    => 'Craquelures avec couche picturale soulevée',
+        'paint_abrasion'             => 'Abrasion de la peinture',
+        'scrap'                      => 'Éraflure',
+        'dusty_surface'              => 'Surface poussiéreuse',
+        'bloom'                      => 'Voile de vernis',
+        'discoloration'              => 'Décoloration',
+        'local_stains'               => 'Taches locales',
+        'fingerprint'                => 'Empreinte digitale',
+        'fly_specks'                 => 'Chiures de mouches',
+        'foxing'                     => 'Rousseurs',
+        'previous_treatment'         => 'Interventions antérieures',
+        'damaged_patina'             => 'Patine endommagée',
+        'yellowish_paper'            => 'Papier jauni',
+        'loose_parts'                => 'Parties détachées',
+        'woodworm_damage'            => 'Dégâts de vrillette',
+        'fillings_and_retouch'       => 'Mastics et retouches',
+    ],
+
+    'frame' => [
+        'frame_abrasion'           => 'Abrasion',
+        'frame_crackle'            => 'Craquelure, fente',
+        'frame_open_bevel'         => 'Onglet ouvert',
+        'frame_colour_trace'       => 'Traces de peinture',
+        'frame_fallen_fragment'    => 'Fragment détaché',
+        'frame_previous_treatment' => 'Interventions antérieures',
+    ],
+];

@@ -1,0 +1,102 @@
+<?php
+
+return [
+    'title'                     => 'Protokol o stavu sbírkového předmětu',
+
+    'exhibition_title'          => 'Název výstavy',
+    'institution'               => 'Organizátor výstavy / Vypůjčitel',
+    'place'                     => 'Místo konání',
+    'duration'                  => 'Trvání',
+    'contact_person'            => 'Kontaktní osoba',
+    'curator'                   => 'Kurátor',
+
+    'installation_conditions'   => 'Instalační podmínky',
+    'transport_conditions'      => 'Přepravní podmínky',
+    'per_agreement'             => 'Podle smlouvy',
+    'notes'                     => 'Poznámky',
+
+    'stage_label'               => 'Fáze',
+    'overall_label'             => 'Celkově',
+    'report_date_label'         => 'Datum protokolu',
+    'needs_conservator_review'  => 'Vyžaduje posouzení restaurátorem',
+    'reason'                    => 'Důvod',
+    'examination_limitations'   => 'Omezení prohlídky',
+
+    'section_body'              => 'Stav díla',
+    'section_frame'             => 'Stav rámu',
+    'section_annotated'         => 'Stav sbírkového předmětu (viz zobrazení níže)',
+
+    'handing_over'              => 'Předání',
+    'checked_by'                => 'Zkontroloval — jméno',
+    'signature'                 => 'Podpis',
+    'place_short'               => 'Místo',
+    'date_short'                => 'Dne',
+    'borrower_recipient'        => 'Převzal za vypůjčitele — jméno',
+
+    'stages' => [
+        'incoming'      => 'Příchod',
+        'pre_shipment'  => 'Před přepravou',
+        'installation'  => 'Instalace',
+        'post_shipment' => 'Po přepravě',
+        'return'        => 'Vrácení',
+        'baseline'      => 'Výchozí stav',
+        'incident'      => 'Incident',
+    ],
+
+    'ratings' => [
+        'excellent' => 'Výborný',
+        'good'      => 'Dobrý',
+        'fair'      => 'Průměrný',
+        'poor'      => 'Špatný',
+    ],
+
+    'roles' => [
+        'registrar'          => 'Registrátor',
+        'curator'            => 'Kurátor',
+        'conservator'        => 'Restaurátor',
+        'collection_manager' => 'Správce sbírek',
+        'gallery_owner'      => 'Majitel galerie',
+        'artist'             => 'Umělec',
+        'other'              => '',
+    ],
+
+    'body' => [
+        'base_level'                 => 'Změna roviny nosiče',
+        'ground_damage'              => 'Poškození nosiče',
+        'ground_perforation'         => 'a) perforace',
+        'ground_cracks'              => 'b) praskliny',
+        'fold_of_support'            => 'Prohnutí nosiče',
+        'break'                      => 'Zlom',
+        'undulation'                 => 'Zvlnění',
+        'crease'                     => 'Záhyb',
+        'bulge'                      => 'Vypuklina',
+        'diminished_paint_adhesion'  => 'Snížená přilnavost malby',
+        'fallen_colour_layer'        => 'Odpadnutá barevná vrstva',
+        'damaged_colour_layer'       => 'Porušení barevné vrstvy',
+        'cracks_with_loose_paint'    => 'Krakely s uvolněnou malbou',
+        'paint_abrasion'             => 'Odření',
+        'scrap'                      => 'Vryp',
+        'dusty_surface'              => 'Zaprášený povrch',
+        'bloom'                      => 'Zákal, závoj laku',
+        'discoloration'              => 'Vyblednutí',
+        'local_stains'               => 'Lokální skvrny',
+        'fingerprint'                => 'Otisk prstu',
+        'fly_specks'                 => 'Muší skvrny',
+        'foxing'                     => 'Plíseň',
+        'previous_treatment'         => 'Předchozí zásahy',
+        'damaged_patina'             => 'Poškozená patina',
+        'yellowish_paper'            => 'Zažloutlý papír',
+        'loose_parts'                => 'Uvolněné části',
+        'woodworm_damage'            => 'Poškození červotočem',
+        'fillings_and_retouch'       => 'Tmel a retuše',
+    ],
+
+    'frame' => [
+        'frame_abrasion'           => 'Odření',
+        'frame_crackle'            => 'Krakel, prasklina',
+        'frame_open_bevel'         => 'Otevřený pokos',
+        'frame_colour_trace'       => 'Barevné stopy',
+        'frame_fallen_fragment'    => 'Odpadnutý fragment',
+        'frame_previous_treatment' => 'Předchozí zásahy',
+    ],
+];

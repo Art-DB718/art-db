@@ -1,0 +1,102 @@
+<?php
+
+return [
+    'title'                     => 'Zapisnik o stanju muzejskog predmeta',
+
+    'exhibition_title'          => 'Naziv izložbe',
+    'institution'               => 'Ustanova / Posuditelj',
+    'place'                     => 'Mjesto izložbe',
+    'duration'                  => 'Trajanje',
+    'contact_person'            => 'Kontakt osoba',
+    'curator'                   => 'Kustos',
+
+    'installation_conditions'   => 'Uvjeti postavljanja',
+    'transport_conditions'      => 'Uvjeti transporta',
+    'per_agreement'             => 'Prema ugovoru o posudbi',
+    'notes'                     => 'Napomene',
+
+    'stage_label'               => 'Faza',
+    'overall_label'             => 'Ukupno',
+    'report_date_label'         => 'Datum zapisnika',
+    'needs_conservator_review'  => 'Potreban pregled restauratora',
+    'reason'                    => 'Razlog',
+    'examination_limitations'   => 'Ograničenja pregleda',
+
+    'section_body'              => 'Stanje djela',
+    'section_frame'             => 'Stanje okvira',
+    'section_annotated'         => 'Stanje muzejskog predmeta (vidi slike niže)',
+
+    'handing_over'              => 'Predaja',
+    'checked_by'                => 'Pregledao — ime',
+    'signature'                 => 'Potpis',
+    'place_short'               => 'Mjesto',
+    'date_short'                => 'Datum',
+    'borrower_recipient'        => 'Preuzeo u ime posuditelja — ime',
+
+    'stages' => [
+        'incoming'      => 'Dolazak',
+        'pre_shipment'  => 'Prije transporta',
+        'installation'  => 'Postavljanje',
+        'post_shipment' => 'Poslije transporta',
+        'return'        => 'Povrat',
+        'baseline'      => 'Početno stanje',
+        'incident'      => 'Incident',
+    ],
+
+    'ratings' => [
+        'excellent' => 'Odličan',
+        'good'      => 'Dobar',
+        'fair'      => 'Zadovoljavajući',
+        'poor'      => 'Loš',
+    ],
+
+    'roles' => [
+        'registrar'          => 'Registrator',
+        'curator'            => 'Kustos',
+        'conservator'        => 'Restaurator',
+        'collection_manager' => 'Upravitelj zbirke',
+        'gallery_owner'      => 'Vlasnik galerije',
+        'artist'             => 'Umjetnik',
+        'other'              => '',
+    ],
+
+    'body' => [
+        'base_level'                 => 'Promjena ravnine nosača',
+        'ground_damage'              => 'Oštećenja nosača',
+        'ground_perforation'         => 'a) perforacija',
+        'ground_cracks'              => 'b) pukotine',
+        'fold_of_support'            => 'Svijanje nosača',
+        'break'                      => 'Lom',
+        'undulation'                 => 'Valovitost',
+        'crease'                     => 'Pregib',
+        'bulge'                      => 'Izbočina',
+        'diminished_paint_adhesion'  => 'Smanjena prianjivost bojanog sloja',
+        'fallen_colour_layer'        => 'Otpali bojani sloj',
+        'damaged_colour_layer'       => 'Oštećenje bojanog sloja',
+        'cracks_with_loose_paint'    => 'Krakele s odvojenom bojom',
+        'paint_abrasion'             => 'Istrošenost boje',
+        'scrap'                      => 'Ogrebotina',
+        'dusty_surface'              => 'Prašnjava površina',
+        'bloom'                      => 'Zamagljenost laka',
+        'discoloration'              => 'Izblijedjelost',
+        'local_stains'               => 'Lokalne mrlje',
+        'fingerprint'                => 'Otisak prsta',
+        'fly_specks'                 => 'Tragovi muha',
+        'foxing'                     => 'Pigmentne mrlje',
+        'previous_treatment'         => 'Prethodne intervencije',
+        'damaged_patina'             => 'Oštećena patina',
+        'yellowish_paper'            => 'Požutjeli papir',
+        'loose_parts'                => 'Labavi dijelovi',
+        'woodworm_damage'            => 'Oštećenje crvotočinom',
+        'fillings_and_retouch'       => 'Kitovi i retuše',
+    ],
+
+    'frame' => [
+        'frame_abrasion'           => 'Istrošenost',
+        'frame_crackle'            => 'Krakele, pukotina',
+        'frame_open_bevel'         => 'Otvoreni zarez',
+        'frame_colour_trace'       => 'Tragovi boje',
+        'frame_fallen_fragment'    => 'Otpali fragment',
+        'frame_previous_treatment' => 'Prethodne intervencije',
+    ],
+];

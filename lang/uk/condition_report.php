@@ -1,0 +1,102 @@
+<?php
+
+return [
+    'title'                     => 'Протокол стану музейного предмета',
+
+    'exhibition_title'          => 'Назва виставки',
+    'institution'               => 'Установа / Позичальник',
+    'place'                     => 'Місце проведення',
+    'duration'                  => 'Тривалість',
+    'contact_person'            => 'Контактна особа',
+    'curator'                   => 'Куратор',
+
+    'installation_conditions'   => 'Умови монтажу',
+    'transport_conditions'      => 'Умови транспортування',
+    'per_agreement'             => 'Згідно з договором',
+    'notes'                     => 'Примітки',
+
+    'stage_label'               => 'Етап',
+    'overall_label'             => 'Загалом',
+    'report_date_label'         => 'Дата протоколу',
+    'needs_conservator_review'  => 'Потребує огляду реставратора',
+    'reason'                    => 'Причина',
+    'examination_limitations'   => 'Обмеження огляду',
+
+    'section_body'              => 'Стан твору',
+    'section_frame'             => 'Стан рами',
+    'section_annotated'         => 'Стан музейного предмета (див. зображення нижче)',
+
+    'handing_over'              => 'Передача',
+    'checked_by'                => 'Перевірив — ім\'я',
+    'signature'                 => 'Підпис',
+    'place_short'               => 'Місце',
+    'date_short'                => 'Дата',
+    'borrower_recipient'        => 'Прийняв від імені позичальника — ім\'я',
+
+    'stages' => [
+        'incoming'      => 'Надходження',
+        'pre_shipment'  => 'Перед транспортуванням',
+        'installation'  => 'Монтаж',
+        'post_shipment' => 'Після транспортування',
+        'return'        => 'Повернення',
+        'baseline'      => 'Базовий стан',
+        'incident'      => 'Інцидент',
+    ],
+
+    'ratings' => [
+        'excellent' => 'Відмінний',
+        'good'      => 'Добрий',
+        'fair'      => 'Задовільний',
+        'poor'      => 'Поганий',
+    ],
+
+    'roles' => [
+        'registrar'          => 'Реєстратор',
+        'curator'            => 'Куратор',
+        'conservator'        => 'Реставратор',
+        'collection_manager' => 'Керівник колекції',
+        'gallery_owner'      => 'Власник галереї',
+        'artist'             => 'Художник',
+        'other'              => '',
+    ],
+
+    'body' => [
+        'base_level'                 => 'Зміна площини основи',
+        'ground_damage'              => 'Пошкодження основи',
+        'ground_perforation'         => 'а) перфорація',
+        'ground_cracks'              => 'б) тріщини',
+        'fold_of_support'            => 'Згин основи',
+        'break'                      => 'Розлам',
+        'undulation'                 => 'Хвилястість',
+        'crease'                     => 'Злам',
+        'bulge'                      => 'Випуклість',
+        'diminished_paint_adhesion'  => 'Знижена адгезія фарбового шару',
+        'fallen_colour_layer'        => 'Відшарований фарбовий шар',
+        'damaged_colour_layer'       => 'Пошкодження фарбового шару',
+        'cracks_with_loose_paint'    => 'Кракелюри з відшаруванням фарби',
+        'paint_abrasion'             => 'Стирання фарби',
+        'scrap'                      => 'Подряпина',
+        'dusty_surface'              => 'Запилена поверхня',
+        'bloom'                      => 'Помутніння лаку',
+        'discoloration'              => 'Вицвітання',
+        'local_stains'               => 'Локальні плями',
+        'fingerprint'                => 'Відбиток пальця',
+        'fly_specks'                 => 'Сліди комах',
+        'foxing'                     => 'Плісенева пляма',
+        'previous_treatment'         => 'Попередні втручання',
+        'damaged_patina'             => 'Пошкоджена патина',
+        'yellowish_paper'            => 'Пожовклий папір',
+        'loose_parts'                => 'Незакріплені частини',
+        'woodworm_damage'            => 'Пошкодження шашелем',
+        'fillings_and_retouch'       => 'Шпаклівка і ретуш',
+    ],
+
+    'frame' => [
+        'frame_abrasion'           => 'Потертість',
+        'frame_crackle'            => 'Кракелюр, тріщина',
+        'frame_open_bevel'         => 'Відкритий зріз',
+        'frame_colour_trace'       => 'Сліди фарби',
+        'frame_fallen_fragment'    => 'Відпалий фрагмент',
+        'frame_previous_treatment' => 'Попередні втручання',
+    ],
+];

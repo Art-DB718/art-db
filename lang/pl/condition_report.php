@@ -1,0 +1,102 @@
+<?php
+
+return [
+    'title'                     => 'Protokół stanu obiektu',
+
+    'exhibition_title'          => 'Tytuł wystawy',
+    'institution'               => 'Instytucja / Wypożyczający',
+    'place'                     => 'Miejsce wystawy',
+    'duration'                  => 'Czas trwania',
+    'contact_person'            => 'Osoba kontaktowa',
+    'curator'                   => 'Kurator',
+
+    'installation_conditions'   => 'Warunki montażu',
+    'transport_conditions'      => 'Warunki transportu',
+    'per_agreement'             => 'Zgodnie z umową',
+    'notes'                     => 'Uwagi',
+
+    'stage_label'               => 'Etap',
+    'overall_label'             => 'Ogólnie',
+    'report_date_label'         => 'Data protokołu',
+    'needs_conservator_review'  => 'Wymaga oceny konserwatora',
+    'reason'                    => 'Powód',
+    'examination_limitations'   => 'Ograniczenia oględzin',
+
+    'section_body'              => 'Stan dzieła',
+    'section_frame'             => 'Stan ramy',
+    'section_annotated'         => 'Stan obiektu kolekcji (zob. ilustracje poniżej)',
+
+    'handing_over'              => 'Przekazanie',
+    'checked_by'                => 'Sprawdzający — imię i nazwisko',
+    'signature'                 => 'Podpis',
+    'place_short'               => 'Miejsce',
+    'date_short'                => 'Data',
+    'borrower_recipient'        => 'Przyjął w imieniu wypożyczającego — imię i nazwisko',
+
+    'stages' => [
+        'incoming'      => 'Przyjęcie',
+        'pre_shipment'  => 'Przed transportem',
+        'installation'  => 'Montaż',
+        'post_shipment' => 'Po transporcie',
+        'return'        => 'Zwrot',
+        'baseline'      => 'Stan wyjściowy',
+        'incident'      => 'Zdarzenie',
+    ],
+
+    'ratings' => [
+        'excellent' => 'Doskonały',
+        'good'      => 'Dobry',
+        'fair'      => 'Dostateczny',
+        'poor'      => 'Zły',
+    ],
+
+    'roles' => [
+        'registrar'          => 'Rejestrator',
+        'curator'            => 'Kurator',
+        'conservator'        => 'Konserwator',
+        'collection_manager' => 'Kierownik kolekcji',
+        'gallery_owner'      => 'Właściciel galerii',
+        'artist'             => 'Artysta',
+        'other'              => '',
+    ],
+
+    'body' => [
+        'base_level'                 => 'Zmiana płaszczyzny podłoża',
+        'ground_damage'              => 'Uszkodzenia podłoża',
+        'ground_perforation'         => 'a) perforacja',
+        'ground_cracks'              => 'b) pęknięcia',
+        'fold_of_support'            => 'Wygięcie podłoża',
+        'break'                      => 'Pęknięcie',
+        'undulation'                 => 'Falowanie',
+        'crease'                     => 'Zagięcie',
+        'bulge'                      => 'Wybrzuszenie',
+        'diminished_paint_adhesion'  => 'Osłabiona przyczepność warstwy malarskiej',
+        'fallen_colour_layer'        => 'Odpadnięta warstwa malarska',
+        'damaged_colour_layer'       => 'Uszkodzenie warstwy malarskiej',
+        'cracks_with_loose_paint'    => 'Spękania z odspajającą się warstwą malarską',
+        'paint_abrasion'             => 'Przetarcie warstwy malarskiej',
+        'scrap'                      => 'Zadrapanie',
+        'dusty_surface'              => 'Zapylona powierzchnia',
+        'bloom'                      => 'Zmętnienie werniksu',
+        'discoloration'              => 'Przebarwienie',
+        'local_stains'               => 'Lokalne plamy',
+        'fingerprint'                => 'Odcisk palca',
+        'fly_specks'                 => 'Ślady muszych odchodów',
+        'foxing'                     => 'Foxingi',
+        'previous_treatment'         => 'Wcześniejsze ingerencje',
+        'damaged_patina'             => 'Uszkodzona patyna',
+        'yellowish_paper'            => 'Zżółknięty papier',
+        'loose_parts'                => 'Luźne części',
+        'woodworm_damage'            => 'Uszkodzenie przez kornika',
+        'fillings_and_retouch'       => 'Kity i retusze',
+    ],
+
+    'frame' => [
+        'frame_abrasion'           => 'Przetarcie',
+        'frame_crackle'            => 'Spękanie, pęknięcie',
+        'frame_open_bevel'         => 'Rozwarte ukosowanie',
+        'frame_colour_trace'       => 'Ślady farby',
+        'frame_fallen_fragment'    => 'Odpadnięty fragment',
+        'frame_previous_treatment' => 'Wcześniejsze ingerencje',
+    ],
+];

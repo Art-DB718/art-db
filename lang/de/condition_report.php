@@ -1,0 +1,102 @@
+<?php
+
+return [
+    'title'                     => 'Zustandsprotokoll',
+
+    'exhibition_title'          => 'Ausstellungstitel',
+    'institution'               => 'Institution / Leihnehmer',
+    'place'                     => 'Ausstellungsort',
+    'duration'                  => 'Dauer',
+    'contact_person'            => 'Kontaktperson',
+    'curator'                   => 'Kurator',
+
+    'installation_conditions'   => 'Installationsbedingungen',
+    'transport_conditions'      => 'Transportbedingungen',
+    'per_agreement'             => 'Gemäß Leihvertrag',
+    'notes'                     => 'Anmerkungen',
+
+    'stage_label'               => 'Phase',
+    'overall_label'             => 'Gesamt',
+    'report_date_label'         => 'Berichtsdatum',
+    'needs_conservator_review'  => 'Prüfung durch Restaurator erforderlich',
+    'reason'                    => 'Grund',
+    'examination_limitations'   => 'Einschränkungen der Untersuchung',
+
+    'section_body'              => 'Zustand des Werkes',
+    'section_frame'             => 'Zustand des Rahmens',
+    'section_annotated'         => 'Zustand des Sammlungsobjekts (siehe Abbildungen unten)',
+
+    'handing_over'              => 'Übergabe',
+    'checked_by'                => 'Geprüft von — Name',
+    'signature'                 => 'Unterschrift',
+    'place_short'               => 'Ort',
+    'date_short'                => 'Datum',
+    'borrower_recipient'        => 'Übernommen im Namen des Leihnehmers — Name',
+
+    'stages' => [
+        'incoming'      => 'Eingang',
+        'pre_shipment'  => 'Vor Versand',
+        'installation'  => 'Installation',
+        'post_shipment' => 'Nach Versand',
+        'return'        => 'Rückgabe',
+        'baseline'      => 'Ausgangszustand',
+        'incident'      => 'Vorfall',
+    ],
+
+    'ratings' => [
+        'excellent' => 'Ausgezeichnet',
+        'good'      => 'Gut',
+        'fair'      => 'Mäßig',
+        'poor'      => 'Schlecht',
+    ],
+
+    'roles' => [
+        'registrar'          => 'Registrar',
+        'curator'            => 'Kurator',
+        'conservator'        => 'Restaurator',
+        'collection_manager' => 'Sammlungsleiter',
+        'gallery_owner'      => 'Galerieinhaber',
+        'artist'             => 'Künstler',
+        'other'              => '',
+    ],
+
+    'body' => [
+        'base_level'                 => 'Veränderung der Trägerebene',
+        'ground_damage'              => 'Beschädigung des Trägers',
+        'ground_perforation'         => 'a) Perforation',
+        'ground_cracks'              => 'b) Risse',
+        'fold_of_support'            => 'Faltung des Trägers',
+        'break'                      => 'Bruch',
+        'undulation'                 => 'Wellung',
+        'crease'                     => 'Knick',
+        'bulge'                      => 'Beule',
+        'diminished_paint_adhesion'  => 'Verminderte Malschichthaftung',
+        'fallen_colour_layer'        => 'Abgefallene Malschicht',
+        'damaged_colour_layer'       => 'Beschädigung der Malschicht',
+        'cracks_with_loose_paint'    => 'Krakelee mit abhebender Malschicht',
+        'paint_abrasion'             => 'Abrieb der Malschicht',
+        'scrap'                      => 'Kratzer',
+        'dusty_surface'              => 'Verstaubte Oberfläche',
+        'bloom'                      => 'Firnistrübung',
+        'discoloration'              => 'Verblassung',
+        'local_stains'               => 'Lokale Flecken',
+        'fingerprint'                => 'Fingerabdruck',
+        'fly_specks'                 => 'Fliegenspuren',
+        'foxing'                     => 'Stockflecken',
+        'previous_treatment'         => 'Frühere Eingriffe',
+        'damaged_patina'             => 'Beschädigte Patina',
+        'yellowish_paper'            => 'Vergilbtes Papier',
+        'loose_parts'                => 'Lose Teile',
+        'woodworm_damage'            => 'Holzwurmbefall',
+        'fillings_and_retouch'       => 'Kittung und Retusche',
+    ],
+
+    'frame' => [
+        'frame_abrasion'           => 'Abrieb',
+        'frame_crackle'            => 'Krakelee, Spalten',
+        'frame_open_bevel'         => 'Offene Gehrung',
+        'frame_colour_trace'       => 'Farbspuren',
+        'frame_fallen_fragment'    => 'Abgefallenes Fragment',
+        'frame_previous_treatment' => 'Frühere Eingriffe',
+    ],
+];

@@ -1,0 +1,102 @@
+<?php
+
+return [
+    'title'                     => 'Állapotjegyzőkönyv',
+
+    'exhibition_title'          => 'Kiállítás címe',
+    'institution'               => 'Intézmény / Kölcsönvevő',
+    'place'                     => 'A kiállítás helyszíne',
+    'duration'                  => 'Időtartam',
+    'contact_person'            => 'Kapcsolattartó',
+    'curator'                   => 'Kurátor',
+
+    'installation_conditions'   => 'Telepítési feltételek',
+    'transport_conditions'      => 'Szállítási feltételek',
+    'per_agreement'             => 'A kölcsönszerződés szerint',
+    'notes'                     => 'Megjegyzések',
+
+    'stage_label'               => 'Szakasz',
+    'overall_label'             => 'Összesített',
+    'report_date_label'         => 'Jegyzőkönyv dátuma',
+    'needs_conservator_review'  => 'Restaurátori vizsgálat szükséges',
+    'reason'                    => 'Indok',
+    'examination_limitations'   => 'A vizsgálat korlátai',
+
+    'section_body'              => 'A mű állapota',
+    'section_frame'             => 'A keret állapota',
+    'section_annotated'         => 'A gyűjteményi tárgy állapota (lásd az alábbi képeket)',
+
+    'handing_over'              => 'Átadás',
+    'checked_by'                => 'Ellenőrizte — név',
+    'signature'                 => 'Aláírás',
+    'place_short'               => 'Hely',
+    'date_short'                => 'Dátum',
+    'borrower_recipient'        => 'A kölcsönvevő nevében átvette — név',
+
+    'stages' => [
+        'incoming'      => 'Beérkezés',
+        'pre_shipment'  => 'Szállítás előtt',
+        'installation'  => 'Telepítés',
+        'post_shipment' => 'Szállítás után',
+        'return'        => 'Visszaadás',
+        'baseline'      => 'Alapállapot',
+        'incident'      => 'Esemény',
+    ],
+
+    'ratings' => [
+        'excellent' => 'Kiváló',
+        'good'      => 'Jó',
+        'fair'      => 'Megfelelő',
+        'poor'      => 'Rossz',
+    ],
+
+    'roles' => [
+        'registrar'          => 'Regisztrátor',
+        'curator'            => 'Kurátor',
+        'conservator'        => 'Restaurátor',
+        'collection_manager' => 'Gyűjteménykezelő',
+        'gallery_owner'      => 'Galériatulajdonos',
+        'artist'             => 'Művész',
+        'other'              => '',
+    ],
+
+    'body' => [
+        'base_level'                 => 'A hordozó síkjának változása',
+        'ground_damage'              => 'A hordozó sérülései',
+        'ground_perforation'         => 'a) perforáció',
+        'ground_cracks'              => 'b) repedések',
+        'fold_of_support'            => 'A hordozó meghajlása',
+        'break'                      => 'Törés',
+        'undulation'                 => 'Hullámosodás',
+        'crease'                     => 'Gyűrődés',
+        'bulge'                      => 'Kidudorodás',
+        'diminished_paint_adhesion'  => 'Csökkent festékréteg-tapadás',
+        'fallen_colour_layer'        => 'Levált festékréteg',
+        'damaged_colour_layer'       => 'Sérült festékréteg',
+        'cracks_with_loose_paint'    => 'Repedések elváló festékkel',
+        'paint_abrasion'             => 'Festékkopás',
+        'scrap'                      => 'Karcolás',
+        'dusty_surface'              => 'Poros felület',
+        'bloom'                      => 'Lakkhomály',
+        'discoloration'              => 'Elszíneződés',
+        'local_stains'               => 'Helyi foltok',
+        'fingerprint'                => 'Ujjlenyomat',
+        'fly_specks'                 => 'Légynyomok',
+        'foxing'                     => 'Rozsdafoltok',
+        'previous_treatment'         => 'Korábbi beavatkozások',
+        'damaged_patina'             => 'Sérült patina',
+        'yellowish_paper'            => 'Besárgult papír',
+        'loose_parts'                => 'Laza részek',
+        'woodworm_damage'            => 'Szúrágás',
+        'fillings_and_retouch'       => 'Kitöltés és retusálás',
+    ],
+
+    'frame' => [
+        'frame_abrasion'           => 'Kopás',
+        'frame_crackle'            => 'Repedés, hasadás',
+        'frame_open_bevel'         => 'Nyitott gérvágás',
+        'frame_colour_trace'       => 'Festéknyomok',
+        'frame_fallen_fragment'    => 'Levált töredék',
+        'frame_previous_treatment' => 'Korábbi beavatkozások',
+    ],
+];
